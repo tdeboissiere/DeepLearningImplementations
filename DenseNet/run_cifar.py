@@ -42,6 +42,7 @@ model = densenet.DenseNet(nb_classes,
 
 # Model output
 model.summary()
+raw_input()
 
 # Build optimizer
 opt = SGD(lr=learning_rate, decay=1e-4, momentum=0.9, nesterov=True)
@@ -64,11 +65,14 @@ for i in range(img_channels):
 
 def scheduleLR(epoch_index):
 	
-	if epoch_index == int(nb_epoch / 2):
+	if int(nb_epoch / 2) < epoch_index < int( 3 * nb_epoch / 4):
 		return learning_rate / 10
 
-	elif epoch_index == int( 3 * nb_epoch / 4):
+	elif epoch_index > int( 3 * nb_epoch / 4):
 		return learning_rate / 100
+
+	else:
+		return learning_rate
 
 print("Training")
 model.fit(X_train, Y_train, 
