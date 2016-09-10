@@ -5,6 +5,7 @@ from keras.datasets import cifar10
 from keras.optimizers import SGD
 from keras.utils import np_utils
 from keras.callbacks import  LearningRateScheduler
+import numpy as np
 import densenet
 
 batch_size = 64
