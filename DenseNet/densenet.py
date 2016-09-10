@@ -35,13 +35,12 @@ def transition(x, nb_filter, dropout_rate=None):
 def denseblock(x, nb_layers, nb_filter, growth_rate, dropout_rate=None):
     """Build a denseblock where the output of each conv_factory is fed to subsequent ones"""
 
-    list_feat = []
+    list_feat = [x]
 
     for i in range(nb_layers):
         x = conv_factory(x, growth_rate, dropout_rate)
         list_feat.append(x)
-        if len(list_feat) > 1:
-            x = merge(list_feat, mode='concat', concat_axis=1)
+        x = merge(list_feat, mode='concat', concat_axis=1)
         nb_filter += growth_rate
 
     return x, nb_filter
@@ -58,10 +57,10 @@ def DenseNet(nb_classes, img_dim, depth, nb_dense_block, growth_rate, nb_filter,
     nb_layers = (depth - 4) / 3
 
     # Initial convolution
-    x = Convolution2D(nb_filter, 3, 3, border_mode="same")(model_input)
+    x = Convolution2D(nb_filter, 3, 3, border_mode="same", name="initial_conv2D")(model_input)
 
     # Add dense blocks
-    for i in range(nb_dense_block - 1):
+    for block_idx in range(nb_dense_block - 1):
         x, nb_filter = denseblock(x, nb_layers, nb_filter, growth_rate, dropout_rate=dropout_rate)
         # add transition
         x = transition(x, nb_filter, dropout_rate=dropout_rate)
@@ -72,7 +71,6 @@ def DenseNet(nb_classes, img_dim, depth, nb_dense_block, growth_rate, nb_filter,
     x = BatchNormalization(mode=2, axis=1)(x)
     x = Activation('relu')(x)
     x = AveragePooling2D((8,8))(x)
-    print nb_filter
     x = Flatten()(x)
     x = Dense(nb_classes, activation='softmax')(x)
 
