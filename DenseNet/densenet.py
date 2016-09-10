@@ -72,6 +72,7 @@ def DenseNet(nb_classes, img_dim, depth, nb_dense_block, growth_rate, nb_filter,
     x = BatchNormalization(mode=2, axis=1)(x)
     x = Activation('relu')(x)
     x = AveragePooling2D((8,8))(x)
+    print nb_filter
     x = Flatten()(x)
     x = Dense(nb_classes, activation='softmax')(x)
 

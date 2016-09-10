@@ -39,6 +39,7 @@ model = densenet.DenseNet(nb_classes,
 
 # Model output
 model.summary()
+raw_input()
 
 # Build optimizer
 opt = Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
