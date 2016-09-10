@@ -45,6 +45,9 @@ opt = Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
 
 model.compile(loss='categorical_crossentropy', optimizer=opt)
 
+from keras.utils.visualize_util import plot
+plot(model, to_file='model.png', show_shapes=True)
+
 X_train = X_train.astype('float32')
 X_test = X_test.astype('float32')
 X_train /= 255.

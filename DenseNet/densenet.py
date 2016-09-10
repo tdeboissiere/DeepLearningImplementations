@@ -38,7 +38,7 @@ def denseblock(x, nb_layers, nb_filter, growth_rate, dropout_rate=None):
     list_feat = []
 
     for i in range(nb_layers):
-        x = conv_factory(x, nb_filter, dropout_rate)
+        x = conv_factory(x, growth_rate, dropout_rate)
         list_feat.append(x)
         if len(list_feat) > 1:
             x = merge(list_feat, mode='concat', concat_axis=1)
