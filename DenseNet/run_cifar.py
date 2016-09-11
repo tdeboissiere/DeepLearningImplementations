@@ -83,7 +83,7 @@ for e in range(nb_epoch):
 
     split_size = batch_size
     num_splits = X_train.shape[0] / split_size
-    arr_splits = np.arr_splits(np.arange(X_train.shape[0]), num_splits)
+    arr_splits = np.array_split(np.arange(X_train.shape[0]), num_splits)
 
     progbar = generic_utils.Progbar(len(arr_splits))
     l_train_loss = []
