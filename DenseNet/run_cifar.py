@@ -99,21 +99,17 @@ for e in range(nb_epoch):
 
     print("")
     print('Epoch %s/%s, Time: %s' % (e + 1, nb_epoch, time.time() - start))
-    print(model.evaluate(X_test, Y_test, verbose=0, batch_size=64))
-    # y_test_pred = model.predict(X_test, verbose=0, batch_size=64)
-    # train_loss = float(np.mean(np.array(l_train_loss)))
-    # test_loss = log_loss(y_test, y_test_pred)
-    # print("Train loss:", train_loss, "test loss:", test_loss)
-    # list_train_loss.append(train_loss)
-    # list_test_loss.append(test_loss)
+    test_loss = model.evaluate(X_test, Y_test, verbose=0, batch_size=64)
+    list_train_loss.append(np.mean(np.array(l_train_loss), 0))
+    list_test_loss.append(test_loss)
 
-    # d_log = {}
-    # d_log["batch_size"] = batch_size
-    # d_log["nb_epoch"] = nb_epoch
-    # d_log["optimizer"] = opt.get_config()
-    # d_log["train_loss"] = list_train_loss
-    # d_log["test_loss"] = list_test_loss
+    d_log = {}
+    d_log["batch_size"] = batch_size
+    d_log["nb_epoch"] = nb_epoch
+    d_log["optimizer"] = opt.get_config()
+    d_log["train_loss"] = list_train_loss
+    d_log["test_loss"] = list_test_loss
 
-    # json_file = os.path.join('experiment_log.json')
-    # with open(json_file, 'w') as fp:
-    #     json.dump(d_log, fp, indent=4, sort_keys=True)
+    json_file = os.path.join('experiment_log.json')
+    with open(json_file, 'w') as fp:
+        json.dump(d_log, fp, indent=4, sort_keys=True)
