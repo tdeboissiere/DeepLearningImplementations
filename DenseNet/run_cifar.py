@@ -95,7 +95,7 @@ for e in range(nb_epoch):
         train_logloss, train_acc = model.train_on_batch(X_batch, Y_batch)
 
         l_train_loss.append([train_logloss, train_acc])
-        progbar.add(batch_size, values=[("train logloss", train_logloss, "train accuracy", train_acc)])
+        progbar.add(batch_size, values=[("train logloss", train_logloss), ("train accuracy", train_acc)])
 
     print("")
     print('Epoch %s/%s, Time: %s' % (e + 1, nb_epoch, time.time() - start))
