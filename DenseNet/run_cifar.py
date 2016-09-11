@@ -92,19 +92,20 @@ for e in range(nb_epoch):
     for batch_idx in arr_splits:
 
         X_batch, Y_batch = X_train[batch_idx], Y_train[batch_idx]
-        train_loss = model.train_on_batch(X_batch, Y_batch)
+        train_logloss, train_acc = model.train_on_batch(X_batch, Y_batch)
 
-        l_train_loss.append(train_loss)
-        progbar.add(batch_size, values=[("train loss", train_loss)])
+        l_train_loss.append([train_logloss, train_acc])
+        progbar.add(batch_size, values=[("train logloss", train_logloss, "train accuracy", train_acc)])
 
     print("")
     print('Epoch %s/%s, Time: %s' % (e + 1, nb_epoch, time.time() - start))
-    y_test_pred = model.predict(X_test, verbose=0, batch_size=64)
-    train_loss = float(np.mean(l_train_loss))  # use float to make it j$
-    test_loss = log_loss(y_test, y_test_pred)
-    print("Train loss:", train_loss, "test loss:", test_loss)
-    list_train_loss.append(train_loss)
-    list_test_loss.append(test_loss)
+    print(model.evaluate(X_test, Y_test, verbose=0, batch_size=64))
+    # y_test_pred = model.predict(X_test, verbose=0, batch_size=64)
+    # train_loss = float(np.mean(np.array(l_train_loss)))
+    # test_loss = log_loss(y_test, y_test_pred)
+    # print("Train loss:", train_loss, "test loss:", test_loss)
+    # list_train_loss.append(train_loss)
+    # list_test_loss.append(test_loss)
 
     # d_log = {}
     # d_log["batch_size"] = batch_size
