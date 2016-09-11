@@ -25,7 +25,7 @@ Y_train = np_utils.to_categorical(y_train, nb_classes)
 Y_test = np_utils.to_categorical(y_test, nb_classes)
 
 img_dim = (img_channels, img_rows, img_cols)
-depth = 40
+depth = 100
 nb_dense_block = 3
 growth_rate = 12
 nb_filter = 16
