@@ -3,10 +3,13 @@
 from __future__ import print_function
 from keras.datasets import cifar10
 from keras.optimizers import SGD
-from keras.utils import np_utils
-from keras.callbacks import  LearningRateScheduler
+from keras.utils import np_utils, generic_utils
+import time
+import os
 import numpy as np
 import densenet
+import json
+from sklearn.metrics import log_loss
 
 batch_size = 64
 nb_classes = 10
@@ -25,7 +28,7 @@ Y_train = np_utils.to_categorical(y_train, nb_classes)
 Y_test = np_utils.to_categorical(y_test, nb_classes)
 
 img_dim = (img_channels, img_rows, img_cols)
-depth = 100
+depth = 13
 nb_dense_block = 3
 growth_rate = 12
 nb_filter = 16
@@ -42,7 +45,6 @@ model = densenet.DenseNet(nb_classes,
 
 # Model output
 model.summary()
-raw_input()
 
 # Build optimizer
 opt = SGD(lr=learning_rate, decay=1e-4, momentum=0.9, nesterov=True)
@@ -58,26 +60,59 @@ X_test = X_test.astype('float32')
 # Normalisation
 X = np.vstack((X_train, X_test))
 for i in range(img_channels):
-	mean = np.mean(X[:, i, :, :])
-	std = np.std(X[:, i, :, :])
-	X_train[:, i, :, :] = (X_train[:, i, :, :] - mean) / std
-	X_test[:, i, :, :] = (X_test[:, i, :, :] - mean) / std
+    mean = np.mean(X[:, i, :, :])
+    std = np.std(X[:, i, :, :])
+    X_train[:, i, :, :] = (X_train[:, i, :, :] - mean) / std
+    X_test[:, i, :, :] = (X_test[:, i, :, :] - mean) / std
 
-def scheduleLR(epoch_index):
-	
-	if int(nb_epoch / 2) < epoch_index < int( 3 * nb_epoch / 4):
-		return learning_rate / 10
-
-	elif epoch_index > int( 3 * nb_epoch / 4):
-		return learning_rate / 100
-
-	else:
-		return learning_rate
 
 print("Training")
-model.fit(X_train, Y_train, 
-	      nb_epoch=nb_epoch, 
-          batch_size=64, 
-          validation_data=(X_test, Y_test), 
-          verbose=1,
-          callbacks=[LearningRateScheduler(scheduleLR)])
+
+list_train_loss = []
+list_test_loss = []
+
+for e in range(nb_epoch):
+
+    if e == int(nb_epoch / 2):
+        model.optimizer.lr.set_value(learning_rate / 10.)
+        model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=["accuracy"])
+
+    if e == int(3 * nb_epoch / 4):
+        model.optimizer.lr.set_value(learning_rate / 100.)
+        model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=["accuracy"])
+
+    split_size = batch_size
+    num_splits = X_train.shape[0] / split_size
+    arr_splits = np.arr_splits(np.arange(X_train.shape[0]), num_splits)
+
+    progbar = generic_utils.Progbar(len(arr_splits))
+    l_train_loss = []
+    start = time.time()
+
+    for batch_idx in arr_splits:
+
+        X_batch, Y_batch = X_train[batch_idx], Y_train[batch_idx]
+        train_loss = model.train_on_batch(X_train, Y_train)
+
+        l_train_loss.append(train_loss)
+        progbar.add(batch_size, values=[("train loss", train_loss)])
+
+    print("")
+    print('Epoch %s/%s, Time: %s' % (e + 1, nb_epoch, time.time() - start))
+    y_test_pred = model.predict(X_test, verbose=0)
+    train_loss = float(np.mean(l_train_loss))  # use float to make it j$
+    test_loss = log_loss(y_test, y_test_pred)
+    print("Train loss:", train_loss, "test loss:", test_loss)
+    list_train_loss.append(train_loss)
+    list_test_loss.append(test_loss)
+
+    # d_log = {}
+    # d_log["batch_size"] = batch_size
+    # d_log["nb_epoch"] = nb_epoch
+    # d_log["optimizer"] = opt.get_config()
+    # d_log["train_loss"] = list_train_loss
+    # d_log["test_loss"] = list_test_loss
+
+    # json_file = os.path.join('experiment_log.json')
+    # with open(json_file, 'w') as fp:
+    #     json.dump(d_log, fp, indent=4, sort_keys=True)
