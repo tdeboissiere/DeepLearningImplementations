@@ -92,14 +92,14 @@ for e in range(nb_epoch):
     for batch_idx in arr_splits:
 
         X_batch, Y_batch = X_train[batch_idx], Y_train[batch_idx]
-        train_loss = model.train_on_batch(X_train, Y_train)
+        train_loss = model.train_on_batch(X_batch, Y_batch)
 
         l_train_loss.append(train_loss)
         progbar.add(batch_size, values=[("train loss", train_loss)])
 
     print("")
     print('Epoch %s/%s, Time: %s' % (e + 1, nb_epoch, time.time() - start))
-    y_test_pred = model.predict(X_test, verbose=0)
+    y_test_pred = model.predict(X_test, verbose=0, batch_size=64)
     train_loss = float(np.mean(l_train_loss))  # use float to make it j$
     test_loss = log_loss(y_test, y_test_pred)
     print("Train loss:", train_loss, "test loss:", test_loss)
