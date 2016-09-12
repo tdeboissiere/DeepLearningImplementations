@@ -6,11 +6,11 @@ Original idea and implementation:
 
 The figures below are taken from the paper above.
 
-![Model archi](./figures/dense_block.jpg)
+![Dense block](./figures/dense_block.jpg)
 
 Figure 1: A dense block with 5 layers and growth rate 4.
 
-![Model archi](./figures/densenet_archi.jpg)
+![Model scheme](./figures/densenet_scheme.jpg)
 
 
 Figure 2: A deep DenseNet with three dense blocks. 
