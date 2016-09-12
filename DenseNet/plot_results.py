@@ -5,7 +5,7 @@ import numpy as np
 
 def plot_cifar10():
 
-    with open("experiment_log.json", "r") as f:
+    with open("experiment_log_cifar10.json", "r") as f:
         d = json.load(f)
 
     train_accuracy = 100 * (1 - np.array(d["train_loss"])[:, 1])

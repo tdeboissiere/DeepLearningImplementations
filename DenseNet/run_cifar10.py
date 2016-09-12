@@ -73,6 +73,7 @@ print("Training")
 
 list_train_loss = []
 list_test_loss = []
+list_learning_rate = []
 
 for e in range(nb_epoch):
 
@@ -98,12 +99,11 @@ for e in range(nb_epoch):
         train_logloss, train_acc = model.train_on_batch(X_batch, Y_batch)
 
         l_train_loss.append([train_logloss, train_acc])
-        #progbar.add(batch_size, values=[("train logloss", train_logloss), ("train accuracy", train_acc)])
 
+    test_loss = model.evaluate(X_test, Y_test, verbose=0, batch_size=256)
     list_train_loss.append(np.mean(np.array(l_train_loss), 0).tolist())
-    if e % 5 == 0:
-        test_loss = model.evaluate(X_test, Y_test, verbose=0, batch_size=256)
-        list_test_loss.append(test_loss)
+    list_test_loss.append(test_loss)
+    list_learning_rate.append(model.optimizer.lr.get_value())
     print("")
     print('Epoch %s/%s, Time: %s' % (e + 1, nb_epoch, time.time() - start))
 
@@ -113,7 +113,8 @@ for e in range(nb_epoch):
     d_log["optimizer"] = opt.get_config()
     d_log["train_loss"] = list_train_loss
     d_log["test_loss"] = list_test_loss
+    d_log["learning_rate"] = list_learning_rate
 
-    json_file = os.path.join('experiment_log.json')
+    json_file = os.path.join('./log/experiment_log_cifar10.json')
     with open(json_file, 'w') as fp:
         json.dump(d_log, fp, indent=4, sort_keys=True)

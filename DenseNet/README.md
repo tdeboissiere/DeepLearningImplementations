@@ -1,6 +1,6 @@
 # Keras Implementation of DenseNet
 
-Original idead and implementation:
+Original idea and implementation:
 
 [Densely Connected Convolutional Network](http://arxiv.org/abs/1608.06993)
 
