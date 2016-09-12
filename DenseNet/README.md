@@ -6,3 +6,10 @@ Original idea and implementation:
 
 To do:
 - Reproduce paper results
+
+
+# Architecture
+
+With two dense blocks and 2 convolution operations within each block, the model looks like this:
+
+![Model archi](./figures/densenet_archi.png)
