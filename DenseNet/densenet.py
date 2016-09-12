@@ -10,9 +10,9 @@ from keras.layers.normalization import BatchNormalization
 def conv_factory(x, nb_filter, dropout_rate=None):
     """Apply BatchNorm, Relu 3x3Conv2D, optional dropout"""
 
-    x = BatchNormalization(mode=2, axis=1)(x)
+    x = BatchNormalization(mode=0, axis=1)(x)
     x = Activation('relu')(x)
-    x = Convolution2D(nb_filter, 3, 3, border_mode="same")(x)
+    x = Convolution2D(nb_filter, 3, 3, init="he_uniform", border_mode="same")(x)
     if dropout_rate:
         x = Dropout(dropout_rate)(x)
 
@@ -22,9 +22,9 @@ def conv_factory(x, nb_filter, dropout_rate=None):
 def transition(x, nb_filter, dropout_rate=None):
     """Apply BatchNorm, Relu 1x1Conv2D, optional dropout and Maxpooling2D"""
 
-    x = BatchNormalization(mode=2, axis=1)(x)
+    x = BatchNormalization(mode=0, axis=1)(x)
     x = Activation('relu')(x)
-    x = Convolution2D(nb_filter, 1, 1, border_mode="same")(x)
+    x = Convolution2D(nb_filter, 1, 1, init="he_uniform", border_mode="same")(x)
     if dropout_rate:
         x = Dropout(dropout_rate)(x)
     x = MaxPooling2D((2, 2), strides=(2, 2))(x)
@@ -54,10 +54,10 @@ def DenseNet(nb_classes, img_dim, depth, nb_dense_block, growth_rate, nb_filter,
     assert (depth - 4) % 3 == 0, "Depth must be 3 N + 4"
 
     # layers in each dense block
-    nb_layers = (depth - 4) / 3
+    nb_layers = int((depth - 4) / 3)
 
     # Initial convolution
-    x = Convolution2D(nb_filter, 3, 3, border_mode="same", name="initial_conv2D")(model_input)
+    x = Convolution2D(nb_filter, 3, 3, init="he_uniform", border_mode="same", name="initial_conv2D")(model_input)
 
     # Add dense blocks
     for block_idx in range(nb_dense_block - 1):
@@ -68,7 +68,7 @@ def DenseNet(nb_classes, img_dim, depth, nb_dense_block, growth_rate, nb_filter,
     # The last denseblock does not have a transition
     x, nb_filter = denseblock(x, nb_layers, nb_filter, growth_rate, dropout_rate=dropout_rate)
 
-    x = BatchNormalization(mode=2, axis=1)(x)
+    x = BatchNormalization(mode=0, axis=1)(x)
     x = Activation('relu')(x)
     x = AveragePooling2D((8,8))(x)
     x = Flatten()(x)

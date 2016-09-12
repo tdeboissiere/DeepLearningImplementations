@@ -9,7 +9,6 @@ import os
 import numpy as np
 import densenet
 import json
-from sklearn.metrics import log_loss
 
 batch_size = 64
 nb_classes = 10
@@ -34,6 +33,7 @@ growth_rate = 12
 nb_filter = 16
 dropout_rate = 0.2
 learning_rate = 0.1
+decay = 1E-4
 
 model = densenet.DenseNet(nb_classes,
                           img_dim,
@@ -47,12 +47,15 @@ model = densenet.DenseNet(nb_classes,
 model.summary()
 
 # Build optimizer
-opt = SGD(lr=learning_rate, decay=1e-4, momentum=0.9, nesterov=True)
+opt = SGD(lr=learning_rate, decay=0, momentum=0.9, nesterov=True)
 
 model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=["accuracy"])
 
-from keras.utils.visualize_util import plot
-plot(model, to_file='model.png', show_shapes=True)
+try:
+    from keras.utils.visualize_util import plot
+    plot(model, to_file='model.png', show_shapes=True)
+except ImportError:
+    pass
 
 X_train = X_train.astype('float32')
 X_test = X_test.astype('float32')
@@ -73,13 +76,13 @@ list_test_loss = []
 
 for e in range(nb_epoch):
 
-    if e == int(nb_epoch / 2):
-        model.optimizer.lr.set_value(learning_rate / 10.)
-        model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=["accuracy"])
+    model.optimizer.lr.set_value(np.float32(model.optimizer.lr.get_value() / np.float32(1. + decay * e)))
 
-    if e == int(3 * nb_epoch / 4):
-        model.optimizer.lr.set_value(learning_rate / 100.)
-        model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=["accuracy"])
+    if e == int(0.5 * nb_epoch):
+        model.optimizer.lr.set_value(np.float32(model.optimizer.lr.get_value() / np.float32(10.)))
+
+    if e == int(0.75 * nb_epoch):
+        model.optimizer.lr.set_value(np.float32(model.optimizer.lr.get_value() / np.float32(100.)))
 
     split_size = batch_size
     num_splits = X_train.shape[0] / split_size
@@ -97,11 +100,12 @@ for e in range(nb_epoch):
         l_train_loss.append([train_logloss, train_acc])
         #progbar.add(batch_size, values=[("train logloss", train_logloss), ("train accuracy", train_acc)])
 
+    list_train_loss.append(np.mean(np.array(l_train_loss), 0).tolist())
+    if e % 5 == 0:
+        test_loss = model.evaluate(X_test, Y_test, verbose=0, batch_size=256)
+        list_test_loss.append(test_loss)
     print("")
     print('Epoch %s/%s, Time: %s' % (e + 1, nb_epoch, time.time() - start))
-    test_loss = model.evaluate(X_test, Y_test, verbose=0, batch_size=64)
-    list_train_loss.append(np.mean(np.array(l_train_loss), 0).tolist())
-    list_test_loss.append(test_loss)
 
     d_log = {}
     d_log["batch_size"] = batch_size
