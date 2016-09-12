@@ -29,6 +29,8 @@ Figure 2: A deep DenseNet with three dense blocks.
                               growth_rate,
                               nb_filter,
                               dropout_rate=dropout_rate)
+
+
     nb_classes: number of classification targets.
     img_dim: (n_channels, height, width).
     depth: Network depth, must satisfy the following: (depth - 4) % 3 == 0.
