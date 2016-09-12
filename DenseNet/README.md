@@ -4,7 +4,19 @@ Original idea and implementation:
 
 [Densely Connected Convolutional Network](http://arxiv.org/abs/1608.06993)
 
-To do:
+The figures below are taken from the paper above.
+
+![Model archi](./figures/dense_block.jpg)
+
+Figure 1: A dense block with 5 layers and growth rate 4.
+
+![Model archi](./figures/densenet_archi.jpg)
+
+
+Figure 2: A deep DenseNet with three dense blocks. 
+
+# To do:
+
 - Reproduce paper results
 
 # Using DenseNet
