@@ -28,7 +28,7 @@ Y_train = np_utils.to_categorical(y_train, nb_classes)
 Y_test = np_utils.to_categorical(y_test, nb_classes)
 
 img_dim = (img_channels, img_rows, img_cols)
-depth = 13
+depth = 40
 nb_dense_block = 3
 growth_rate = 12
 nb_filter = 16
@@ -95,12 +95,12 @@ for e in range(nb_epoch):
         train_logloss, train_acc = model.train_on_batch(X_batch, Y_batch)
 
         l_train_loss.append([train_logloss, train_acc])
-        progbar.add(batch_size, values=[("train logloss", train_logloss), ("train accuracy", train_acc)])
+        #progbar.add(batch_size, values=[("train logloss", train_logloss), ("train accuracy", train_acc)])
 
     print("")
     print('Epoch %s/%s, Time: %s' % (e + 1, nb_epoch, time.time() - start))
     test_loss = model.evaluate(X_test, Y_test, verbose=0, batch_size=64)
-    list_train_loss.append(np.mean(np.array(l_train_loss), 0))
+    list_train_loss.append(np.mean(np.array(l_train_loss), 0).tolist())
     list_test_loss.append(test_loss)
 
     d_log = {}
