@@ -27,7 +27,7 @@ def transition(x, nb_filter, dropout_rate=None):
     x = Convolution2D(nb_filter, 1, 1, init="he_uniform", border_mode="same")(x)
     if dropout_rate:
         x = Dropout(dropout_rate)(x)
-    x = MaxPooling2D((2, 2), strides=(2, 2))(x)
+    x = AveragePooling2D((2, 2), strides=(2, 2))(x)
 
     return x
 
