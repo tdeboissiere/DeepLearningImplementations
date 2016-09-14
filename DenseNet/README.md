@@ -15,9 +15,15 @@ Figure 1: A dense block with 5 layers and growth rate 4.
 
 Figure 2: A deep DenseNet with three dense blocks. 
 
-# To do:
+# Results (WIP):
 
-- Reproduce paper results
+Below, results obtained with a network of depth 40, growth rate 12, 3 dense blocks dropout rate of 0.2 and trained with SGD for 235 epochs.
+
+The initial learning rate is 0.1, decay is 1E-4 and the learning rate is divided by 10 after 150 and 225 epochs.
+
+Some more tuning (revising learning rate schedule might be needed to reach the published results).
+
+![Model scheme](./figures/cifar10_results.png)
 
 # Using DenseNet
 
