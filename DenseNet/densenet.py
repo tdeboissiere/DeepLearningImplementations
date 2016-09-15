@@ -11,11 +11,15 @@ from keras.regularizers import l2
 def conv_factory(x, nb_filter, dropout_rate=None, weight_decay=1E-4):
     """Apply BatchNorm, Relu 3x3Conv2D, optional dropout"""
 
-    x = BatchNormalization(mode=0, axis=1)(x)
+    x = BatchNormalization(mode=0,
+                           axis=1,
+                           gamma_regularizer=l2(weight_decay),
+                           beta_regularizer=l2(weight_decay))(x)
     x = Activation('relu')(x)
     x = Convolution2D(nb_filter, 3, 3,
                       init="he_uniform",
                       border_mode="same",
+                      bias=False,
                       W_regularizer=l2(weight_decay))(x)
     if dropout_rate:
         x = Dropout(dropout_rate)(x)
@@ -26,11 +30,15 @@ def conv_factory(x, nb_filter, dropout_rate=None, weight_decay=1E-4):
 def transition(x, nb_filter, dropout_rate=None, weight_decay=1E-4):
     """Apply BatchNorm, Relu 1x1Conv2D, optional dropout and Maxpooling2D"""
 
-    x = BatchNormalization(mode=0, axis=1)(x)
+    x = BatchNormalization(mode=0,
+                           axis=1,
+                           gamma_regularizer=l2(weight_decay),
+                           beta_regularizer=l2(weight_decay))(x)
     x = Activation('relu')(x)
     x = Convolution2D(nb_filter, 1, 1,
                       init="he_uniform",
                       border_mode="same",
+                      bias=False,
                       W_regularizer=l2(weight_decay))(x)
     if dropout_rate:
         x = Dropout(dropout_rate)(x)
@@ -81,24 +89,33 @@ def DenseNet(nb_classes, img_dim, depth, nb_dense_block, growth_rate, nb_filter,
                       init="he_uniform",
                       border_mode="same",
                       name="initial_conv2D",
+                      bias=False,
                       W_regularizer=l2(weight_decay))(model_input)
 
     # Add dense blocks
     for block_idx in range(nb_dense_block - 1):
-        x, nb_filter = denseblock(
-            x, nb_layers, nb_filter, growth_rate, dropout_rate=dropout_rate)
+        x, nb_filter = denseblock(x, nb_layers, nb_filter, growth_rate,
+                                  dropout_rate=dropout_rate,
+                                  weight_decay=weight_decay)
         # add transition
         x = transition(x, nb_filter, dropout_rate=dropout_rate, weight_decay=weight_decay)
 
     # The last denseblock does not have a transition
-    x, nb_filter = denseblock(
-        x, nb_layers, nb_filter, growth_rate, dropout_rate=dropout_rate, weight_decay=weight_decay)
+    x, nb_filter = denseblock(x, nb_layers, nb_filter, growth_rate,
+                              dropout_rate=dropout_rate,
+                              weight_decay=weight_decay)
 
-    x = BatchNormalization(mode=0, axis=1)(x)
+    x = BatchNormalization(mode=0,
+                           axis=1,
+                           gamma_regularizer=l2(weight_decay),
+                           beta_regularizer=l2(weight_decay))(x)
     x = Activation('relu')(x)
     x = AveragePooling2D((8, 8))(x)
     x = Flatten()(x)
-    x = Dense(nb_classes, activation='softmax', W_regularizer=l2(weight_decay))(x)
+    x = Dense(nb_classes,
+              activation='softmax',
+              W_regularizer=l2(weight_decay),
+              b_regularizer=l2(weight_decay))(x)
 
     densenet = Model(input=[model_input], output=[x], name="DenseNet")
 

@@ -25,7 +25,7 @@ Y_train = np_utils.to_categorical(y_train, nb_classes)
 Y_test = np_utils.to_categorical(y_test, nb_classes)
 
 img_dim = (img_channels, img_rows, img_cols)
-depth = 10
+depth = 40
 nb_dense_block = 3
 growth_rate = 12
 nb_filter = 16
@@ -76,10 +76,10 @@ list_learning_rate = []
 for e in range(nb_epoch):
 
     if e == int(0.5 * nb_epoch):
-        model.optimizer.lr.set_value(learning_rate / np.float32(10.))
+        model.optimizer.lr.set_value(np.float32(learning_rate / 10.))
 
     if e == int(0.75 * nb_epoch):
-        model.optimizer.lr.set_value(learning_rate / np.float32(100.))
+        model.optimizer.lr.set_value(np.float32(learning_rate / 100.))
 
     split_size = batch_size
     num_splits = X_train.shape[0] / split_size
