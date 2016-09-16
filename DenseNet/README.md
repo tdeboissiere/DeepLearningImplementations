@@ -15,13 +15,17 @@ Figure 1: A dense block with 5 layers and growth rate 4.
 
 Figure 2: A deep DenseNet with three dense blocks. 
 
-# Results (WIP):
+# Results:
 
 Below, results obtained with a network of depth 40, growth rate 12, 3 dense blocks dropout rate of 0.2 and trained with SGD for 235 epochs.
 
-The initial learning rate is 0.1, decay is 1E-4 and the learning rate is divided by 10 after 150 and 225 epochs.
+All convolutional layer have `bias = True` meaning we don't use a bias parameter for them.
 
-Some more tuning (revising learning rate schedule might be needed to reach the published results).
+Weight decay (1E-4) is applied to convolutional layers, batch norm parameters and the last dense layer.
+
+The initial learning rate is 0.1 and the learning rate is divided by 10 after 150 and 225 epochs.
+
+These settings lead to the same results as [Densely Connected Convolutional Network](http://arxiv.org/abs/1608.06993): 7 % misclassification rate on the CIFAR10 test set without data augmentation.
 
 ![Model scheme](./figures/cifar10_results.png)
 
