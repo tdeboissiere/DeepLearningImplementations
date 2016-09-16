@@ -17,7 +17,7 @@ Figure 2: A deep DenseNet with three dense blocks.
 
 # Results:
 
-Below, results obtained with a network of depth 40, growth rate 12, 3 dense blocks dropout rate of 0.2 and trained with SGD for 235 epochs.
+Below, results obtained with a network of depth 40, growth rate 12, 3 dense blocks, dropout rate of 0.2 and trained with SGD for 276 epochs.
 
 All convolutional layer have `bias = True` meaning we don't use a bias parameter for them.
 
