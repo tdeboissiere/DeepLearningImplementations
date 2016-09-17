@@ -1,7 +1,6 @@
 # Implementation of the Deconvnet algorithm
 
-N.B. It's still early days for this code so contributions are welcome !
-However if you follow the guidelines below you should be fine.
+N.B. It's still early days for this code. Suggestions for improvement are welcome !
 
 # Requirements
 
