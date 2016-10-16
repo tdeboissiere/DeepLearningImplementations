@@ -6,6 +6,7 @@ from keras.layers.pooling import AveragePooling2D
 from keras.layers import Input, merge
 from keras.layers.normalization import BatchNormalization
 from keras.regularizers import l2
+import keras.backend as K
 
 
 def conv_factory(x, nb_filter, dropout_rate=None, weight_decay=1E-4):
@@ -52,10 +53,15 @@ def denseblock(x, nb_layers, nb_filter, growth_rate, dropout_rate=None, weight_d
 
     list_feat = [x]
 
+    if K.image_dim_ordering() == "th":
+        concat_axis = 1
+    elif K.image_dim_ordering() == "tf":
+        concat_axis = -1
+
     for i in range(nb_layers):
         x = conv_factory(x, growth_rate, dropout_rate, weight_decay)
         list_feat.append(x)
-        x = merge(list_feat, mode='concat', concat_axis=1)
+        x = merge(list_feat, mode='concat', concat_axis=concat_axis)
         nb_filter += growth_rate
 
     return x, nb_filter
@@ -66,9 +72,14 @@ def denseblock_altern(x, nb_layers, nb_filter, growth_rate, dropout_rate=None, w
        Alternative implementation
     """
 
+    if K.image_dim_ordering() == "th":
+        concat_axis = 1
+    elif K.image_dim_ordering() == "tf":
+        concat_axis = -1
+
     for i in range(nb_layers):
         merge_tensor = conv_factory(x, growth_rate, dropout_rate, weight_decay)
-        x = merge([merge_tensor, x], mode='concat', concat_axis=1)
+        x = merge([merge_tensor, x], mode='concat', concat_axis=concat_axis)
         nb_filter += growth_rate
 
     return x, nb_filter
