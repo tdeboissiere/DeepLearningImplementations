@@ -2,6 +2,7 @@ from __future__ import print_function
 from keras.datasets import cifar10
 from keras.optimizers import SGD, Adam
 from keras.utils import np_utils, generic_utils
+import keras.backend as K
 import time
 import os
 import numpy as np
@@ -61,11 +62,22 @@ X_test = X_test.astype('float32')
 
 # Normalisation
 X = np.vstack((X_train, X_test))
-for i in range(img_channels):
-    mean = np.mean(X[:, i, :, :])
-    std = np.std(X[:, i, :, :])
-    X_train[:, i, :, :] = (X_train[:, i, :, :] - mean) / std
-    X_test[:, i, :, :] = (X_test[:, i, :, :] - mean) / std
+# 2 cases depending on the image ordering
+if K.image_dim_ordering() == "th":
+    n_channels = img_dim[0]
+    for i in range(n_channels):
+        mean = np.mean(X[:, i, :, :])
+        std = np.std(X[:, i, :, :])
+        X_train[:, i, :, :] = (X_train[:, i, :, :] - mean) / std
+        X_test[:, i, :, :] = (X_test[:, i, :, :] - mean) / std
+
+elif K.image_dim_ordering() == "tf":
+    n_channels = img_dim[-1]
+    for i in range(n_channels):
+        mean = np.mean(X[:, :, :, i])
+        std = np.std(X[:, :, :, i])
+        X_train[:, :, :, i] = (X_train[:, :, :, i] - mean) / std
+        X_test[:, :, :, i] = (X_test[:, :, :, i] - mean) / std
 
 
 print("Training")
@@ -77,10 +89,10 @@ list_learning_rate = []
 for e in range(nb_epoch):
 
     if e == int(0.5 * nb_epoch):
-        model.optimizer.lr.set_value(np.float32(learning_rate / 10.))
+        K.set_value(model.optimizer.lr, np.float32(learning_rate / 10.))
 
     if e == int(0.75 * nb_epoch):
-        model.optimizer.lr.set_value(np.float32(learning_rate / 100.))
+        K.set_value(model.optimizer.lr, np.float32(learning_rate / 100.))
 
     split_size = batch_size
     num_splits = X_train.shape[0] / split_size
@@ -100,7 +112,7 @@ for e in range(nb_epoch):
     test_logloss, test_acc = model.evaluate(X_test, Y_test, verbose=0, batch_size=64)
     list_train_loss.append(np.mean(np.array(l_train_loss), 0).tolist())
     list_test_loss.append([test_logloss, test_acc])
-    list_learning_rate.append(float(model.optimizer.lr.get_value()))  # to convert numpy array to json serializable
+    list_learning_rate.append(float(K.get_value(model.optimizer.lr)))  # to convert numpy array to json serializable
     print("")
     print('Epoch %s/%s, Time: %s' % (e + 1, nb_epoch, time.time() - start))
 
