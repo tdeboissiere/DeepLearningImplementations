@@ -122,8 +122,7 @@ def DenseNet(nb_classes, img_dim, depth, nb_dense_block, growth_rate, nb_filter,
                            gamma_regularizer=l2(weight_decay),
                            beta_regularizer=l2(weight_decay))(x)
     x = Activation('relu')(x)
-    x = GlobalAveragePooling2D()(x)
-    x = Flatten()(x)
+    x = GlobalAveragePooling2D(dim_ordering="th")(x)
     x = Dense(nb_classes,
               activation='softmax',
               W_regularizer=l2(weight_decay),
