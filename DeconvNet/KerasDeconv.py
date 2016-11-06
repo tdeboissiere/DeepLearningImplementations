@@ -8,10 +8,18 @@ class DeconvNet(object):
     """DeconvNet class"""
 
     def __init__(self, model):
+        """Creates a DeconvNet instance
+
+        :param model: Keras model
+        :returns: deconvnet class
+        :rtype: deconvnet
+
+        """
         self.model = model
         list_layers = self.model.layers
         self.lnames = [l.name for l in list_layers]
-        assert len(self.lnames) == len(set(self.lnames)), "Non unique layer names"
+        assert len(self.lnames) == len(
+            set(self.lnames)), "Non unique layer names"
         # Dict of layers indexed by layer name
         self.d_layers = {}
         for l_name, l in zip(self.lnames, list_layers):
@@ -38,8 +46,10 @@ class DeconvNet(object):
         pad_width = (o_width - i_width + f_width - 1) / 2
         pad_height = (o_height - i_height + f_height - 1) / 2
 
-        assert isinstance(pad_width, int), "Pad width size issue at layer %s" % lname
-        assert isinstance(pad_height, int), "Pad height size issue at layer %s" % lname
+        assert isinstance(
+            pad_width, int), "Pad width size issue at layer %s" % lname
+        assert isinstance(
+            pad_height, int), "Pad height size issue at layer %s" % lname
 
         # Set to zero based on switch values
         X[d_switch[lname]] = 0
@@ -50,21 +60,22 @@ class DeconvNet(object):
             print "Setting other feat map to zero"
             for i in range(X.shape[1]):
                 if i != feat_map:
-                    X[:,i,:,:] = 0
+                    X[:, i, :, :] = 0
             print "Setting non max activations to zero"
             for i in range(X.shape[0]):
                 iw, ih = np.unravel_index(
-                    X[i,feat_map,:,:].argmax(), X[i,feat_map,:,:].shape)
-                m = np.max(X[i,feat_map,:,:])
-                X[i,feat_map,:,:] = 0
-                X[i,feat_map,iw,ih] = m
+                    X[i, feat_map, :, :].argmax(), X[i, feat_map, :, :].shape)
+                m = np.max(X[i, feat_map, :, :])
+                X[i, feat_map, :, :] = 0
+                X[i, feat_map, iw, ih] = m
         # Get filters. No bias for now
         W = self[lname].W
         # Transpose filter
         W = W.transpose([1, 0, 2, 3])
-        W = W[:,:, ::-1, ::-1]
+        W = W[:, :, ::-1, ::-1]
         # CUDNN for conv2d ?
-        conv_out = K.T.nnet.conv2d(input=self.x, filters=W, border_mode='valid')
+        conv_out = K.T.nnet.conv2d(
+            input=self.x, filters=W, border_mode='valid')
         # Add padding to get correct size
         pad = K.function([self.x], K.spatial_2d_padding(
             self.x, padding=(pad_width, pad_height), dim_ordering="th"))
@@ -95,7 +106,8 @@ class DeconvNet(object):
         # Run deconv/maxunpooling until input pixel space
         layer_index = self.lnames.index(target_layer)
         # Get the output of the target_layer of interest
-        layer_output = K.function([self[self.lnames[0]].input], self[target_layer].output)
+        layer_output = K.function(
+            [self[self.lnames[0]].input], self[target_layer].output)
         X_outl = layer_output([X])
         # Special case for the starting layer where we may want
         # to switchoff somes maps/ activations
@@ -108,15 +120,16 @@ class DeconvNet(object):
             if feat_map is not None:
                 for i in range(X_outl.shape[1]):
                     if i != feat_map:
-                        X_outl[:,i,:,:] = 0
+                        X_outl[:, i, :, :] = 0
                 for i in range(X_outl.shape[0]):
                     iw, ih = np.unravel_index(
-                        X_outl[i,feat_map,:,:].argmax(), X_outl[i,feat_map,:,:].shape)
-                    m = np.max(X_outl[i,feat_map,:,:])
-                    X_outl[i,feat_map,:,:] = 0
-                    X_outl[i,feat_map,iw,ih] = m
+                        X_outl[i, feat_map, :, :].argmax(), X_outl[i, feat_map, :, :].shape)
+                    m = np.max(X_outl[i, feat_map, :, :])
+                    X_outl[i, feat_map, :, :] = 0
+                    X_outl[i, feat_map, iw, ih] = m
         elif "convolution2d" in target_layer:
-            X_outl = self._deconv(X_outl, target_layer, d_switch, feat_map=feat_map)
+            X_outl = self._deconv(X_outl, target_layer,
+                                  d_switch, feat_map=feat_map)
         else:
             raise ValueError(
                 "Invalid layer name: %s \n Can only handle maxpool and conv" % target_layer)
@@ -126,7 +139,8 @@ class DeconvNet(object):
             # Unpool, Deconv or do nothing
             if "maxpooling2d" in lname:
                 p1, p2 = self[lname].pool_size
-                uppool = K.function([self.x], K.resize_images(self.x, p1, p2, "th"))
+                uppool = K.function(
+                    [self.x], K.resize_images(self.x, p1, p2, "th"))
                 X_outl = uppool([X_outl])
 
             elif "convolution2d" in lname:
@@ -139,11 +153,27 @@ class DeconvNet(object):
         return X_outl
 
     def get_layers(self):
+        """Returns the layers of the network
+
+        :returns: returns the layers of the network
+        :rtype: list
+
+        """
         list_layers = self.model.layers
         list_layers_name = [l.name for l in list_layers]
         return list_layers_name
 
     def get_deconv(self, X, target_layer, feat_map=None):
+        """ Starts the deconvolution process
+
+        :param X: input image: the data to be deconv-ed
+        :param target_layer: layer in the model up to which
+        we want to be deconvolved
+        :param feat_map: # @TODO: update
+        :returns: deconvolved image
+        :rtype: numpy array
+
+        """
 
         # First make predictions to get feature maps
         self.model.predict(X)

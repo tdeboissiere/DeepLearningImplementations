@@ -1,3 +1,4 @@
+from __future__ import print_function
 from keras.models import Sequential
 from keras.layers.core import Flatten, Dense, Dropout
 from keras.layers.convolutional import Convolution2D, MaxPooling2D, ZeroPadding2D
@@ -23,41 +24,41 @@ def VGG_16(weights_path=None):
     """
 
     model = Sequential()
-    model.add(ZeroPadding2D((1,1),input_shape=(3,224,224)))
+    model.add(ZeroPadding2D((1, 1), input_shape=(3, 224, 224)))
     model.add(Convolution2D(64, 3, 3, activation='relu'))
-    model.add(ZeroPadding2D((1,1)))
+    model.add(ZeroPadding2D((1, 1)))
     model.add(Convolution2D(64, 3, 3, activation='relu'))
-    model.add(MaxPooling2D((2,2), strides=(2,2)))
+    model.add(MaxPooling2D((2, 2), strides=(2, 2)))
 
-    model.add(ZeroPadding2D((1,1)))
+    model.add(ZeroPadding2D((1, 1)))
     model.add(Convolution2D(128, 3, 3, activation='relu'))
-    model.add(ZeroPadding2D((1,1)))
+    model.add(ZeroPadding2D((1, 1)))
     model.add(Convolution2D(128, 3, 3, activation='relu'))
-    model.add(MaxPooling2D((2,2), strides=(2,2)))
+    model.add(MaxPooling2D((2, 2), strides=(2, 2)))
 
-    model.add(ZeroPadding2D((1,1)))
+    model.add(ZeroPadding2D((1, 1)))
     model.add(Convolution2D(256, 3, 3, activation='relu'))
-    model.add(ZeroPadding2D((1,1)))
+    model.add(ZeroPadding2D((1, 1)))
     model.add(Convolution2D(256, 3, 3, activation='relu'))
-    model.add(ZeroPadding2D((1,1)))
+    model.add(ZeroPadding2D((1, 1)))
     model.add(Convolution2D(256, 3, 3, activation='relu'))
-    model.add(MaxPooling2D((2,2), strides=(2,2)))
+    model.add(MaxPooling2D((2, 2), strides=(2, 2)))
 
-    model.add(ZeroPadding2D((1,1)))
+    model.add(ZeroPadding2D((1, 1)))
     model.add(Convolution2D(512, 3, 3, activation='relu'))
-    model.add(ZeroPadding2D((1,1)))
+    model.add(ZeroPadding2D((1, 1)))
     model.add(Convolution2D(512, 3, 3, activation='relu'))
-    model.add(ZeroPadding2D((1,1)))
+    model.add(ZeroPadding2D((1, 1)))
     model.add(Convolution2D(512, 3, 3, activation='relu'))
-    model.add(MaxPooling2D((2,2), strides=(2,2)))
+    model.add(MaxPooling2D((2, 2), strides=(2, 2)))
 
-    model.add(ZeroPadding2D((1,1)))
+    model.add(ZeroPadding2D((1, 1)))
     model.add(Convolution2D(512, 3, 3, activation='relu'))
-    model.add(ZeroPadding2D((1,1)))
+    model.add(ZeroPadding2D((1, 1)))
     model.add(Convolution2D(512, 3, 3, activation='relu'))
-    model.add(ZeroPadding2D((1,1)))
+    model.add(ZeroPadding2D((1, 1)))
     model.add(Convolution2D(512, 3, 3, activation='relu'))
-    model.add(MaxPooling2D((2,2), strides=(2,2)))
+    model.add(MaxPooling2D((2, 2), strides=(2, 2)))
 
     model.add(Flatten())
     model.add(Dense(4096, activation='relu'))
@@ -67,7 +68,7 @@ def VGG_16(weights_path=None):
     model.add(Dense(1000, activation='softmax'))
 
     if weights_path:
-        print "Loading weights..."
+        print("Loading weights...")
         model.load_weights(weights_path)
 
     return model
@@ -104,10 +105,10 @@ if __name__ == "__main__":
     data = []
     for im_name in list_img:
         im = cv2.resize(cv2.imread(im_name), (224, 224)).astype(np.float32)
-        im[:,:,0] -= 103.939
-        im[:,:,1] -= 116.779
-        im[:,:,2] -= 123.68
-        im = im.transpose((2,0,1))
+        im[:, :, 0] -= 103.939
+        im[:, :, 1] -= 116.779
+        im[:, :, 2] -= 123.68
+        im = im.transpose((2, 0, 1))
         data.append(im)
     data = np.array(data)
 
@@ -155,13 +156,15 @@ if __name__ == "__main__":
         d_act_path = './Data/dict_top9_mean_act.pickle'
         d_deconv_path = './Data/dict_top9_deconv.npz'
         target_layer = "convolution2d_10"
-        plot_max_activation(d_act_path, d_deconv_path, data, target_layer, save=True)
+        plot_max_activation(d_act_path, d_deconv_path,
+                            data, target_layer, save=True)
 
     ###############################################
     # Action 4) Get deconv images of some images for some
     # feat map
     ###############################################
     deconv_specific = False
+    img_choice = False  # for debugging purposes
     if deconv_specific:
         if not model:
             model = load_model('./Data/vgg16_weights.h5')
@@ -170,5 +173,9 @@ if __name__ == "__main__":
         target_layer = "convolution2d_13"
         feat_map = 12
         num_img = 25
-        img_index = np.random.choice(data.shape[0], num_img, replace=False)
+        if img_choice:
+            img_index = []
+            assert(len(img_index) == num_img)
+        else:
+            img_index = np.random.choice(data.shape[0], num_img, replace=False)
         plot_deconv(img_index, data, Dec, target_layer, feat_map)
