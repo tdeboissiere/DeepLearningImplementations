@@ -67,7 +67,6 @@ if K.image_dim_ordering() == "th":
 elif K.image_dim_ordering() == "tf":
     n_channels = img_dim[0]
     for i in range(n_channels):
-        print(i)
         mean = np.mean(X[:, :, :, i])
         std = np.std(X[:, :, :, i])
         X_train[:, :, :, i] = (X_train[:, :, :, i] - mean) / std

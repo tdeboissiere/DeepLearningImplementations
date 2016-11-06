@@ -91,6 +91,7 @@ def denseblock(x, nb_layers, nb_filter, growth_rate,
 
     for i in range(nb_layers):
         x = conv_factory(x, growth_rate, dropout_rate, weight_decay)
+
         list_feat.append(x)
         x = merge(list_feat, mode='concat', concat_axis=concat_axis)
         nb_filter += growth_rate
@@ -113,7 +114,8 @@ def denseblock_altern(x, nb_layers, nb_filter, growth_rate,
     :returns: keras model with nb_layers of conv_factory appended
     :rtype: keras model
 
-
+    * The main difference between this implementation and the implementation
+    above is that the one above
     """
     if K.image_dim_ordering() == "th":
         concat_axis = 1
@@ -130,8 +132,21 @@ def denseblock_altern(x, nb_layers, nb_filter, growth_rate,
 
 def DenseNet(nb_classes, img_dim, depth, nb_dense_block, growth_rate,
              nb_filter, dropout_rate=None, weight_decay=1E-4):
-    """ Build the DenseNet model"""
+    """ Build the DenseNet model
 
+    :param nb_classes: int -- number of classes
+    :param img_dim: tuple -- (channels, rows, columns)
+    :param depth: int -- how many layers
+    :param nb_dense_block: int -- number of dense blocks to add to end
+    :param growth_rate: int -- number of filters to add
+    :param nb_filter: int -- number of filters
+    :param dropout_rate: float -- dropout rate
+    :param weight_decay: float -- weight decay
+
+    :returns: keras model with nb_layers of conv_factory appended
+    :rtype: keras model
+
+    """
     model_input = Input(shape=img_dim)
 
     def lambda_output(input_shape):
