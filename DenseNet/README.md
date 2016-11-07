@@ -29,25 +29,30 @@ These settings lead to the same results as [Densely Connected Convolutional Netw
 
 ![Model scheme](./figures/cifar10_results.png)
 
-# Using DenseNet
+# Running a CIFAR10 experiment
 
-    import densenet.py
-    model = densenet.DenseNet(nb_classes,
-                              img_dim,
-                              depth,
-                              nb_dense_block,
-                              growth_rate,
-                              nb_filter,
-                              dropout_rate=dropout_rate)
+python run_cifar10.py
 
-
-    nb_classes: number of classification targets.
-    img_dim: (n_channels, height, width).
-    depth: Network depth, must satisfy the following: (depth - 4) % 3 == 0.
-    nb_dense_block: the number of dense blocks (typically 3).
-    growth_rate: the number of new convolution filters to add at each step (typically 12 or 24).
-    nb_filter: the number of convolution filters at the first convolution layer (typically 16).
-    dropout_rate: the dropout rate (typically 0.2).
+optional arguments:
+    -h, --help            show this help message and exit
+    --batch_size BATCH_SIZE
+                          Batch size
+    --nb_epoch NB_EPOCH   Number of epochs
+    --depth DEPTH         Network depth
+    --nb_dense_block NB_DENSE_BLOCK
+                          Number of dense blocks
+    --nb_filter NB_FILTER
+                          Initial number of conv filters
+    --growth_rate GROWTH_RATE
+                          Number of new filters added by conv layers
+    --dropout_rate DROPOUT_RATE
+                          Dropout rate
+    --learning_rate LEARNING_RATE
+                          Learning rate
+    --weight_decay WEIGHT_DECAY
+                          L2 regularization on weights
+    --plot_architecture PLOT_ARCHITECTURE
+                          Save a plot of the network architecture
 
 
 # Architecture
