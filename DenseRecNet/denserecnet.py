@@ -207,11 +207,11 @@ def DenseNet(nb_classes, img_dim, depth, nb_dense_block, growth_rate,
     x_RNN = Expand(x_RNN)
     list_RNN_input.append(x_RNN)
 
-    x_RNN = merge(list_RNN_input, mode='concat', concat_axis=1)
+    if len(list_RNN_input) > 1:
+        x_RNN = merge(list_RNN_input, mode='concat', concat_axis=1)
     x_RNN = SimpleRNN(100)(x_RNN)
 
     x = GlobalAveragePooling2D()(x)
-    x = Flatten()(x)
 
     x = merge([x, x_RNN], mode="concat")
 
