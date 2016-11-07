@@ -9,14 +9,38 @@ import numpy as np
 import denserecnet
 import json
 
+#########################
+# Network specificatons #
+#########################
+
 batch_size = 64
 nb_classes = 10
 nb_epoch = 300
+
+depth = 10
+nb_dense_block = 3
+growth_rate = 12
+nb_filter = 16
+dropout_rate = 0.2
+learning_rate = 1E-3
+weight_decay = 1E-4
+
+plot_architecture = False
+
+########################
+# Input specifications #
+########################
 
 # input image dimensions
 img_rows, img_cols = 32, 32
 # the CIFAR10 images are RGB
 img_channels = 3
+
+img_dim = (img_channels, img_rows, img_cols)
+
+###################
+# Data processing #
+###################
 
 # the data, shuffled and split between train and test sets
 (X_train, y_train), (X_test, y_test) = cifar10.load_data()
@@ -25,14 +49,32 @@ img_channels = 3
 Y_train = np_utils.to_categorical(y_train, nb_classes)
 Y_test = np_utils.to_categorical(y_test, nb_classes)
 
-img_dim = (img_channels, img_rows, img_cols)
-depth = 10
-nb_dense_block = 3
-growth_rate = 12
-nb_filter = 16
-dropout_rate = 0.2
-learning_rate = 1E-3
-weight_decay = 1E-4
+
+X_train = X_train.astype('float32')
+X_test = X_test.astype('float32')
+
+# Normalisation
+X = np.vstack((X_train, X_test))
+# 2 cases depending on the image ordering
+if K.image_dim_ordering() == "th":
+    n_channels = img_dim[0]
+    for i in range(n_channels):
+        mean = np.mean(X[:, i, :, :])
+        std = np.std(X[:, i, :, :])
+        X_train[:, i, :, :] = (X_train[:, i, :, :] - mean) / std
+        X_test[:, i, :, :] = (X_test[:, i, :, :] - mean) / std
+
+elif K.image_dim_ordering() == "tf":
+    n_channels = img_dim[0]
+    for i in range(n_channels):
+        mean = np.mean(X[:, :, :, i])
+        std = np.std(X[:, :, :, i])
+        X_train[:, :, :, i] = (X_train[:, :, :, i] - mean) / std
+        X_test[:, :, :, i] = (X_test[:, :, :, i] - mean) / std
+
+###################
+# Construct model #
+###################
 
 model = denserecnet.DenseNet(nb_classes,
                              img_dim,
@@ -50,35 +92,18 @@ model.summary()
 opt = SGD(lr=learning_rate, decay=0, momentum=0.9, nesterov=True)
 opt = Adam(lr=learning_rate, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
 
-model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=["accuracy"])
+model.compile(loss='categorical_crossentropy',
+              optimizer=opt,
+              metrics=["accuracy"])
 
-# uncomment to plot model architecture
-from keras.utils.visualize_util import plot
-plot(model, to_file='./figures/densenet_archi.png', show_shapes=True)
-# raw_input("OK")
+if plot_architecture:
+    from keras.utils.visualize_util import plot
+    plot(model, to_file='./figures/densenet_archi.png', show_shapes=True)
+    # raw_input("OK")
 
-X_train = X_train.astype('float32')
-X_test = X_test.astype('float32')
-
-# Normalisation
-X = np.vstack((X_train, X_test))
-# 2 cases depending on the image ordering
-if K.image_dim_ordering() == "th":
-    n_channels = img_dim[0]
-    for i in range(n_channels):
-        mean = np.mean(X[:, i, :, :])
-        std = np.std(X[:, i, :, :])
-        X_train[:, i, :, :] = (X_train[:, i, :, :] - mean) / std
-        X_test[:, i, :, :] = (X_test[:, i, :, :] - mean) / std
-
-elif K.image_dim_ordering() == "tf":
-    n_channels = img_dim[-1]
-    for i in range(n_channels):
-        mean = np.mean(X[:, :, :, i])
-        std = np.std(X[:, :, :, i])
-        X_train[:, :, :, i] = (X_train[:, :, :, i] - mean) / std
-        X_test[:, :, :, i] = (X_test[:, :, :, i] - mean) / std
-
+####################
+# Network training #
+####################
 
 print("Training")
 
@@ -109,11 +134,14 @@ for e in range(nb_epoch):
 
         l_train_loss.append([train_logloss, train_acc])
 
-    test_logloss, test_acc = model.evaluate(X_test, Y_test, verbose=0, batch_size=64)
+    test_logloss, test_acc = model.evaluate(X_test,
+                                            Y_test,
+                                            verbose=0,
+                                            batch_size=64)
     list_train_loss.append(np.mean(np.array(l_train_loss), 0).tolist())
     list_test_loss.append([test_logloss, test_acc])
-    list_learning_rate.append(float(K.get_value(model.optimizer.lr)))  # to convert numpy array to json serializable
-    print("")
+    list_learning_rate.append(float(K.get_value(model.optimizer.lr)))
+    # to convert numpy array to json serializable
     print('Epoch %s/%s, Time: %s' % (e + 1, nb_epoch, time.time() - start))
 
     d_log = {}
