@@ -9,10 +9,14 @@ python run_cifar10.py
 
 optional arguments:
     -h, --help            show this help message and exit
+    
     --batch_size BATCH_SIZE
                         Batch size
+                        
     --nb_epoch NB_EPOCH   Number of epochs
+    
     --depth DEPTH         Network depth
+    
     --nb_dense_block NB_DENSE_BLOCK
                         Number of dense blocks
     --nb_filter NB_FILTER
