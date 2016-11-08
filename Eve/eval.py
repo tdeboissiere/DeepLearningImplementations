@@ -31,12 +31,15 @@ def plot_results(list_log, to_plot="losses"):
                      linestyle="--",
                      linewidth=3,)
     plt.ylabel(to_plot, fontsize=20)
-    plt.yscale("log")
+    if to_plot == "losses":
+        plt.yscale("log")
+    if to_plot == "accs":
+        plt.ylim([0.5, 1.1])
     plt.xlabel("Number of epochs", fontsize=20)
     plt.title("%s experiment" % dataset, fontsize=22)
     plt.legend(loc="best")
     plt.tight_layout()
-    plt.savefig("./figures/%s_results.png" % dataset)
+    plt.savefig("./figures/%s_results_%s.png" % (dataset, to_plot))
     plt.show()
 
 
@@ -54,4 +57,4 @@ if __name__ == '__main__':
 
     list_log = [l for l in list_log if dataset in l]
 
-    plot_results(list_log)
+    plot_results(list_log, to_plot=args.to_plot)

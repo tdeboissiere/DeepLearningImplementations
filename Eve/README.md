@@ -42,6 +42,8 @@ optional arguments:
 
 Running `python main.py --model_name CNN --nb_epoch 200 --dataset cifar10`, we obtained:
 
-![CIFAR10](./figures/cifar10_results.png)
+![CIFAR10](./figures/cifar10_results_losses.png)
 
-which shows that for this one experiment (no hyperparameter selection) the training loss converges faster and to a better minimum with Eve.
+![CIFAR10](./figures/cifar10_results_accs.png)
+
+which shows that for this one experiment (no hyperparameter grid search) the training metric converges faster and to a better optimum with Eve.
