@@ -7,3 +7,5 @@
 - [Visualizing and Understanding Convolutional Networks](https://arxiv.org/pdf/1311.2901v1) implemented in the [DeconvNet folder](https://github.com/tdeboissiere/DeepLearningImplementations/tree/master/DeconvNet)
 
 - Densely Connected Recurrent Convolution Network implemented in the [DenseRecNet folder](https://github.com/tdeboissiere/DeepLearningImplementations/tree/master/DenseRecNet)
+
+- [Improving Stochastic Gradient Descent With Feedback](https://arxiv.org/pdf/1611.01505v1.pdf) implemented in the [Eve folder](https://github.com/tdeboissiere/DeepLearningImplementations/tree/master/Eve)
