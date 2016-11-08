@@ -16,3 +16,32 @@ You can either import this optimizer:
 
 
 Or copy the Eve class to keras/optimizers.py and use it as any other optimizer.
+
+## Experiments:
+
+Run: `python main.py`
+
+
+positional arguments:
+
+    list_experiments      List of experiment names. E.g. Eve SGD Adam --> will
+                        run a training session with each optimizer
+
+optional arguments:
+
+      -h, --help            show this help message and exit
+      --model_name MODEL_NAME
+                            Model name: CNN, Big_CNN or FCN
+      --batch_size BATCH_SIZE
+                            Batch size
+      --nb_epoch NB_EPOCH   Number of epochs
+      --dataset DATASET     Dataset, cifar10, cifar100 or mnist
+
+
+## Results
+
+Running `python main.py --model_name CNN --nb_epoch 200 --dataset cifar10`, we obtained:
+
+![CIFAR10](./figures/cifar10_results.png)
+
+which shows that for this one experiment (no hyperparameter selection) the training loss converges faster and to a better minimum with Eve.
