@@ -25,11 +25,11 @@ def train(model_name, **kwargs):
 
     # Compile model.
     if optimizer == "SGD":
-        opt = SGD(lr=1E-3, decay=0, momentum=0.9, nesterov=True)
+        opt = SGD(lr=1E-2, decay=1E-4, momentum=0.9, nesterov=True)
     if optimizer == "Adam":
-        opt = Adam(lr=1E-3, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
+        opt = Adam(lr=1E-4, beta_1=0.9, beta_2=0.999, epsilon=1e-08, decay=1E-4)
     if optimizer == "Eve":
-        opt = Eve(lr=1E-3, beta_1=0.9, beta_2=0.999, beta_3=0.999, small_k=0.1, big_K=10, epsilon=1e-08)
+        opt = Eve(lr=1E-4, decay=1E-4, beta_1=0.9, beta_2=0.999, beta_3=0.999, small_k=0.1, big_K=10, epsilon=1e-08)
 
     if dataset == "cifar10":
         (X_train, y_train), (X_test, y_test) = cifar10.load_data()

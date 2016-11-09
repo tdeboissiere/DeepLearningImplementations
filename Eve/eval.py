@@ -34,7 +34,7 @@ def plot_results(list_log, to_plot="losses"):
     if to_plot == "losses":
         plt.yscale("log")
     if to_plot == "accs":
-        plt.ylim([0.5, 1.1])
+        plt.ylim([0, 1.1])
     plt.xlabel("Number of epochs", fontsize=20)
     plt.title("%s experiment" % dataset, fontsize=22)
     plt.legend(loc="best")

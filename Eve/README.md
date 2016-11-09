@@ -55,3 +55,14 @@ For this experiment, the configuration of the optimizers was:
 which shows that for this one experiment (no hyperparameter grid search) the training metric converges faster and to a better optimum with Eve.
 
 
+Running `python main.py SGD Adam Eve --model_name Big_CNN --nb_epoch 100 --dataset cifar100` --nb_epoch 40, we obtained:
+
+For this experiment, the configuration of the optimizers was:
+
+    opt = SGD(lr=1E-2, decay=1E-4, momentum=0.9, nesterov=True)
+    opt = Adam(lr=1E-4, decay=1E-4, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
+    opt = Eve(lr=1E-4, decay=1E-4, beta_1=0.9, beta_2=0.999, beta_3=0.999, small_k=0.1, big_K=10, epsilon=1e-08)
+
+![CIFAR100](./figures/cifar100_results_losses.png)
+
+![CIFAR100](./figures/cifar100_results_accs.png)
