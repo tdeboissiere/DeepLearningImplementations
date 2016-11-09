@@ -40,10 +40,18 @@ optional arguments:
 
 ## Results
 
-Running `python main.py --model_name CNN --nb_epoch 200 --dataset cifar10`, we obtained:
+Running `python main.py SGD Adam Eve --model_name CNN --nb_epoch 200 --dataset cifar10`, we obtained:
+
+For this experiment, the configuration of the optimizers was:
+
+    opt = SGD(lr=1E-3, decay=0, momentum=0.9, nesterov=True)
+    opt = Adam(lr=1E-3, decay=0, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
+    opt = Eve(lr=1E-3, decay=0, beta_1=0.9, beta_2=0.999, beta_3=0.999, small_k=0.1, big_K=10, epsilon=1e-08)
 
 ![CIFAR10](./figures/cifar10_results_losses.png)
 
 ![CIFAR10](./figures/cifar10_results_accs.png)
 
 which shows that for this one experiment (no hyperparameter grid search) the training metric converges faster and to a better optimum with Eve.
+
+
