@@ -40,6 +40,8 @@ optional arguments:
 
 ## Results
 
+### CIFAR10
+
 Running `python main.py SGD Adam Eve --model_name CNN --nb_epoch 200 --dataset cifar10`, we obtained:
 
 For this experiment, the configuration of the optimizers was:
@@ -54,6 +56,9 @@ For this experiment, the configuration of the optimizers was:
 
 which shows that for this one experiment (no hyperparameter grid search) the training metric converges faster and to a better optimum with Eve.
 
+*Dashed lines show the validation error*
+
+### CIFAR100
 
 Running `python main.py SGD Adam Eve --model_name Big_CNN --nb_epoch 100 --dataset cifar100 --nb_epoch 40`, we obtained:
 
@@ -71,3 +76,5 @@ In this one experiment, Eve again outperforms the other optimizers.
 ![CIFAR100](./figures/cifar100_results_losses.png)
 
 ![CIFAR100](./figures/cifar100_results_accs.png)
+
+*Dashed lines show the validation error*
