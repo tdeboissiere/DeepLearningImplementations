@@ -45,14 +45,14 @@ def build_HDF5(size=64):
     # In evaluation status, "0" represents training image, "1" represents
     # validation image, "2" represents testing image;
     d_partition = {}
-    with open(raw_dir + "Eval/list_eval_partition.txt", "r") as f:
+    with open(os.path.join(raw_dir, "Eval/list_eval_partition.txt"), "r") as f:
         lines = f.readlines()
         for celeb in lines:
             celeb = celeb.rstrip().split()
             img = celeb[0]
             attrs = int(celeb[1])
             d_partition[img] = attrs
-    with open(data_dir + "d_partition.pickle", "w") as fd:
+    with open(os.path.join(data_dir, "d_partition.pickle"), "w") as fd:
         pickle.dump(d_partition, fd)
 
     # Put train data in HDF5
@@ -65,6 +65,7 @@ def build_HDF5(size=64):
             for img in d_partition.keys():
                 if d_partition[img] == dset_idx:
                     list_img.append(os.path.join(raw_dir, "img_align_celeba", img))
+            list_img = np.array(list_img)
 
             data_color = hfw.create_dataset("%s_color_data" % dset_type,
                                             (0, 3, size, size),
@@ -156,7 +157,7 @@ def compute_color_prior(size=64, do_plot=False):
         prior_prob = prior_prob / (1.0 * np.sum(prior_prob))
 
         # Save
-        np.save(os.path.join(data_dir, "CelebA_%s_prior_prob.npy" % size, prior_prob))
+        np.save(os.path.join(data_dir, "CelebA_%s_prior_prob.npy" % size), prior_prob)
 
         if do_plot:
             plt.hist(prior_prob, bins=100)
@@ -164,7 +165,7 @@ def compute_color_prior(size=64, do_plot=False):
             plt.show()
 
 
-def smooth_color_prior(dset_type, size=64, sigma=5, do_plot=False):
+def smooth_color_prior(size=64, sigma=5, do_plot=False):
 
     prior_prob = np.load(os.path.join(data_dir, "CelebA_%s_prior_prob.npy" % size))
     # add an epsilon to prior prob to avoid 0 vakues and possible NaN
@@ -194,7 +195,7 @@ def smooth_color_prior(dset_type, size=64, sigma=5, do_plot=False):
         plt.show()
 
 
-def compute_prior_factor(dset_type, size=64, gamma=0.5, alpha=1, do_plot=False):
+def compute_prior_factor(size=64, gamma=0.5, alpha=1, do_plot=False):
 
     file_name = os.path.join(data_dir, "CelebA_%s_prior_prob_smoothed.npy" % size)
     prior_prob_smoothed = np.load(file_name)
@@ -264,14 +265,14 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    data_dir = args.raw_dir
-    raw_dir = args.data_dir
+    raw_dir = args.raw_dir
+    data_dir = args.data_dir
 
     for d in [raw_dir, data_dir]:
         if not os.path.exists(d):
             os.makedirs(d)
 
-    build_HDF5(size=args.img_size)
-    compute_color_prior(do_plot=args.do_plot)
-    smooth_color_prior(do_plot=args.do_plot)
-    compute_prior_factor(do_plot=args.do_plot)
+    # build_HDF5(size=args.img_size)
+    compute_color_prior(size=args.img_size, do_plot=args.do_plot)
+    smooth_color_prior(size=args.img_size, do_plot=args.do_plot)
+    compute_prior_factor(size=args.img_size, do_plot=args.do_plot)
