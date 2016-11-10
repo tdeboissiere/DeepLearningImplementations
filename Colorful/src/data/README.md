@@ -23,7 +23,7 @@ You should have the following folder structure:
 
 # Step 2. Build HDF5 CelebA dataset
 
-python make_dataset.py
+`python make_dataset.py`
 
 positional arguments:
 
