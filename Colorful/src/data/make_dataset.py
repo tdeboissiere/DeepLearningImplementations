@@ -1,18 +1,18 @@
 import os
-import h5py
 import cv2
-import numpy as np
+import h5py
 import parmap
+import argparse
+import numpy as np
+import cPickle as pickle
+from skimage import color
+from tqdm import tqdm as tqdm
+import sklearn.neighbors as nn
+import matplotlib.pylab as plt
+from matplotlib.colors import LogNorm
+import matplotlib.gridspec as gridspec
 from scipy.interpolate import interp1d
 from scipy.signal import gaussian, convolve
-from skimage import color
-import cPickle as pickle
-import matplotlib.pylab as plt
-import matplotlib.gridspec as gridspec
-import sklearn.neighbors as nn
-from dotenv import find_dotenv, load_dotenv
-from tqdm import tqdm as tqdm
-from matplotlib.colors import LogNorm
 
 
 def format_image(img_path, size):
@@ -40,14 +40,6 @@ def build_HDF5(dset_type, size=64):
     """
     Gather the data in a single HDF5 file.
     """
-
-    # Define Raw Dir
-    raw_dir = os.path.expanduser(os.environ.get("RAW_DIR"))
-    # Define  directory where processed files will be stored
-    data_dir = os.path.expanduser(os.environ.get("DATA_DIR"))
-
-    if not os.path.exists(data_dir):
-        os.makedirs(data_dir)
 
     # Read evaluation file, build it if it does not exist
     # In evaluation status, "0" represents training image, "1" represents
@@ -133,8 +125,6 @@ def build_HDF5(dset_type, size=64):
 
 def compute_color_prior(dset_type, size=64, do_plot=False):
 
-    data_dir = os.path.expanduser(os.environ.get("DATA_DIR"))
-
     # Load the gamut points location
     q_ab = np.load(os.path.join(data_dir, "pts_in_hull.npy"))
 
@@ -182,7 +172,7 @@ def compute_color_prior(dset_type, size=64, do_plot=False):
         prior_prob = prior_prob / (1.0 * np.sum(prior_prob))
 
         # Save
-        np.save("../../data/processed/%s_%s_prior_prob.npy" % (dset_type, size), prior_prob)
+        np.save(os.path.join(data_dir, "%s_%s_prior_prob.npy" % (dset_type, size), prior_prob))
 
         if do_plot:
             plt.hist(prior_prob, bins=100)
@@ -192,7 +182,7 @@ def compute_color_prior(dset_type, size=64, do_plot=False):
 
 def smooth_color_prior(dset_type, size=64, sigma=5, do_plot=False):
 
-    prior_prob = np.load("../../data/processed/training_%s_prior_prob.npy" % size)
+    prior_prob = np.load(os.path.join(data_dir, "training_%s_prior_prob.npy" % size))
     # add an epsilon to prior prob to avoid 0 vakues and possible NaN
     prior_prob += 1E-3 * np.min(prior_prob)
     # renormalize
@@ -209,7 +199,7 @@ def smooth_color_prior(dset_type, size=64, sigma=5, do_plot=False):
     prior_prob_smoothed = prior_prob_smoothed / np.sum(prior_prob_smoothed)
 
     # Save
-    file_name = "../../data/processed/%s_%s_prior_prob_smoothed.npy" % (dset_type, size)
+    file_name = os.path.join(data_dir, "%s_%s_prior_prob_smoothed.npy" % (dset_type, size))
     np.save(file_name, prior_prob_smoothed)
 
     if do_plot:
@@ -222,7 +212,7 @@ def smooth_color_prior(dset_type, size=64, sigma=5, do_plot=False):
 
 def compute_prior_factor(dset_type, size=64, gamma=0.5, alpha=1, do_plot=False):
 
-    file_name = "../../data/processed/%s_%s_prior_prob_smoothed.npy" % (dset_type, size)
+    file_name = os.path.join(data_dir, "%s_%s_prior_prob_smoothed.npy" % (dset_type, size))
     prior_prob_smoothed = np.load(file_name)
 
     u = np.ones_like(prior_prob_smoothed)
@@ -281,24 +271,31 @@ def check_HDF5(dset_type):
 
 if __name__ == '__main__':
 
-    load_dotenv(find_dotenv())
+    parser = argparse.ArgumentParser(description='Build dataset')
+    parser.add_argument('list_datasets', type=str, nargs='+',
+                        help='List of dataset names. Choose training, validation or test')
+    parser.add_argument('--img_size', default=64, type=int,
+                        help='Desired Width == Height')
+    parser.add_argument('--do_plot', default=False, type=bool,
+                        help='Whether to visualize statistics when computing color prior')
+    parser.add_argument('--data_dir', default="../../data/processed", type=str,
+                        help='Path where to save the processed data')
+    parser.add_argument('--raw_dir', default="../../data/raw", type=str,
+                        help='Path where the raw Celeba data was saved in Step 1')
 
-    # Check the env variables exist
-    raw_msg = "Set your raw data absolute path in the .env file at project root"
-    data_msg = "Set your processed data absolute path in the .env file at project root"
-    assert "RAW_DIR" in os.environ, raw_msg
-    assert "DATA_DIR" in os.environ, data_msg
+    args = parser.parse_args()
 
-    # build_HDF5("training", size=64)
-    # build_HDF5("validation", size=64)
-    # build_HDF5("test", size=64)
+    data_dir = args.raw_dir
+    raw_dir = args.data_dir
 
-    # build_HDF5("training", size=128)
-    # build_HDF5("validation", size=128)
-    # build_HDF5("test", size=128)
+    for d in [raw_dir, data_dir]:
+        if not os.path.exists(d):
+            os.makedirs(d)
 
-    # compute_color_prior("training")
-    # smooth_color_prior("training")
-    compute_prior_factor("training", do_plot=True)
+    for dset_type in args.list_datasets:
+        assert dset_type in ["training", "validation", "test"]
 
-    # check_HDF5("validation")
+        build_HDF5(dset_type, size=args.img_size)
+        compute_color_prior("training")
+        smooth_color_prior("training")
+        compute_prior_factor("training", do_plot=True)
