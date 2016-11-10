@@ -2,13 +2,24 @@
 
 # Step 1. Download CelebA
 
-Go to http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html
+- Go to http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html
+- In the Downloads section, select Align&Cropped images.
+- In the dropbox page that follows, download the Anno, Eval and Img folders.
+- Copy these folders to the location of your choice.
+- Extract the zip files.
 
-In the Downloads section, select Align&Cropped images.
+You should have the following folder structure:
 
-In the dropbox page that follows, download the Anno, Eval and Img folders.
+    ├── Anno
+        ├── list_attr_celeba.txt  
+        ├── list_bbox_celeba.txt  
+        ├── list_landmarks_align_celeba.txt  
+        ├── list_landmarks_celeba.txt
+    ├── Eval
+        ├──list_eval_partition.txt
+    ├── img_align_celeba
+        ├──lots of images
 
-Copy these folders to the location of your choice.
 
 # Step 2. Build HDF5 CelebA dataset
 

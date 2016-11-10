@@ -226,9 +226,9 @@ def check_HDF5(size=64):
     hdf5_file = os.path.join(data_dir, "CelebA_%s_data.h5" % size)
 
     with h5py.File(hdf5_file, "r") as hf:
-        data_color = hf["%s_color_data" % dset_type]
-        data_lab = hf["%s_lab_data" % dset_type]
-        data_black = hf["%s_black_data" % dset_type]
+        data_color = hf["training_color_data"]
+        data_lab = hf["training_lab_data"]
+        data_black = hf["training_black_data"]
         for i in range(data_color.shape[0]):
             fig = plt.figure()
             gs = gridspec.GridSpec(3, 1)
@@ -271,10 +271,7 @@ if __name__ == '__main__':
         if not os.path.exists(d):
             os.makedirs(d)
 
-    for dset_type in args.list_datasets:
-        assert dset_type in ["training", "validation", "test"]
-
-        build_HDF5(size=args.img_size)
-        compute_color_prior(do_plot=args.do_plot)
-        smooth_color_prior(do_plot=args.do_plot)
-        compute_prior_factor(do_plot=args.do_plot)
+    build_HDF5(size=args.img_size)
+    compute_color_prior(do_plot=args.do_plot)
+    smooth_color_prior(do_plot=args.do_plot)
+    compute_prior_factor(do_plot=args.do_plot)
