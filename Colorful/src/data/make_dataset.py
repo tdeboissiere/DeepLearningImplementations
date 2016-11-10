@@ -36,7 +36,7 @@ def format_image(img_path, size):
     return img_color, img_lab, img_black
 
 
-def build_HDF5(dset_type, size=64):
+def build_HDF5(size=64):
     """
     Gather the data in a single HDF5 file.
     """
@@ -44,86 +44,68 @@ def build_HDF5(dset_type, size=64):
     # Read evaluation file, build it if it does not exist
     # In evaluation status, "0" represents training image, "1" represents
     # validation image, "2" represents testing image;
-    d_eval = {}
-    try:
-        with open(data_dir + "d_eval.pickle", "r") as fd:
-            print "Loading d_eval"
-            d_eval = pickle.load(fd)
-    except:
-        with open(raw_dir + "Eval/list_eval_partition.txt", "r") as f:
-            lines = f.readlines()
-            for celeb in lines:
-                celeb = celeb.rstrip().split()
-                img = celeb[0]
-                attrs = int(celeb[1])
-                d_eval[img] = attrs
-        with open(data_dir + "d_eval.pickle", "w") as fd:
-            pickle.dump(d_eval, fd)
-
-    # Get the list of jpg files
-    list_img = []
-    if dset_type == "training":
-        for img in d_eval.keys():
-            if d_eval[img] == 0:
-                list_img.append(os.path.join(raw_dir, "img_align_celeba", img))
-    elif dset_type == "validation":
-        for img in d_eval.keys():
-            if d_eval[img] == 1:
-                list_img.append(os.path.join(raw_dir, "img_align_celeba", img))
-    elif dset_type == "test":
-        for img in d_eval.keys():
-            if d_eval[img] == 2:
-                list_img.append(os.path.join(raw_dir, "img_align_celeba", img))
-
-    # Shuffle images
-    np.random.seed(20)
-    p = np.random.permutation(len(list_img))
-    list_img = np.array(list_img)[p]
+    d_partition = {}
+    with open(raw_dir + "Eval/list_eval_partition.txt", "r") as f:
+        lines = f.readlines()
+        for celeb in lines:
+            celeb = celeb.rstrip().split()
+            img = celeb[0]
+            attrs = int(celeb[1])
+            d_partition[img] = attrs
+    with open(data_dir + "d_partition.pickle", "w") as fd:
+        pickle.dump(d_partition, fd)
 
     # Put train data in HDF5
-    hdf5_file = os.path.join(data_dir, "%s_%s_data.h5" % (dset_type, size))
+    hdf5_file = os.path.join(data_dir, "CelebA_%s_data.h5" % size)
     with h5py.File(hdf5_file, "w") as hfw:
 
-        data_color = hfw.create_dataset("%s_color_data" % dset_type,
-                                        (0, 3, size, size),
-                                        maxshape=(None, 3, size, size),
-                                        dtype=np.uint8)
+        for dset_idx, dset_type in enumerate(["training", "validation", "test"]):
 
-        data_lab = hfw.create_dataset("%s_lab_data" % dset_type,
-                                      (0, 3, size, size),
-                                      maxshape=(None, 3, size, size),
-                                      dtype=np.float64)
+            list_img = []
+            for img in d_partition.keys():
+                if d_partition[img] == dset_idx:
+                    list_img.append(os.path.join(raw_dir, "img_align_celeba", img))
 
-        data_black = hfw.create_dataset("%s_black_data" % dset_type,
-                                        (0, 1, size, size),
-                                        maxshape=(None, 1, size, size),
-                                        dtype=np.uint8)
+            data_color = hfw.create_dataset("%s_color_data" % dset_type,
+                                            (0, 3, size, size),
+                                            maxshape=(None, 3, size, size),
+                                            dtype=np.uint8)
 
-        num_files = len(list_img)
-        chunk_size = 1000
-        num_chunks = num_files / chunk_size
-        arr_chunks = np.array_split(np.arange(num_files), num_chunks)
+            data_lab = hfw.create_dataset("%s_lab_data" % dset_type,
+                                          (0, 3, size, size),
+                                          maxshape=(None, 3, size, size),
+                                          dtype=np.float64)
 
-        for chunk_idx in tqdm(arr_chunks):
+            data_black = hfw.create_dataset("%s_black_data" % dset_type,
+                                            (0, 1, size, size),
+                                            maxshape=(None, 1, size, size),
+                                            dtype=np.uint8)
 
-            list_img_path = list_img[chunk_idx].tolist()
-            output = parmap.map(format_image, list_img_path, size, parallel=True)
+            num_files = len(list_img)
+            chunk_size = 1000
+            num_chunks = num_files / chunk_size
+            arr_chunks = np.array_split(np.arange(num_files), num_chunks)
 
-            arr_img_color = np.vstack([o[0] for o in output if o[0].shape[0] > 0])
-            arr_img_lab = np.vstack([o[1] for o in output if o[0].shape[0] > 0])
-            arr_img_black = np.vstack([o[2] for o in output if o[0].shape[0] > 0])
+            for chunk_idx in tqdm(arr_chunks):
 
-            # Resize HDF5 dataset
-            data_color.resize(data_color.shape[0] + arr_img_color.shape[0], axis=0)
-            data_lab.resize(data_lab.shape[0] + arr_img_lab.shape[0], axis=0)
-            data_black.resize(data_black.shape[0] + arr_img_black.shape[0], axis=0)
+                list_img_path = list_img[chunk_idx].tolist()
+                output = parmap.map(format_image, list_img_path, size, parallel=True)
 
-            data_color[-arr_img_color.shape[0]:] = arr_img_color.astype(np.uint8)
-            data_lab[-arr_img_lab.shape[0]:] = arr_img_lab.astype(np.float64)
-            data_black[-arr_img_black.shape[0]:] = arr_img_black.astype(np.uint8)
+                arr_img_color = np.vstack([o[0] for o in output if o[0].shape[0] > 0])
+                arr_img_lab = np.vstack([o[1] for o in output if o[0].shape[0] > 0])
+                arr_img_black = np.vstack([o[2] for o in output if o[0].shape[0] > 0])
+
+                # Resize HDF5 dataset
+                data_color.resize(data_color.shape[0] + arr_img_color.shape[0], axis=0)
+                data_lab.resize(data_lab.shape[0] + arr_img_lab.shape[0], axis=0)
+                data_black.resize(data_black.shape[0] + arr_img_black.shape[0], axis=0)
+
+                data_color[-arr_img_color.shape[0]:] = arr_img_color.astype(np.uint8)
+                data_lab[-arr_img_lab.shape[0]:] = arr_img_lab.astype(np.float64)
+                data_black[-arr_img_black.shape[0]:] = arr_img_black.astype(np.uint8)
 
 
-def compute_color_prior(dset_type, size=64, do_plot=False):
+def compute_color_prior(size=64, do_plot=False):
 
     # Load the gamut points location
     q_ab = np.load(os.path.join(data_dir, "pts_in_hull.npy"))
@@ -138,7 +120,9 @@ def compute_color_prior(dset_type, size=64, do_plot=False):
             ax.set_xlim([-110,110])
             ax.set_ylim([-110,110])
 
-    with h5py.File(os.path.join(data_dir, "%s_%s_data.h5" % (dset_type, size)), "a") as hf:
+    with h5py.File(os.path.join(data_dir, "CelebA_%s_data.h5" % size), "a") as hf:
+        # Compute the color prior over a subset of the training set
+        # Otherwise it is quite long
         X_ab = hf["training_lab_data"][:100000][:, 1:, :, :]
         npts, c, h, w = X_ab.shape
         X_a = np.ravel(X_ab[:, 0, :, :])
@@ -164,15 +148,15 @@ def compute_color_prior(dset_type, size=64, do_plot=False):
         ind = np.ravel(ind)
         counts = np.bincount(ind)
         idxs = np.nonzero(counts)[0]
-        prior_prob = np.zeros((313))
-        for i in range(313):
+        prior_prob = np.zeros((q_ab.shape[0]))
+        for i in range(q_ab.shape[0]):
             prior_prob[idxs] = counts[idxs]
 
         # We turn this into a color probability
         prior_prob = prior_prob / (1.0 * np.sum(prior_prob))
 
         # Save
-        np.save(os.path.join(data_dir, "%s_%s_prior_prob.npy" % (dset_type, size), prior_prob))
+        np.save(os.path.join(data_dir, "CelebA_%s_prior_prob.npy" % size, prior_prob))
 
         if do_plot:
             plt.hist(prior_prob, bins=100)
@@ -182,7 +166,7 @@ def compute_color_prior(dset_type, size=64, do_plot=False):
 
 def smooth_color_prior(dset_type, size=64, sigma=5, do_plot=False):
 
-    prior_prob = np.load(os.path.join(data_dir, "training_%s_prior_prob.npy" % size))
+    prior_prob = np.load(os.path.join(data_dir, "CelebA_%s_prior_prob.npy" % size))
     # add an epsilon to prior prob to avoid 0 vakues and possible NaN
     prior_prob += 1E-3 * np.min(prior_prob)
     # renormalize
@@ -199,7 +183,7 @@ def smooth_color_prior(dset_type, size=64, sigma=5, do_plot=False):
     prior_prob_smoothed = prior_prob_smoothed / np.sum(prior_prob_smoothed)
 
     # Save
-    file_name = os.path.join(data_dir, "%s_%s_prior_prob_smoothed.npy" % (dset_type, size))
+    file_name = os.path.join(data_dir, "CelebA_%s_prior_prob_smoothed.npy" % size)
     np.save(file_name, prior_prob_smoothed)
 
     if do_plot:
@@ -212,7 +196,7 @@ def smooth_color_prior(dset_type, size=64, sigma=5, do_plot=False):
 
 def compute_prior_factor(dset_type, size=64, gamma=0.5, alpha=1, do_plot=False):
 
-    file_name = os.path.join(data_dir, "%s_%s_prior_prob_smoothed.npy" % (dset_type, size))
+    file_name = os.path.join(data_dir, "CelebA_%s_prior_prob_smoothed.npy" % size)
     prior_prob_smoothed = np.load(file_name)
 
     u = np.ones_like(prior_prob_smoothed)
@@ -224,7 +208,7 @@ def compute_prior_factor(dset_type, size=64, gamma=0.5, alpha=1, do_plot=False):
     # renormalize
     prior_factor = prior_factor / (np.sum(prior_factor * prior_prob_smoothed))
 
-    file_name = "../../data/processed/%s_%s_prior_factor.npy" % (dset_type, size)
+    file_name = os.path.join(data_dir, "CelebA_%s_prior_factor.npy" % size)
     np.save(file_name, prior_factor)
 
     if do_plot:
@@ -233,16 +217,13 @@ def compute_prior_factor(dset_type, size=64, gamma=0.5, alpha=1, do_plot=False):
         plt.show()
 
 
-def check_HDF5(dset_type):
+def check_HDF5(size=64):
     """
     Plot images with landmarks to check the processing
     """
 
-    # Get processed data directory
-    data_dir = os.path.expanduser(os.environ.get("DATA_DIR"))
-
     # Get hdf5 file
-    hdf5_file = os.path.join(data_dir, "%s_64_data.h5" % dset_type)
+    hdf5_file = os.path.join(data_dir, "CelebA_%s_data.h5" % size)
 
     with h5py.File(hdf5_file, "r") as hf:
         data_color = hf["%s_color_data" % dset_type]
@@ -272,8 +253,6 @@ def check_HDF5(dset_type):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Build dataset')
-    parser.add_argument('list_datasets', type=str, nargs='+',
-                        help='List of dataset names. Choose training, validation or test')
     parser.add_argument('--img_size', default=64, type=int,
                         help='Desired Width == Height')
     parser.add_argument('--do_plot', default=False, type=bool,
@@ -295,7 +274,7 @@ if __name__ == '__main__':
     for dset_type in args.list_datasets:
         assert dset_type in ["training", "validation", "test"]
 
-        build_HDF5(dset_type, size=args.img_size)
-        compute_color_prior("training")
-        smooth_color_prior("training")
-        compute_prior_factor("training", do_plot=True)
+        build_HDF5(size=args.img_size)
+        compute_color_prior(do_plot=args.do_plot)
+        smooth_color_prior(do_plot=args.do_plot)
+        compute_prior_factor(do_plot=args.do_plot)
