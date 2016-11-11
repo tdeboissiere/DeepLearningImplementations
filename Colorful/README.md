@@ -2,7 +2,7 @@
 
 Keras implementation of [Colorful Image Colorization](https://arxiv.org/abs/1603.08511) by Richard Zhang, Phillip Isola and Alexei A. Efros
 
-The technique is applied on the CelebA dataset with minor modifications.
+The technique is applied on the [CelebA dataset](http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html) with minor modifications.
 
 # Requirements
 
