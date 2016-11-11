@@ -1,5 +1,9 @@
 # Colorful
 
+Keras implementation of [Colorful Image Colorization](https://arxiv.org/abs/1603.08511) by Richard Zhang, Phillip Isola and Alexei A. Efros
+
+The technique is applied on the CelebA dataset with minor modifications.
+
 # Requirements
 
 ## python modules
@@ -28,6 +32,12 @@ Follow [these instructions](https://github.com/tdeboissiere/DeepLearningImplemen
 
 # Part 2. Running the code
 
+Follow [these instructions](https://github.com/tdeboissiere/DeepLearningImplementations/tree/master/Colorful/src/model)
+
 # Part 3. Example results
 
+
+
 # Part 4. Live colorization with webcam
+
+Follow [these instructions](https://github.com/tdeboissiere/DeepLearningImplementations/tree/master/Colorful/src/app)
