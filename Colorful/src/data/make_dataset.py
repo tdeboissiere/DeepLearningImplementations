@@ -258,21 +258,17 @@ if __name__ == '__main__':
                         help='Desired Width == Height')
     parser.add_argument('--do_plot', default=False, type=bool,
                         help='Whether to visualize statistics when computing color prior')
-    parser.add_argument('--data_dir', default="../../data/processed", type=str,
-                        help='Path where to save the processed data')
-    parser.add_argument('--raw_dir', default="../../data/raw", type=str,
-                        help='Path where the raw Celeba data was saved in Step 1')
 
     args = parser.parse_args()
 
-    raw_dir = args.raw_dir
-    data_dir = args.data_dir
+    raw_dir = "../../data/raw"
+    data_dir = "../../data/processed"
 
     for d in [raw_dir, data_dir]:
         if not os.path.exists(d):
             os.makedirs(d)
 
-    # build_HDF5(size=args.img_size)
+    build_HDF5(size=args.img_size)
     compute_color_prior(size=args.img_size, do_plot=args.do_plot)
     smooth_color_prior(size=args.img_size, do_plot=args.do_plot)
     compute_prior_factor(size=args.img_size, do_plot=args.do_plot)

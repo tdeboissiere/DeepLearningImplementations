@@ -5,7 +5,7 @@
 - Go to http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html
 - In the Downloads section, select Align&Cropped images.
 - In the dropbox page that follows, download the Anno, Eval and Img folders.
-- Copy these folders to the location of your choice.
+- Copy these folders to `Colorful/data/raw`.
 - Extract the zip files.
 
 You should have the following folder structure:
@@ -34,5 +34,3 @@ positional arguments:
     --img_size IMG_SIZE  Desired Width == Height
     --do_plot DO_PLOT    Whether to visualize statistics when computing color
                        prior
-    --data_dir DATA_DIR  Path where to save the processed data
-    --raw_dir RAW_DIR    Path where the raw Celeba data was saved in Step 1
