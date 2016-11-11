@@ -12,7 +12,7 @@ def launch_training(**kwargs):
 def launch_eval(**kwargs):
 
     # Launch training
-    eval_colorful.train(**kwargs)
+    eval_colorful.eval(**kwargs)
 
 
 if __name__ == "__main__":
@@ -45,7 +45,9 @@ if __name__ == "__main__":
                 "nb_resblocks":args.nb_resblocks,
                 "training_mode": args.training_mode,
                 "model_name": args.model_name,
-                "nb_neighbors": args.nb_neighbors
+                "nb_neighbors": args.nb_neighbors,
+                "epoch": args.epoch,
+                "T": args.T
                 }
 
     assert args.mode in ["train", "eval"]

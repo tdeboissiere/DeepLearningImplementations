@@ -75,7 +75,7 @@ optional arguments:
 
 **Example:**
 
-python main.py eval ../../data/processed/CelebA_32_data.h5
+python main.py eval ../../data/processed/CelebA_64_data.h5 --epoch 10
 
 ### Expected outputs:
 

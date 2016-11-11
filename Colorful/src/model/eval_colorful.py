@@ -9,13 +9,13 @@ import batch_utils
 import general_utils
 
 
-def eval_colorful(**kwargs):
+def eval(**kwargs):
 
     data_file = kwargs["data_file"]
     model_name = kwargs["model_name"]
     epoch = kwargs["epoch"]
     T = kwargs["T"]
-    batch_size = kwargs["batch_sie"]
+    batch_size = kwargs["batch_size"]
     nb_neighbors = kwargs["nb_neighbors"]
 
     img_size = int(os.path.basename(data_file).split("_")[1])
