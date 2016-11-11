@@ -34,3 +34,8 @@ positional arguments:
     --img_size IMG_SIZE  Desired Width == Height
     --do_plot DO_PLOT    Whether to visualize statistics when computing color
                        prior
+
+
+**Example:**
+
+`python make_dataset.py --img_size 64`
