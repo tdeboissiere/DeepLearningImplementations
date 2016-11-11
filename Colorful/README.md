@@ -36,7 +36,7 @@ Follow [these instructions](https://github.com/tdeboissiere/DeepLearningImplemen
 
 # Part 3. Example results
 
-![figure](https://github.com/tdeboissiere/DeepLearningImplementations/tree/master/Colorful/figures/fig_epoch9.png)
+![figure](./figures/fig_epoch9.png)
 
 For each triplet:
 
