@@ -36,7 +36,7 @@ Follow [these instructions](https://github.com/tdeboissiere/DeepLearningImplemen
 
 # Part 3. Example results
 
-![figure](./figures/fig_epoch9.png)
+![figure](./figures/celeba_colorized_small.png)
 
 For each triplet:
 
