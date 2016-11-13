@@ -8,10 +8,32 @@ import models_colorful as models
 from keras.utils import generic_utils
 from keras.optimizers import Adam
 import sklearn.neighbors as nn
+import keras.backend as K
 # Utils
 sys.path.append("../utils")
 import batch_utils
 import general_utils
+
+
+def categorical_crossentropy_color(y_true, y_pred):
+
+    # Flatten
+    n, h, w, q = y_true.shape
+    y_true = K.reshape(y_true, (n * h * w, q))
+    y_pred = K.reshape(y_pred, (n * h * w, q))
+
+    weights = y_true[:, 313:]  # extract weight from y_true
+    weights = K.concatenate([weights] * 313, axis=1)
+    y_true = y_true[:, :-1]  # remove last column
+    y_pred = y_pred[:, :-1]  # remove last column
+
+    # multiply y_true by weights
+    y_true = y_true * weights
+
+    cross_ent = K.categorical_crossentropy(y_pred, y_true)
+    cross_ent = K.mean(cross_ent, axis=-1)
+
+    return cross_ent
 
 
 def train(**kwargs):
@@ -66,7 +88,7 @@ def train(**kwargs):
 
         # Load colorizer model
         color_model = models.load(model_name, nb_q, (1, h, w), batch_size)
-        color_model.compile(loss='categorical_crossentropy_color', optimizer=opt)
+        color_model.compile(loss=categorical_crossentropy_color, optimizer=opt)
 
         color_model.summary()
         from keras.utils.visualize_util import plot
