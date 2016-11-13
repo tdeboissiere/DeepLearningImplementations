@@ -128,7 +128,7 @@ def run_cifar10(batch_size,
         l_train_loss = []
         start = time.time()
 
-        for batch_idx in arr_splits[:10]:
+        for batch_idx in arr_splits:
 
             X_batch, Y_batch = X_train[batch_idx], Y_train[batch_idx]
             train_logloss, train_acc = model.train_on_batch(X_batch, Y_batch)
