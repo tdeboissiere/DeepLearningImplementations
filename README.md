@@ -12,4 +12,4 @@
 
 - [Colorful Image Colorization](https://arxiv.org/abs/1603.08511) implemented in the [Colorful folder](https://github.com/tdeboissiere/DeepLearningImplementations/tree/master/Colorful)
 
-- [Deep Feature Interpolation for Image Content Changes](https://arxiv.org/pdf/1611.05507v1.pdf) by Paul Upchurch, Jacob Gardner, Kavita Bala, Robert Pless, Noah Snavely, Kilian Weinberger
+- [Deep Feature Interpolation for Image Content Changes](https://arxiv.org/pdf/1611.05507v1.pdf) implemented in the [DFI folder](https://github.com/tdeboissiere/DeepLearningImplementations/tree/master/DFI)
