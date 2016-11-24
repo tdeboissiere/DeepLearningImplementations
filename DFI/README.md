@@ -19,6 +19,10 @@ The technique is applied on the [LFW](http://vis-www.cs.umass.edu/lfw/) with min
 - tqdm
 - parmap
 
+## keras repo
+
+Make sure to clone this repo: https://github.com/fchollet/deep-learning-models for easy access to the VGG19 model.
+
 
 # Part 1. Processing the data
 
