@@ -102,6 +102,9 @@ if __name__ == "__main__":
     ############
     list_img = glob.glob("./Data/Img/*.jpg*")
     assert len(list_img) > 0, "Put some images in the ./Data/Img folder"
+    if len(list_img) < 32:
+        list_img = (int(32 / len(list_img)) + 2) * list_img
+        list_img = list_img[:32]
     data = []
     for im_name in list_img:
         im = cv2.resize(cv2.imread(im_name), (224, 224)).astype(np.float32)
@@ -113,9 +116,9 @@ if __name__ == "__main__":
     data = np.array(data)
 
     ###############################################
-    # Action 1) Get max activation for a slection of feat maps
+    # Action 1) Get max activation for a secp ~/deconv_specificlection of feat maps
     ###############################################
-    get_max_act = False
+    get_max_act = True
     if get_max_act:
         if not model:
             model = load_model('./Data/vgg16_weights.h5')
@@ -137,7 +140,7 @@ if __name__ == "__main__":
     # Action 2) Get deconv images of images that maximally activate
     # the feat maps selected in the step above
     ###############################################
-    deconv_img = False
+    deconv_img = True
     if deconv_img:
         d_act_path = './Data/dict_top9_mean_act.pickle'
         d_deconv_path = './Data/dict_top9_deconv.pickle'
@@ -151,7 +154,7 @@ if __name__ == "__main__":
     # Action 3) Get deconv images of images that maximally activate
     # the feat maps selected in the step above
     ###############################################
-    plot_deconv_img = False
+    plot_deconv_img = True
     if plot_deconv_img:
         d_act_path = './Data/dict_top9_mean_act.pickle'
         d_deconv_path = './Data/dict_top9_deconv.npz'
