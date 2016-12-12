@@ -1,9 +1,4 @@
 import os
-import numpy as np
-from skimage import color
-import matplotlib.pylab as plt
-import matplotlib.gridspec as gridspec
-import data_utils
 
 
 def remove_files(files):
@@ -48,4 +43,3 @@ def setup_logging(model_name):
 
     # Create if it does not exist
     create_dir([model_dir, fig_dir])
-

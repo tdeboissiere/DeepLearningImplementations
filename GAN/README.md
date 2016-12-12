@@ -15,11 +15,8 @@ Keras implementation of some GAN models.
 - keras, theano or tensorflow backend
 - h5py
 - matplotlib
-- scikit-learn
-- scikit-image
 - opencv 3
 - numpy
-- scipy
 - tqdm
 - parmap
 
