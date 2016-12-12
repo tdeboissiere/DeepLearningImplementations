@@ -13,3 +13,5 @@
 - [Colorful Image Colorization](https://arxiv.org/abs/1603.08511) implemented in the [Colorful folder](https://github.com/tdeboissiere/DeepLearningImplementations/tree/master/Colorful)
 
 - [Deep Feature Interpolation for Image Content Changes](https://arxiv.org/pdf/1611.05507v1.pdf) implemented in the [DFI folder](https://github.com/tdeboissiere/DeepLearningImplementations/tree/master/DFI)
+
+- Several Generative Adversarial Networks (GAN) models and techniques in the [GAN folder](https://github.com/tdeboissiere/DeepLearningImplementations/tree/master/GAN)
