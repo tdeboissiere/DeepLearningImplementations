@@ -4,9 +4,9 @@ Keras implementation of some GAN models.
 
 **Sources:**
 
-[Improved Techniques for Training GANs](https://arxiv.org/abs/1606.03498)
-[Unsupervised Representation Learning with Deep Convolutional Generative Adversarial Networks](https://arxiv.org/abs/1511.06434)
-[GANHacks](https://github.com/soumith/ganhacks)
+- [Improved Techniques for Training GANs](https://arxiv.org/abs/1606.03498)
+- [Unsupervised Representation Learning with Deep Convolutional Generative Adversarial Networks](https://arxiv.org/abs/1511.06434)
+- [GANHacks](https://github.com/soumith/ganhacks)
 
 # Requirements
 
