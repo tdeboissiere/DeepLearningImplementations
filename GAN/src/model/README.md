@@ -32,7 +32,7 @@ optional arguments:
 
 **Example:**
 
-`python main.py
+`python main.py`
 
 **N.B.** If using the CelebA dataset, make sure to specify the corresponding img_dim value.
 
