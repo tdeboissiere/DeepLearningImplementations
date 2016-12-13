@@ -1,4 +1,4 @@
-# Colorful
+# GAN
 
 Keras implementation of some GAN models.
 
