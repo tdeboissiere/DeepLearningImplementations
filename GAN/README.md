@@ -37,6 +37,11 @@ Follow [these instructions](https://github.com/tdeboissiere/DeepLearningImplemen
 ![figure](./figures/img_gan2.png)
 ![figure](./figures/img_gan3.png)
 
+**MNIST example results**
+
+![figure](./figures/img_mnist.png)
+![figure](./figures/img_mnist2.png)
+
 For each image:
 
 - The first 2 rows are generated images
