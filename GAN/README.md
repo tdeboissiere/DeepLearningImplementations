@@ -1,4 +1,4 @@
-# GAN
+# Generative Adversarial Networks
 
 Keras implementation of some GAN models.
 
