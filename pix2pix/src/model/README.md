@@ -30,7 +30,7 @@ optional arguments:
     --label_flipping LABEL_FLIPPING
                         Probability (0 to 1.) to flip the labels when training
                         D
-
+    --use_mbd USE_MBD     Whether to use minibatch discrimination
 
 **Example:**
 
