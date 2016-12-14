@@ -33,4 +33,4 @@ Follow [these instructions](https://github.com/tdeboissiere/DeepLearningImplemen
 For each image:
 
 - The first 2 rows are generated images
-- The last 2 rows are real images
+- The last 2 rows are corresponding real imagesgit 
