@@ -26,11 +26,12 @@ Follow [these instructions](https://github.com/tdeboissiere/DeepLearningImplemen
 
 # Part 3. Example results
 
-**Facade example results**
+**Facade example results (validation set)**
 
 ![figure](./figures/img_pix2pix.png)
 
 For each image:
 
-- The first 2 rows are generated images
-- The last 2 rows are corresponding real imagesgit 
+- The first row is the generator input
+- The second row is the generator output
+- The last row is the original image 
