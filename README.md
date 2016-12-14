@@ -15,3 +15,5 @@
 - [Deep Feature Interpolation for Image Content Changes](https://arxiv.org/pdf/1611.05507v1.pdf) implemented in the [DFI folder](https://github.com/tdeboissiere/DeepLearningImplementations/tree/master/DFI)
 
 - Several Generative Adversarial Networks (GAN) models and techniques in the [GAN folder](https://github.com/tdeboissiere/DeepLearningImplementations/tree/master/GAN)
+
+- pix2pix in the [pix2pix folder](https://github.com/tdeboissiere/DeepLearningImplementations/tree/master/pix2pix)
