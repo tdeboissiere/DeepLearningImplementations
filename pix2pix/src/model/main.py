@@ -14,7 +14,7 @@ if __name__ == "__main__":
     parser.add_argument('patch_size', type=int, nargs=2, action="store", help="Patch size for D")
     parser.add_argument('--backend', type=str, default="theano", help="theano or tensorflow")
     parser.add_argument('--dset', type=str, default="facade", help="facade")
-    parser.add_argument('--batch_size', default=4, type=int, help='Batch size')
+    parser.add_argument('--batch_size', default=32, type=int, help='Batch size')
     parser.add_argument('--n_batch_per_epoch', default=50, type=int, help="Number of training epochs")
     parser.add_argument('--nb_epoch', default=400, type=int, help="Number of batches per epoch")
     parser.add_argument('--epoch', default=10, type=int, help="Epoch at which weights were saved for evaluation")
@@ -24,6 +24,7 @@ if __name__ == "__main__":
     parser.add_argument('--img_dim', default=64, type=int, help="Image width == height")
     parser.add_argument('--label_smoothing', default=False, type=bool, help="Whether to smooth the positive labels when training D")
     parser.add_argument('--label_flipping', default=0, type=float, help="Probability (0 to 1.) to flip the labels when training D")
+    parser.add_argument('--use_mbd', default=True, type=bool, help="Whether to use minibatch discrimination")
 
     args = parser.parse_args()
 
@@ -62,7 +63,8 @@ if __name__ == "__main__":
                 "img_dim": args.img_dim,
                 "label_smoothing": args.label_smoothing,
                 "label_flipping": args.label_flipping,
-                "patch_size": args.patch_size
+                "patch_size": args.patch_size,
+                "use_mbd": args.use_mbd
                 }
 
     # Launch training

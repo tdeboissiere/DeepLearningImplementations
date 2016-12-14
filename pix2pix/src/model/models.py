@@ -6,11 +6,24 @@ from keras.layers.advanced_activations import LeakyReLU
 from keras.layers.normalization import BatchNormalization
 from keras.layers.pooling import MaxPooling2D
 import keras.backend as K
+import numpy as np
 
 
-def conv_block_unet(x, f, name, bn_mode, bn_axis, bn=True, dropout=False):
+def minb_disc(x):
+    diffs = K.expand_dims(x, 3) - K.expand_dims(K.permute_dimensions(x, [1, 2, 0]), 0)
+    abs_diffs = K.sum(K.abs(diffs), 2)
+    x = K.sum(K.exp(-abs_diffs), 2)
 
-    x = Convolution2D(f, 3, 3, subsample=(2, 2), name=name, border_mode="same")(x)
+    return x
+
+
+def lambda_output(input_shape):
+    return input_shape[:2]
+
+
+def conv_block_unet(x, f, name, bn_mode, bn_axis, bn=True, dropout=False, subsample=(2,2)):
+
+    x = Convolution2D(f, 3, 3, subsample=subsample, name=name, border_mode="same")(x)
     if bn:
         x = BatchNormalization(mode=bn_mode, axis=bn_axis)(x)
     x = LeakyReLU(0.2)(x)
@@ -42,32 +55,50 @@ def generator_unet(img_dim, bn_mode, model_name="generator_unet"):
     if K.image_dim_ordering() == "th":
         bn_axis = 1
         nb_channels = img_dim[0]
+        min_s = min(img_dim[1:])
     else:
         bn_axis = -1
         nb_channels = img_dim[-1]
+        min_s = min(img_dim[:-1])
 
     unet_input = Input(shape=img_dim, name="unet_input")
 
+    # Prepare encoder filters
+    nb_conv = int(np.floor(np.log(min_s) / np.log(2)))
+    list_nb_filters = [nb_filters * min(8, (2 ** i)) for i in range(nb_conv)]
+
     # Encoder
-    conv1 = conv_block_unet(unet_input, nb_filters, "unet_conv2D_1", bn_mode, bn_axis, bn=False)
-    conv2 = conv_block_unet(conv1, nb_filters * 2, "unet_conv2D_2", bn_mode, bn_axis)
-    conv3 = conv_block_unet(conv2, nb_filters * 4, "unet_conv2D_3", bn_mode, bn_axis)
-    conv4 = conv_block_unet(conv3, nb_filters * 8, "unet_conv2D_4", bn_mode, bn_axis)
-    conv5 = conv_block_unet(conv4, nb_filters * 8, "unet_conv2D_5", bn_mode, bn_axis)
-    conv6 = conv_block_unet(conv5, nb_filters * 8, "unet_conv2D_6", bn_mode, bn_axis)
-    conv7 = conv_block_unet(conv6, nb_filters * 8, "unet_conv2D_7", bn_mode, bn_axis)
-    conv8 = conv_block_unet(conv7, nb_filters * 8, "unet_conv2D_8", bn_mode, bn_axis, dropout=True)
+    list_encoder = [conv_block_unet(unet_input, list_nb_filters[0], "unet_conv2D_1", bn_mode, bn_axis, bn=False)]
+    for i, f in enumerate(list_nb_filters[1:]):
+        name = "unet_conv2D_%s" % (i + 2)
+        # Dropout only on last layer
+        if i == len(list_nb_filters) - 2:
+            d = True
+        else:
+            d = False
+        conv = conv_block_unet(list_encoder[-1], f, name, bn_mode, bn_axis, dropout=d)
+        list_encoder.append(conv)
+
+    # Prepare decoder filters
+    list_nb_filters = list_nb_filters[:-2][::-1]
+    if len(list_nb_filters) < nb_conv - 1:
+        list_nb_filters.append(nb_filters)
 
     # Decoder
-    upconv1 = up_conv_block_unet(conv8, conv7, nb_filters * 8, "unet_upconv2D_1", bn_mode, bn_axis, dropout=True)
-    upconv2 = up_conv_block_unet(upconv1, conv6, nb_filters * 8, "unet_upconv2D_2", bn_mode, bn_axis, dropout=True)
-    upconv3 = up_conv_block_unet(upconv2, conv5, nb_filters * 8, "unet_upconv2D_3", bn_mode, bn_axis)
-    upconv4 = up_conv_block_unet(upconv3, conv4, nb_filters * 4, "unet_upconv2D_4", bn_mode, bn_axis)
-    upconv5 = up_conv_block_unet(upconv4, conv3, nb_filters * 2, "unet_upconv2D_5", bn_mode, bn_axis)
-    upconv6 = up_conv_block_unet(upconv5, conv2, nb_filters * 1, "unet_upconv2D_6", bn_mode, bn_axis)
-    upconv7 = up_conv_block_unet(upconv6, conv1, nb_filters * 1, "unet_upconv2D_7", bn_mode, bn_axis)
+    list_decoder = [up_conv_block_unet(list_encoder[-1], list_encoder[-2],
+                                       list_nb_filters[0], "unet_upconv2D_1", bn_mode, bn_axis, dropout=True)]
+    for i, f in enumerate(list_nb_filters[1:]):
+        name = "unet_upconv2D_%s" % (i + 2)
+        # Dropout only on first few layers
+        if i < 2:
+            d = True
+        else:
+            d = False
+        conv = up_conv_block_unet(list_decoder[-1], list_encoder[-(i + 3)], f, name, bn_mode, bn_axis, dropout=d)
+        list_decoder.append(conv)
 
-    x = UpSampling2D(size=(2, 2))(upconv7)
+    x = UpSampling2D(size=(2, 2))(list_decoder[-1])
+    x = conv_block_unet(x, nb_filters, "unet_penultimate_conv2d", bn_mode, bn_axis, subsample=(1, 1))
     x = Convolution2D(nb_channels, 1, 1, activation='tanh')(x)
 
     generator_unet = Model(input=[unet_input], output=[x])
@@ -75,7 +106,7 @@ def generator_unet(img_dim, bn_mode, model_name="generator_unet"):
     return generator_unet
 
 
-def DCGAN_discriminator(img_dim, nb_patch, bn_mode, model_name="DCGAN_discriminator"):
+def DCGAN_discriminator(img_dim, nb_patch, bn_mode, model_name="DCGAN_discriminator", use_mbd=True):
     """
     Discriminator model of the DCGAN
 
@@ -106,16 +137,33 @@ def DCGAN_discriminator(img_dim, nb_patch, bn_mode, model_name="DCGAN_discrimina
         x = BatchNormalization(mode=bn_mode, axis=bn_axis)(x)
         x = LeakyReLU(0.2)(x)
 
-    x = Flatten()(x)
-    x = Dense(2, activation='softmax', name="disc_dense")(x)
+    x_flat = Flatten()(x)
+    x = Dense(2, activation='softmax', name="disc_dense")(x_flat)
 
-    PatchGAN = Model(input=[x_input], output=[x], name="PatchGAN")
+    PatchGAN = Model(input=[x_input], output=[x, x_flat], name="PatchGAN")
 
-    list_output = [PatchGAN(patch) for patch in list_input]
-    final_output = merge(list_output, mode="concat", name="merge_patch")
-    final_output = Dense(2, activation="softmax", name="disc_output")(final_output)
+    list_feat = [PatchGAN(patch)[0] for patch in list_input]
+    list_feat_mbd = [PatchGAN(patch)[1] for patch in list_input]
 
-    discriminator_model = Model(input=list_input, output=[final_output], name=model_name)
+    x_out = merge(list_feat, mode="concat", name="merge_feat")
+
+    if use_mbd:
+        x_mbd = merge(list_feat_mbd, mode="concat", name="merge_feat_mbd")
+
+        num_kernels = 100
+        dim_per_kernel = 5
+
+        M = Dense(num_kernels * dim_per_kernel, bias=False, activation=None)
+        MBD = Lambda(minb_disc, output_shape=lambda_output)
+
+        x_mbd = M(x_mbd)
+        x_mbd = Reshape((num_kernels, dim_per_kernel))(x_mbd)
+        x_mbd = MBD(x_mbd)
+        x_out = merge([x_out, x_mbd], mode='concat')
+
+    x_out = Dense(2, activation="softmax", name="disc_output")(x_out)
+
+    discriminator_model = Model(input=list_input, output=[x_out], name=model_name)
 
     return discriminator_model
 
@@ -153,7 +201,7 @@ def DCGAN(generator, discriminator_model, img_dim, patch_size, image_dim_orderin
     return DCGAN
 
 
-def load(model_name, img_dim, nb_patch, bn_mode):
+def load(model_name, img_dim, nb_patch, bn_mode, use_mbd):
 
     if model_name == "generator_unet":
         model = generator_unet(img_dim, bn_mode, model_name=model_name)
@@ -163,7 +211,7 @@ def load(model_name, img_dim, nb_patch, bn_mode):
         return model
 
     if model_name == "DCGAN_discriminator":
-        model = DCGAN_discriminator(img_dim, nb_patch, bn_mode, model_name=model_name)
+        model = DCGAN_discriminator(img_dim, nb_patch, bn_mode, model_name=model_name, use_mbd=use_mbd)
         model.summary()
         from keras.utils.visualize_util import plot
         plot(model, to_file='../../figures/%s.png' % model_name, show_shapes=True, show_layer_names=True)
@@ -172,4 +220,4 @@ def load(model_name, img_dim, nb_patch, bn_mode):
 
 if __name__ == '__main__':
 
-    load("generator_unet", (100,), (3, 256, 256), 2)
+    load("generator_unet", (3, 128, 128), 16, 2, False)
