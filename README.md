@@ -16,4 +16,4 @@
 
 - Several Generative Adversarial Networks (GAN) models and techniques in the [GAN folder](https://github.com/tdeboissiere/DeepLearningImplementations/tree/master/GAN)
 
-- pix2pix in the [pix2pix folder](https://github.com/tdeboissiere/DeepLearningImplementations/tree/master/pix2pix)
+- [pix2pix](https://arxiv.org/pdf/1611.07004v1.pdf) in the [pix2pix folder](https://github.com/tdeboissiere/DeepLearningImplementations/tree/master/pix2pix)
