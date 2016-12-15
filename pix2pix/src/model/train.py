@@ -25,21 +25,23 @@ def train(**kwargs):
     n_batch_per_epoch = kwargs["n_batch_per_epoch"]
     nb_epoch = kwargs["nb_epoch"]
     model_name = kwargs["model_name"]
+    generator = kwargs["generator"]
     image_dim_ordering = kwargs["image_dim_ordering"]
     img_dim = kwargs["img_dim"]
     patch_size = kwargs["patch_size"]
     bn_mode = kwargs["bn_mode"]
-    label_smoothing = kwargs["label_smoothing"]
+    label_smoothing = kwargs["use_label_smoothing"]
     label_flipping = kwargs["label_flipping"]
     dset = kwargs["dset"]
+    use_mbd = kwargs["use_mbd"]
+
     epoch_size = n_batch_per_epoch * batch_size
 
     # Setup environment (logging directory etc)
     general_utils.setup_logging(model_name)
 
     # Load and rescale data
-    if dset == "facade":
-        X_full_train, X_sketch_train, X_full_val, X_sketch_val = data_utils.load_facade(image_dim_ordering)
+    X_full_train, X_sketch_train, X_full_val, X_sketch_val = data_utils.load_data(dset, image_dim_ordering)
     img_dim = X_full_train.shape[-3:]
 
     # Get the number of non overlapping patch and the size of input image to the discriminator
@@ -48,20 +50,24 @@ def train(**kwargs):
     try:
 
         # Create optimizers
-        opt_dcgan = Adam(lr=1E-3, beta_1=0.5, beta_2=0.999, epsilon=1e-08)
+        opt_dcgan = Adam(lr=1E-4, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
         # opt_discriminator = SGD(lr=1E-3, momentum=0.9, nesterov=True)
-        opt_discriminator = Adam(lr=1E-3, beta_1=0.5, beta_2=0.999, epsilon=1e-08)
+        opt_discriminator = Adam(lr=1E-4, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
 
         # Load generator model
-        generator_model = models.load("generator_unet",
+        generator_model = models.load("generator_unet_%s" % generator,
                                       img_dim,
                                       nb_patch,
-                                      bn_mode)
+                                      bn_mode,
+                                      use_mbd,
+                                      batch_size)
         # Load discriminator model
         discriminator_model = models.load("DCGAN_discriminator",
                                           img_dim_disc,
                                           nb_patch,
-                                          bn_mode)
+                                          bn_mode,
+                                          use_mbd,
+                                          batch_size)
 
         generator_model.compile(loss='mae', optimizer=opt_discriminator)
         discriminator_model.trainable = False
@@ -73,7 +79,7 @@ def train(**kwargs):
                                    image_dim_ordering)
 
         loss = ['mae', 'binary_crossentropy']
-        loss_weights = [1, 1]
+        loss_weights = [1E2, 1]
         DCGAN_model.compile(loss=loss, loss_weights=loss_weights, optimizer=opt_dcgan)
 
         discriminator_model.trainable = True
@@ -123,11 +129,13 @@ def train(**kwargs):
                                                 ("G logloss", gen_loss[2])])
 
                 # Save images for visualization
-                if batch_counter % 25 == 0:
+                if batch_counter % (n_batch_per_epoch / 2) == 0:
                     # Get new images from validation
+                    data_utils.plot_generated_batch(X_full_batch, X_sketch_batch, generator_model,
+                                                    batch_size, image_dim_ordering, "training")
                     X_full_batch, X_sketch_batch = next(data_utils.gen_batch(X_full_val, X_sketch_val, batch_size))
                     data_utils.plot_generated_batch(X_full_batch, X_sketch_batch, generator_model,
-                                                    batch_size, image_dim_ordering)
+                                                    batch_size, image_dim_ordering, "validation")
 
                 if batch_counter >= n_batch_per_epoch:
                     break

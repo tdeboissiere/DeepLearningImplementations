@@ -13,7 +13,9 @@ optional arguments:
 
     -h, --help            show this help message and exit
     --backend BACKEND     theano or tensorflow
-    --dset DSET           facade
+    --generator GENERATOR
+                        upsampling or deconv
+    --dset DSET           facades
     --batch_size BATCH_SIZE
                         Batch size
     --n_batch_per_epoch N_BATCH_PER_EPOCH
@@ -22,15 +24,16 @@ optional arguments:
     --epoch EPOCH         Epoch at which weights were saved for evaluation
     --nb_classes NB_CLASSES
                         Number of classes
-    --do_plot DO_PLOT     Debugging plot
+    --do_plot             Debugging plot
     --bn_mode BN_MODE     Batch norm mode
     --img_dim IMG_DIM     Image width == height
-    --label_smoothing LABEL_SMOOTHING
+    --use_mbd             Whether to use minibatch discrimination
+    --use_label_smoothing
                         Whether to smooth the positive labels when training D
     --label_flipping LABEL_FLIPPING
                         Probability (0 to 1.) to flip the labels when training
                         D
-    --use_mbd USE_MBD     Whether to use minibatch discrimination
+
 
 **Example:**
 
@@ -43,8 +46,13 @@ optional arguments:
 - Figures are saved in  pix2pix/figures
 - Save model weights every few epochs
 
-## Notes:
+### Additional notes
 
-- Upsampling is used instead of transposed convolutions
+You can choose the type of generator:
+
 - The image dimension must be a multiple of the patch size (e.g. 256 is a multiple of 64)
 - In the discriminator, each patch goes through the same feature extractor. Then the outputs are combined with a new dense layer + softmax
+- `upsampling:` generate the image with a series of `Upsampling2D` and `Convolution2D` operations 
+- `deconv:` use keras' transposed convolutions `Deconvolution2D`. This is closer to the original DCGAN implementation. 
+
+At this stage, `deconv` only works with the `tensorflow` backend.
