@@ -12,6 +12,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Train model')
     parser.add_argument('--backend', type=str, default="theano", help="theano or tensorflow")
+    parser.add_argument('--generator', type=str, default="upsampling", help="upsampling or deconv")
     parser.add_argument('--dset', type=str, default="mnist", help="mnist or celebA")
     parser.add_argument('--batch_size', default=32, type=int, help='Batch size')
     parser.add_argument('--n_batch_per_epoch', default=200, type=int, help="Number of training epochs")
@@ -22,7 +23,8 @@ if __name__ == "__main__":
     parser.add_argument('--bn_mode', default=2, type=int, help="Batch norm mode")
     parser.add_argument('--img_dim', default=64, type=int, help="Image width == height")
     parser.add_argument('--noise_scale', default=0.5, type=float, help="variance of the normal from which we sample the noise")
-    parser.add_argument('--label_smoothing', default=False, type=bool, help="Whether to smooth the positive labels when training D")
+    parser.add_argument('--label_smoothing', action="store_true", help="smooth the positive labels when training D")
+    parser.add_argument('--use_mbd', action="store_true", help="use mini batch disc")
     parser.add_argument('--label_flipping', default=0, type=float, help="Probability (0 to 1.) to flip the labels when training D")
 
     args = parser.parse_args()
@@ -51,6 +53,7 @@ if __name__ == "__main__":
     # Set default params
     d_params = {"mode": "train_GAN",
                 "dset": args.dset,
+                "generator": args.generator,
                 "batch_size": args.batch_size,
                 "n_batch_per_epoch": args.n_batch_per_epoch,
                 "nb_epoch": args.nb_epoch,
@@ -64,6 +67,7 @@ if __name__ == "__main__":
                 "label_smoothing": args.label_smoothing,
                 "label_flipping": args.label_flipping,
                 "noise_scale": args.noise_scale,
+                "use_mbd": args.use_mbd,
                 }
 
     # Launch training

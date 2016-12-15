@@ -23,6 +23,7 @@ def train(**kwargs):
     batch_size = kwargs["batch_size"]
     n_batch_per_epoch = kwargs["n_batch_per_epoch"]
     nb_epoch = kwargs["nb_epoch"]
+    generator = kwargs["generator"]
     model_name = kwargs["model_name"]
     image_dim_ordering = kwargs["image_dim_ordering"]
     img_dim = kwargs["img_dim"]
@@ -31,6 +32,7 @@ def train(**kwargs):
     label_flipping = kwargs["label_flipping"]
     noise_scale = kwargs["noise_scale"]
     dset = kwargs["dset"]
+    use_mbd = kwargs["use_mbd"]
     epoch_size = n_batch_per_epoch * batch_size
 
     # Setup environment (logging directory etc)
@@ -51,17 +53,21 @@ def train(**kwargs):
         opt_discriminator = SGD(lr=1E-3, momentum=0.9, nesterov=True)
 
         # Load generator model
-        generator_model = models.load("generator_upsampling",
+        generator_model = models.load("generator_%s" % generator,
                                       noise_dim,
                                       img_dim,
                                       bn_mode,
-                                      dset=dset)
+                                      batch_size,
+                                      dset=dset,
+                                      use_mbd=use_mbd)
         # Load discriminator model
         discriminator_model = models.load("DCGAN_discriminator",
                                           noise_dim,
                                           img_dim,
                                           bn_mode,
-                                          dset=dset)
+                                          batch_size,
+                                          dset=dset,
+                                          use_mbd=use_mbd)
 
         generator_model.compile(loss='mse', optimizer=opt_discriminator)
         discriminator_model.trainable = False
