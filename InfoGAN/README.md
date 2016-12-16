@@ -27,16 +27,12 @@ Follow [these instructions](https://github.com/tdeboissiere/DeepLearningImplemen
 
 **MNIST example results**
 
-Varying the categorical code:
+Varying the categorical code: getting there but not perfect
 
 ![figure](./figures/varying_categorical.png)
 
-Getting there but not perfect
-
-Varying the continuous code:
+Varying the continuous code (the codes are samples from a grid column wise x row wise):
 
 ![figure](./figures/varying_continuous.png)
-
-(the codes are samples from a grid column wise x row wise)
 
 It seems that a combination of the two codes rather than one in isolation leads to a change of thickness / orientation
