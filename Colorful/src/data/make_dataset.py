@@ -150,8 +150,7 @@ def compute_color_prior(size=64, do_plot=False):
         counts = np.bincount(ind)
         idxs = np.nonzero(counts)[0]
         prior_prob = np.zeros((q_ab.shape[0]))
-        for i in range(q_ab.shape[0]):
-            prior_prob[idxs] = counts[idxs]
+        prior_prob[idxs] = counts[idxs]
 
         # We turn this into a color probability
         prior_prob = prior_prob / (1.0 * np.sum(prior_prob))
