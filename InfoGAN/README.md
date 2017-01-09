@@ -27,12 +27,14 @@ Follow [these instructions](https://github.com/tdeboissiere/DeepLearningImplemen
 
 **MNIST example results**
 
-Varying the categorical code: getting there but not perfect
+**Note 1** The figures below were obtained with a slight modification of the original InfoGAN paper: supervised categorical cross entropy loss for the discriminator and simple MSE loss for the continuous variables. Credits to @burisuriburi for the original idea: https://github.com/buriburisuri/supervised_infogan.
+
+**Note 2** The code in this repository matches OpenAI's original implementation, without the trick of Note 1.
+
+Varying the categorical code:
 
 ![figure](./figures/varying_categorical.png)
 
 Varying the continuous code (the codes are samples from a grid column wise x row wise):
 
 ![figure](./figures/varying_continuous.png)
-
-It seems that a combination of the two codes rather than one in isolation leads to a change of thickness / orientation
