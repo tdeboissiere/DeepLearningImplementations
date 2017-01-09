@@ -31,10 +31,10 @@ Follow [these instructions](https://github.com/tdeboissiere/DeepLearningImplemen
 
 **Note 2** The code in this repository matches OpenAI's original implementation, without the trick of Note 1.
 
-Varying the categorical code:
+Varying the categorical code along each row:
 
 ![figure](./figures/varying_cat.png)
 
-Varying the continuous code (the codes are samples from a grid column wise x row wise):
+Varying the continuous code along rows and columns
 
 ![figure](./figures/varying_cont.png)
