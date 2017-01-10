@@ -33,8 +33,8 @@ Follow [these instructions](https://github.com/tdeboissiere/DeepLearningImplemen
 
 Varying the categorical code along each row:
 
-![figure](./figures/varying_cat.png)
+![figure](./figures/varying_categorical.png)
 
 Varying the continuous code along rows and columns:
 
-![figure](./figures/varying_cont.png)
+![figure](./figures/varying_continuous.png)
