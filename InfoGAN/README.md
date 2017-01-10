@@ -35,7 +35,7 @@ Varying the categorical code along each row:
 
 ![figure](./figures/varying_categorical.png)
 
-<img src="https://github.com/tdeboissiere/DeepLearningImplementations/blob/master/InfoGAN/figures/varying_categorical.png" align="center" width="200">
+<img src="https://github.com/tdeboissiere/DeepLearningImplementations/blob/master/InfoGAN/figures/varying_categorical.png" align="middle" width="200">
 
 Varying the continuous code along rows and columns:
 
