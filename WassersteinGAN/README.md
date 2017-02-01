@@ -31,14 +31,10 @@ Follow [these instructions](https://github.com/tdeboissiere/DeepLearningImplemen
 
 **CelebA example results**
 
-![figure](./figures/img_gan.png)<!-- 
-![figure](./figures/img_gan2.png)
-![figure](./figures/img_gan3.png) -->
+![figure](./figures/img_celebA_1.png) 
 
 **MNIST example results**
 
-![figure](./figures/img_mnist.png)<!-- 
-![figure](./figures/img_mnist2.png) -->
 
 For each image:
 
