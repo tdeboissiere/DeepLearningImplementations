@@ -32,13 +32,17 @@ Follow [these instructions](https://github.com/tdeboissiere/DeepLearningImplemen
 **CelebA example results**
 
 ![figure](./figures/img_celebA_1.png)
-<!-- ![figure](./figures/img_celebA_2.png) 
- -->
-**MNIST example results**
+![figure](./figures/img_celebA_2.png)
 
-<!-- ![figure](./figures/img_mnist_1.png)
- -->
 For each image:
 
 - The first 2 rows are generated images
 - The last 2 rows are real images
+
+
+**MoG**
+
+Results on the unrolled GAN paper to dataset:
+
+![figure](./figures/MoG_dataset.gif)
+
