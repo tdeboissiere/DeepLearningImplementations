@@ -60,9 +60,7 @@ A new `keras` objective is defined:
         return K.mean(y_true * y_pred)
 
 
-### Training:
-
-**Discriminator:**
+### Discriminator training:
 
 Step1: **maximize**
 
@@ -80,7 +78,7 @@ Step2: **minimize**
 
 which is why there is *no* `-` sign in the train target
 
-**Generator:**
+### Generator training:
 
 The generator is trained to **maximize**
 
