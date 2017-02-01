@@ -45,14 +45,14 @@ optional arguments:
 
 ### Implementation notes:
 
-**Weight clipping:**
+#### Weight clipping:
 
     for l in discriminator_model.layers:
         weights = l.get_weights()
         weights = [np.clip(w, -0.01, 0.01) for w in weights]
         l.set_weights(weights)
 
-**Wasserstein objective:**
+#### Wasserstein objective:
 
 A new `keras` objective is defined:
 
@@ -60,11 +60,11 @@ A new `keras` objective is defined:
         return K.mean(y_true * y_pred)
 
 
-**Training:**
+#### Training:
 
-Discriminator:
+**Discriminator:**
 
-The discriminator is first trained to maximize
+Step1: **maximize**
 
 <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{1}{m}&space;\sum_i^nf_w(x^{(i)})" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{1}{m}&space;\sum_i^nf_w(x^{(i)})" title="\frac{1}{m} \sum_i^nf_w(x^{(i)})" /></a>
 
@@ -72,7 +72,7 @@ The discriminator is first trained to maximize
 
 which is why there is a `-` sign in the train target
 
-The it is trained to minimize
+Step2: **minimize**
 
 <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{1}{m}&space;\sum_i^nf_w(g_{\theta}(z^{i}))" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{1}{m}&space;\sum_i^nf_w(g_{\theta}(z^{i}))" title="\frac{1}{m} \sum_i^nf_w(g_{\theta}(z^{i}))" /></a>
 
@@ -80,9 +80,9 @@ The it is trained to minimize
 
 which is why there is *no* `-` sign in the train target
 
-Generator:
+**Generator:**
 
-The generator is trained to maximize
+The generator is trained to **maximize**
 
 <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{1}{m}&space;\sum_i^nf_w(g_{\theta}(z^{i}))" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{1}{m}&space;\sum_i^nf_w(g_{\theta}(z^{i}))" title="\frac{1}{m} \sum_i^nf_w(g_{\theta}(z^{i}))" /></a>
 
