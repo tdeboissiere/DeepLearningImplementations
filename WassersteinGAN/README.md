@@ -31,7 +31,7 @@ Follow [these instructions](https://github.com/tdeboissiere/DeepLearningImplemen
 
 **CelebA example results**
 
-![](https://github.com/tdeboissiere/DeepLearningImplementations/blob/master/WassersteinGAN/figures/img_celebA_1.png =250x250)
+![figure](./figures/img_celebA_1.png =250x250) 
 
 **MNIST example results**
 
