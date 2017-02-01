@@ -19,3 +19,5 @@
 - [pix2pix](https://arxiv.org/pdf/1611.07004v1.pdf) in the [pix2pix folder](https://github.com/tdeboissiere/DeepLearningImplementations/tree/master/pix2pix)
 
 - [InfoGAN](https://arxiv.org/abs/1606.03657) in the [InfoGAN folder](https://github.com/tdeboissiere/DeepLearningImplementations/tree/master/InfoGAN)
+
+- [WassersteinGAN](https://arxiv.org/abs/1701.07875) in the [WassersteinGAN folder](https://github.com/tdeboissiere/DeepLearningImplementations/tree/master/WassersteinGAN)
