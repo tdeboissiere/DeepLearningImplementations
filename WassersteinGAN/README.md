@@ -31,11 +31,13 @@ Follow [these instructions](https://github.com/tdeboissiere/DeepLearningImplemen
 
 **CelebA example results**
 
-![figure](./figures/img_celebA_1.png =250x250) 
-
+![figure](./figures/img_celebA_1.png)
+<!-- ![figure](./figures/img_celebA_2.png) 
+ -->
 **MNIST example results**
 
-
+<!-- ![figure](./figures/img_mnist_1.png)
+ -->
 For each image:
 
 - The first 2 rows are generated images
