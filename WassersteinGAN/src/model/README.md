@@ -1,6 +1,6 @@
-# Training and evaluating
+# Training WGAN
 
-## Training
+## Usage
 
 `python main.py`
 
@@ -27,7 +27,6 @@ optional arguments:
                             variance of the normal from which we sample the noise
       --disc_iterations DISC_ITERATIONS
                             Number of discriminator iterations
-
 
 
 **Example:**
