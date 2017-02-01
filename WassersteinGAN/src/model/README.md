@@ -37,22 +37,22 @@ optional arguments:
 **N.B.** If using the CelebA dataset, make sure to specify the corresponding img_dim value. For instance, if you saved a 64x64 CelebA hdf5 dataset, call `python main.py --dset celebA --img_dim 64`
 
 
-### Expected outputs:
+## Expected outputs:
 
 - Weights are saved in  `WassersteinGAN/models`
 - Figures are saved in  `WassersteinGAN/figures`
 - Save model weights every few epochs
 
-### Implementation notes:
+## Implementation notes:
 
-#### Weight clipping:
+### Weight clipping:
 
     for l in discriminator_model.layers:
         weights = l.get_weights()
         weights = [np.clip(w, -0.01, 0.01) for w in weights]
         l.set_weights(weights)
 
-#### Wasserstein objective:
+### Wasserstein objective:
 
 A new `keras` objective is defined:
 
@@ -60,7 +60,7 @@ A new `keras` objective is defined:
         return K.mean(y_true * y_pred)
 
 
-#### Training:
+### Training:
 
 **Discriminator:**
 
@@ -90,7 +90,7 @@ The generator is trained to **maximize**
 
 which is why this time there is a `-` sign in the train target
 
-### Additional notes
+## Additional notes
 
 You can choose the type of generator:
 
