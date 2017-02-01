@@ -5,6 +5,7 @@ import numpy as np
 import models_WGAN as models
 from keras.utils import generic_utils
 from keras.optimizers import Adam, SGD, RMSprop
+import matplotlib.pylab as plt
 # Utils
 sys.path.append("../utils")
 import general_utils
@@ -14,8 +15,6 @@ import data_utils
 def train(**kwargs):
     """
     Train model
-
-    Load the whole train data in memory for faster operations
 
     args: **kwargs (dict) keyword arguments that specify the model hyperparameters
     """
@@ -169,6 +168,126 @@ def train(**kwargs):
 
                 DCGAN_weights_path = os.path.join('../../models/%s/DCGAN_weights_epoch%s.h5' % (model_name, e))
                 DCGAN_model.save_weights(DCGAN_weights_path, overwrite=True)
+
+    except KeyboardInterrupt:
+        pass
+
+
+def train_toy(**kwargs):
+    """
+    Train model
+
+    args: **kwargs (dict) keyword arguments that specify the model hyperparameters
+    """
+
+    # Roll out the parameters
+    batch_size = kwargs["batch_size"]
+    n_batch_per_epoch = kwargs["n_batch_per_epoch"]
+    nb_epoch = kwargs["nb_epoch"]
+    model_name = "toy_MLP"
+    noise_scale = kwargs["noise_scale"]
+    epoch_size = n_batch_per_epoch * batch_size
+
+    # Setup environment (logging directory etc)
+    general_utils.setup_logging(model_name)
+
+    # Load and rescale data
+    X_real_train = data_utils.load_toy()
+    noise_dim = (128,)
+
+    try:
+
+        # Create optimizers
+        opt_gan = RMSprop(lr=1E-3)
+        opt_discriminator = RMSprop(lr=1E-3)
+
+        # opt_gan = Adam(lr=1E-3)
+        # opt_discriminator = Adam(lr=1E-4)
+
+        # Load generator model
+        generator_model = models.generator_toy(noise_dim, model_name="generator_toy")
+        # Load discriminator model
+        discriminator_model = models.discriminator_toy(model_name="discriminator_toy")
+
+        generator_model.compile(loss='mse', optimizer=opt_discriminator)
+        discriminator_model.trainable = False
+
+        GAN_model = models.GAN_toy(generator_model, discriminator_model, noise_dim)
+
+        loss = [models.wasserstein]
+        loss_weights = [1]
+        GAN_model.compile(loss=loss, loss_weights=loss_weights, optimizer=opt_gan)
+
+        discriminator_model.trainable = True
+        discriminator_model.compile(loss=models.wasserstein, optimizer=opt_discriminator)
+
+        gen_iterations = 0
+        # Start training
+        print("Start training")
+        for e in range(nb_epoch):
+            # Initialize progbar and batch counter
+            progbar = generic_utils.Progbar(epoch_size)
+            batch_counter = 1
+            start = time.time()
+
+            while batch_counter < n_batch_per_epoch:
+
+                disc_iterations = kwargs["disc_iterations"]
+
+                ###################################
+                # 1) Train the critic / discriminator
+                ###################################
+                list_disc_loss_real = []
+                list_disc_loss_gen = []
+                for disc_it in range(disc_iterations):
+
+                    # Clip discriminator weights
+                    for l in discriminator_model.layers:
+                        weights = l.get_weights()
+                        weights = [np.clip(w, -0.5, 0.5) for w in weights]
+                        l.set_weights(weights)
+
+                    X_real_batch = next(data_utils.gen_batch(X_real_train, batch_size))
+
+                    # Create a batch to feed the discriminator model
+                    X_disc_real, X_disc_gen = data_utils.get_disc_batch(X_real_batch,
+                                                                        generator_model,
+                                                                        batch_counter,
+                                                                        batch_size,
+                                                                        noise_dim,
+                                                                        noise_scale=noise_scale)
+
+                    # Update the discriminator
+                    disc_loss_real = discriminator_model.train_on_batch(X_disc_real, -np.ones(X_disc_real.shape[0]))
+                    disc_loss_gen = discriminator_model.train_on_batch(X_disc_gen, np.ones(X_disc_gen.shape[0]))
+                    list_disc_loss_real.append(disc_loss_real)
+                    list_disc_loss_gen.append(disc_loss_gen)
+
+                #######################
+                # 2) Train the generator
+                #######################
+                X_gen = data_utils.sample_noise(noise_scale, batch_size, noise_dim)
+
+                # Freeze the discriminator
+                discriminator_model.trainable = False
+                gen_loss = GAN_model.train_on_batch(X_gen, -np.ones(X_gen.shape[0]))
+                # Unfreeze the discriminator
+                discriminator_model.trainable = True
+
+                batch_counter += 1
+                progbar.add(batch_size, values=[("Loss_D", -np.mean(list_disc_loss_real) - np.mean(list_disc_loss_gen)),
+                                                ("Loss_D_real", -np.mean(list_disc_loss_real)),
+                                                ("Loss_D_gen", np.mean(list_disc_loss_gen)),
+                                                ("Loss_G", -gen_loss)])
+
+                # # Save images for visualization
+                if gen_iterations % 20 == 0:
+                    data_utils.plot_generated_toy_batch(X_real_train, generator_model,
+                                                        discriminator_model, noise_dim, gen_iterations)
+                gen_iterations += 1
+
+            print("")
+            print('Epoch %s/%s, Time: %s' % (e + 1, nb_epoch, time.time() - start))
 
     except KeyboardInterrupt:
         pass

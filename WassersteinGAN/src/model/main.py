@@ -5,7 +5,10 @@ import argparse
 def launch_training(**kwargs):
 
     # Launch training
-    train_WGAN.train(**kwargs)
+    if kwargs["dset"] == "toy":
+        train_WGAN.train_toy(**kwargs)
+    else:
+        train_WGAN.train(**kwargs)
 
 
 if __name__ == "__main__":
@@ -13,7 +16,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Train model')
     parser.add_argument('--backend', type=str, default="theano", help="theano or tensorflow")
     parser.add_argument('--generator', type=str, default="upsampling", help="upsampling or deconv")
-    parser.add_argument('--dset', type=str, default="mnist", help="mnist or celebA")
+    parser.add_argument('--dset', type=str, default="mnist", help="mnist or celebA or cifar10 or toy")
     parser.add_argument('--batch_size', default=32, type=int, help='Batch size')
     parser.add_argument('--n_batch_per_epoch', default=200, type=int, help="Number of training epochs")
     parser.add_argument('--nb_epoch', default=400, type=int, help="Number of batches per epoch")
@@ -27,7 +30,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    assert args.dset in ["mnist", "celebA", "cifar10"]
+    assert args.dset in ["mnist", "celebA", "cifar10", "toy"]
 
     # Set the backend by modifying the env variable
     if args.backend == "theano":

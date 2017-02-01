@@ -2,8 +2,9 @@ from keras.datasets import mnist, cifar10
 from keras.utils import np_utils
 import numpy as np
 import h5py
-
+from scipy import stats
 import matplotlib.pylab as plt
+import matplotlib.gridspec as gridspec
 
 
 def normalization(X, image_dim_ordering):
@@ -89,6 +90,23 @@ def load_celebA(img_dim, image_dim_ordering):
         return X_real_train
 
 
+def load_toy(n_mixture=8, std=0.01, radius=1.0, pts_per_mixture=5000):
+
+    thetas = np.linspace(0, 2 * np.pi, n_mixture + 1)[:-1]
+    xs, ys = radius * np.sin(thetas), radius * np.cos(thetas)
+    cov = std * np.eye(2)
+
+    X = np.zeros((n_mixture * pts_per_mixture, 2))
+
+    for i in range(n_mixture):
+
+        mean = np.array([xs[i], ys[i]])
+        pts = np.random.multivariate_normal(mean, cov, pts_per_mixture)
+        X[i * pts_per_mixture: (i + 1) * pts_per_mixture, :] = pts
+
+    return X
+
+
 def gen_batch(X, batch_size):
 
     while True:
@@ -110,13 +128,6 @@ def get_disc_batch(X_real_batch, generator_model, batch_counter, batch_size, noi
     X_disc_real = X_real_batch[:batch_size]
 
     return X_disc_real, X_disc_gen
-
-
-def get_gen_batch(batch_size, noise_dim, noise_scale=0.5):
-
-    X_gen = sample_noise(noise_scale, batch_size, noise_dim)
-
-    return X_gen
 
 
 def plot_generated_batch(X_real, generator_model, batch_size, noise_dim, image_dim_ordering, noise_scale=0.5):
@@ -157,3 +168,92 @@ def plot_generated_batch(X_real, generator_model, batch_size, noise_dim, image_d
     plt.savefig("../../figures/current_batch.png")
     plt.clf()
     plt.close()
+
+
+def plot_generated_toy_batch(X_real, generator_model, discriminator_model, noise_dim, gen_iter, noise_scale=0.5):
+
+    # Generate images
+    X_gen = sample_noise(noise_scale, 10000, noise_dim)
+    X_gen = generator_model.predict(X_gen)
+
+    # Get some toy data to plot KDE of real data
+    data = load_toy(pts_per_mixture=200)
+    x = data[:, 0]
+    y = data[:, 1]
+    xmin, xmax = -1.5, 1.5
+    ymin, ymax = -1.5, 1.5
+
+    # Peform the kernel density estimate
+    xx, yy = np.mgrid[xmin:xmax:100j, ymin:ymax:100j]
+    positions = np.vstack([xx.ravel(), yy.ravel()])
+    values = np.vstack([x, y])
+    kernel = stats.gaussian_kde(values)
+    f = np.reshape(kernel(positions).T, xx.shape)
+
+    # Plot the contour
+    fig = plt.figure(figsize=(10,10))
+    plt.suptitle("Generator iteration %s" % gen_iter, fontweight="bold", fontsize=22)
+    ax = fig.gca()
+    ax.contourf(xx, yy, f, cmap='Blues', vmin=np.percentile(f,80), vmax=np.max(f), levels=np.linspace(0.25, 0.85, 30))
+
+    # Also plot the contour of the discriminator
+    delta = 0.025
+    xmin, xmax = -1.5, 1.5
+    ymin, ymax = -1.5, 1.5
+    # Create mesh
+    XX, YY = np.meshgrid(np.arange(xmin, xmax, delta), np.arange(ymin, ymax, delta))
+    arr_pos = np.vstack((np.ravel(XX), np.ravel(YY))).T
+    # Get Z = predictions
+    ZZ = discriminator_model.predict(arr_pos)
+    ZZ = ZZ.reshape(XX.shape)
+    # Plot contour
+    ax.contour(XX, YY, ZZ, cmap="Blues", levels=np.linspace(0.25, 0.85, 10))
+    dy, dx = np.gradient(ZZ)
+    # Add streamlines
+    # plt.streamplot(XX, YY, dx, dy, linewidth=0.5, cmap="magma", density=1, arrowsize=1)
+    # Scatter generated data
+    plt.scatter(X_gen[:1000, 0], X_gen[:1000, 1], s=20, color="coral", marker="o")
+
+    l_gen = plt.Line2D((0,1),(0,0), color='coral', marker='o', linestyle='', markersize=20)
+    l_D = plt.Line2D((0,1),(0,0), color='steelblue', linewidth=3)
+    l_real = plt.Rectangle((0, 0), 1, 1, fc="steelblue")
+
+    # Create legend from custom artist/label lists
+    # bbox_to_anchor = (0.4, 1)
+    ax.legend([l_real, l_D, l_gen], ['Real data KDE', 'Discriminator contour',
+                                     'Generated data'], fontsize=18, loc="upper left")
+    ax.set_xlim(xmin, xmax)
+    ax.set_ylim(ymin, ymax + 0.8)
+    plt.savefig("../../figures/toy_dataset_iter%s.png" % gen_iter)
+    plt.clf()
+    plt.close()
+
+
+if __name__ == '__main__':
+
+    data = load_toy(pts_per_mixture=200)
+
+    x = data[:, 0]
+    y = data[:, 1]
+    xmin, xmax = -1.5, 1.5
+    ymin, ymax = -1.5, 1.5
+
+    # Peform the kernel density estimate
+    xx, yy = np.mgrid[xmin:xmax:100j, ymin:ymax:100j]
+    positions = np.vstack([xx.ravel(), yy.ravel()])
+    values = np.vstack([x, y])
+    kernel = stats.gaussian_kde(values)
+    f = np.reshape(kernel(positions).T, xx.shape)
+
+    fig = plt.figure()
+    gen_it = 5
+    plt.suptitle("Generator iteration %s" % gen_it, fontweight="bold")
+    ax = fig.gca()
+    ax.set_xlim(xmin, xmax)
+    ax.set_ylim(ymin, ymax)
+    # Contourf plot
+    cfset = ax.contourf(xx, yy, f, cmap='Blues', vmin=np.percentile(f,90),
+                        vmax=np.max(f), levels=np.linspace(0.25, 0.85, 30))
+    # cfset = ax.contour(xx, yy, f, color="k", levels=np.linspace(0.25, 0.85, 30), label="roger")
+    plt.legend()
+    plt.show()

@@ -18,6 +18,51 @@ def wasserstein(y_true, y_pred):
     return K.mean(y_true * y_pred)
 
 
+def generator_toy(noise_dim, model_name="generator_toy"):
+
+    gen_input = Input(shape=noise_dim, name="generator_input")
+
+    x = Dense(128)(gen_input)
+    x = Activation("tanh")(x)
+    x = Dense(128)(x)
+    x = Activation("tanh")(x)
+    x = Dense(2)(x)
+
+    generator_model = Model(input=[gen_input], output=[x], name=model_name)
+    generator_model.summary()
+
+    return generator_model
+
+
+def discriminator_toy(model_name="discriminator_toy"):
+
+    disc_input = Input(shape=(2,), name="discriminator_input")
+
+    x = Dense(128)(disc_input)
+    x = Activation("tanh")(x)
+    x = Dense(128)(x)
+    x = Activation("tanh")(x)
+    x = Dense(1)(x)
+
+    discriminator_model = Model(input=[disc_input], output=[x], name=model_name)
+    discriminator_model.summary()
+
+    return discriminator_model
+
+
+def GAN_toy(generator, discriminator, noise_dim):
+
+    gen_input = Input(shape=noise_dim, name="noise_input")
+    generated_sample = generator(gen_input)
+    DCGAN_output = discriminator(generated_sample)
+
+    DCGAN = Model(input=[gen_input],
+                  output=[DCGAN_output],
+                  name="DCGAN")
+
+    return DCGAN
+
+
 def generator_upsampling(noise_dim, img_dim, bn_mode, model_name="generator_upsampling", dset="mnist"):
     """
     Generator model of the DCGAN
@@ -51,7 +96,7 @@ def generator_upsampling(noise_dim, img_dim, bn_mode, model_name="generator_upsa
 
     x = Dense(f * start_dim * start_dim, input_dim=noise_dim)(gen_input)
     x = Reshape(reshape_shape)(x)
-    # x = BatchNormalization(mode=bn_mode, axis=bn_axis)(x)
+    x = BatchNormalization(mode=bn_mode, axis=bn_axis)(x)
     x = Activation("relu")(x)
 
     # Upscaling blocks
@@ -59,7 +104,7 @@ def generator_upsampling(noise_dim, img_dim, bn_mode, model_name="generator_upsa
         x = UpSampling2D(size=(2, 2))(x)
         nb_filters = int(f / (2 ** (i + 1)))
         x = Convolution2D(nb_filters, 3, 3, border_mode="same", init=conv2D_init)(x)
-        # x = BatchNormalization(mode=bn_mode, axis=1)(x)
+        x = BatchNormalization(mode=bn_mode, axis=1)(x)
         x = Activation("relu")(x)
         x = Convolution2D(nb_filters, 3, 3, border_mode="same", init=conv2D_init)(x)
         x = Activation("relu")(x)
@@ -181,12 +226,12 @@ def DCGAN_discriminator(noise_dim, img_dim, bn_mode, model_name="DCGAN_discrimin
     return discriminator_model
 
 
-def DCGAN(generator, discriminator_model, noise_dim, img_dim):
+def DCGAN(generator, discriminator, noise_dim, img_dim):
 
     noise_input = Input(shape=noise_dim, name="noise_input")
 
     generated_image = generator(noise_input)
-    DCGAN_output = discriminator_model(generated_image)
+    DCGAN_output = discriminator(generated_image)
 
     DCGAN = Model(input=[noise_input],
                   output=[DCGAN_output],
