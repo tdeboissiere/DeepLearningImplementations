@@ -45,7 +45,7 @@ optional arguments:
 
 **Toy experiment:**
 
-`python main.py --backend tensorflow --generator deconv --dset toy --lr_G 1E-3 --lr_D 1E-3 --clamp_lower -0.5 --clamp_upper 0.5` generally gives good results.
+`python main.py --backend tensorflow --generator deconv --dset toy --lr_G 1E-3 --lr_D 1E-3 --clamp_lower -0.5 --clamp_upper 0.5 --batch_size 512 --noise_dim 128` generally gives good results.
 
 To produce the `.gif`, let it run a few epochs to save some images. Then in `../../figures`:
 
