@@ -1,10 +1,12 @@
-from keras.datasets import mnist, cifar10
-from keras.utils import np_utils
-import numpy as np
+import os
 import h5py
+import numpy as np
 from scipy import stats
+from keras.utils import np_utils
+from keras.datasets import mnist, cifar10
 import matplotlib.pylab as plt
 import matplotlib.gridspec as gridspec
+from keras.optimizers import Adam, SGD, RMSprop
 
 
 def normalization(X, image_dim_ordering):
@@ -45,8 +47,6 @@ def load_mnist(image_dim_ordering):
     Y_train = np_utils.to_categorical(y_train, nb_classes)
     Y_test = np_utils.to_categorical(y_test, nb_classes)
 
-    print X_train.shape, X_test.shape, Y_train.shape, Y_test.shape
-
     return X_train, Y_train, X_test, Y_test
 
 
@@ -72,8 +72,6 @@ def load_cifar10(image_dim_ordering):
     Y_train = np_utils.to_categorical(y_train, nb_classes)
     Y_test = np_utils.to_categorical(y_test, nb_classes)
 
-    print X_train.shape, X_test.shape, Y_train.shape, Y_test.shape
-
     return X_train, Y_train, X_test, Y_test
 
 
@@ -88,6 +86,18 @@ def load_celebA(img_dim, image_dim_ordering):
             X_real_train = X_real_train.transpose(0, 2, 3, 1)
 
         return X_real_train
+
+
+def load_image_dataset(dset, img_dim, image_dim_ordering):
+
+    if dset == "celebA":
+        X_real_train = load_celebA(img_dim, image_dim_ordering)
+    if dset == "mnist":
+        X_real_train, _, _, _ = load_mnist(image_dim_ordering)
+    if dset == "cifar10":
+        X_real_train, _, _, _ = load_cifar10(image_dim_ordering)
+
+    return X_real_train
 
 
 def load_toy(n_mixture=8, std=0.01, radius=1.0, pts_per_mixture=5000):
@@ -105,6 +115,16 @@ def load_toy(n_mixture=8, std=0.01, radius=1.0, pts_per_mixture=5000):
         X[i * pts_per_mixture: (i + 1) * pts_per_mixture, :] = pts
 
     return X
+
+
+def get_optimizer(opt, lr):
+
+    if opt == "SGD":
+        return SGD(lr=lr)
+    elif opt == "RMSprop":
+        return RMSprop(lr=lr)
+    elif opt == "Adam":
+        return Adam(lr=lr, beta1=0.5)
 
 
 def gen_batch(X, batch_size):
@@ -128,6 +148,21 @@ def get_disc_batch(X_real_batch, generator_model, batch_counter, batch_size, noi
     X_disc_real = X_real_batch[:batch_size]
 
     return X_disc_real, X_disc_gen
+
+
+def save_model_weights(generator_model, discriminator_model, DCGAN_model, e):
+
+    model_path = "../../models/DCGAN"
+
+    if e % 5 == 0:
+        gen_weights_path = os.path.join(model_path, '%s_epoch%s.h5' % (generator_model.name, e))
+        generator_model.save_weights(gen_weights_path, overwrite=True)
+
+        disc_weights_path = os.path.join(model_path, '%s_epoch%s.h5' % (discriminator_model.name, e))
+        discriminator_model.save_weights(disc_weights_path, overwrite=True)
+
+        DCGAN_weights_path = os.path.join(model_path, '%s_epoch%s.h5' % (DCGAN_model.name, e))
+        DCGAN_model.save_weights(DCGAN_weights_path, overwrite=True)
 
 
 def plot_generated_batch(X_real, generator_model, batch_size, noise_dim, image_dim_ordering, noise_scale=0.5):
@@ -224,7 +259,7 @@ def plot_generated_toy_batch(X_real, generator_model, discriminator_model, noise
                                      'Generated data'], fontsize=18, loc="upper left")
     ax.set_xlim(xmin, xmax)
     ax.set_ylim(ymin, ymax + 0.8)
-    plt.savefig("../../figures/toy_dataset_iter%s.png" % gen_iter)
+    plt.savefig("../../figures/toy_dataset_iter%s.jpg" % gen_iter)
     plt.clf()
     plt.close()
 

@@ -8,25 +8,32 @@
 optional arguments:
 
       -h, --help            show this help message and exit
-      --backend BACKEND     theano or tensorflow
-      --generator GENERATOR
-                            upsampling or deconv
-      --dset DSET           mnist or celebA
-      --batch_size BATCH_SIZE
-                            Batch size
-      --n_batch_per_epoch N_BATCH_PER_EPOCH
-                            Number of training epochs
-      --nb_epoch NB_EPOCH   Number of batches per epoch
-      --epoch EPOCH         Epoch at which weights were saved for evaluation
-      --nb_classes NB_CLASSES
-                            Number of classes
-      --do_plot DO_PLOT     Debugging plot
-      --bn_mode BN_MODE     Batch norm mode
-      --img_dim IMG_DIM     Image width == height
-      --noise_scale NOISE_SCALE
-                            variance of the normal from which we sample the noise
-      --disc_iterations DISC_ITERATIONS
-                            Number of discriminator iterations
+    --backend BACKEND     theano or tensorflow
+    --generator GENERATOR
+                          upsampling or deconv
+    --dset DSET           mnist or celebA or cifar10 or toy
+    --img_dim IMG_DIM     Image width == height
+    --nb_epoch NB_EPOCH   Number of batches per epoch
+    --batch_size BATCH_SIZE
+                          Batch size
+    --n_batch_per_epoch N_BATCH_PER_EPOCH
+                          Number of training epochs
+    --bn_mode BN_MODE     Batch norm mode
+    --noise_dim NOISE_DIM
+                          noise sampler dimension
+    --noise_scale NOISE_SCALE
+                          noise sampler variance
+    --disc_iterations DISC_ITERATIONS
+                          Number of discriminator iterations
+    --clamp_upper CLAMP_UPPER
+                          Clamp weights below this value
+    --clamp_lower CLAMP_LOWER
+                          Clamp weights above this value
+    --opt_D OPT_D         Optimizer for the discriminator
+    --opt_G OPT_G         Optimizer for the generator
+    --lr_D LR_D           learning rate for the discriminator
+    --lr_G LR_G           learning rate for the generator
+
 
 
 **Example:**
@@ -34,6 +41,16 @@ optional arguments:
 `python main.py --backend tensorflow --generator deconv --dset celebA`
 
 **N.B.** If using the CelebA dataset, make sure to specify the corresponding img_dim value. For instance, if you saved a 64x64 CelebA hdf5 dataset, call `python main.py --dset celebA --img_dim 64`
+
+
+**Toy experiment:**
+
+`python main.py --backend tensorflow --generator deconv --dset toy --lr_G 1E-3 --lr_D 1E-3 --clamp_lower -0.5 --clamp_upper 0.5` generally gives good results.
+
+To produce the `.gif`, let it run a few epochs to save some images. Then in `../../figures`:
+
+- `python write_gif_script.py`
+- `bash make_gif.sh`
 
 
 ## Expected outputs:
@@ -48,7 +65,7 @@ optional arguments:
 
     for l in discriminator_model.layers:
         weights = l.get_weights()
-        weights = [np.clip(w, -0.01, 0.01) for w in weights]
+        weights = [np.clip(w, clamp_lower, clamp_upper) for w in weights]
         l.set_weights(weights)
 
 ### Wasserstein objective:
