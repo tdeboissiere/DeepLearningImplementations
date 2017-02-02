@@ -7,7 +7,6 @@
 
 optional arguments:
 
-      -h, --help            show this help message and exit
     --backend BACKEND     theano or tensorflow
     --generator GENERATOR
                           upsampling or deconv
@@ -25,14 +24,15 @@ optional arguments:
                           noise sampler variance
     --disc_iterations DISC_ITERATIONS
                           Number of discriminator iterations
-    --clamp_upper CLAMP_UPPER
-                          Clamp weights below this value
     --clamp_lower CLAMP_LOWER
+                          Clamp weights below this value
+    --clamp_upper CLAMP_UPPER
                           Clamp weights above this value
     --opt_D OPT_D         Optimizer for the discriminator
     --opt_G OPT_G         Optimizer for the generator
     --lr_D LR_D           learning rate for the discriminator
     --lr_G LR_G           learning rate for the generator
+
 
 
 
