@@ -7,7 +7,8 @@ from keras.utils import visualize_util
 from keras.layers.advanced_activations import LeakyReLU
 from keras.layers.normalization import BatchNormalization
 from keras.layers.core import Flatten, Dense, Activation, Reshape
-from keras.layers.convolutional import Convolution2D, Deconvolution2D, UpSampling2D, AveragePooling2D
+from keras.layers.convolutional import Convolution2D, Deconvolution2D, UpSampling2D
+from keras.layers.pooling import AveragePooling2D, GlobalAveragePooling2D
 
 
 def conv2D_init(shape, name=None):
@@ -16,6 +17,7 @@ def conv2D_init(shape, name=None):
 
 def wasserstein(y_true, y_pred):
 
+    # return K.mean(y_true * y_pred) / K.mean(y_true)
     return K.mean(y_true * y_pred)
 
 
@@ -206,14 +208,13 @@ def generator_deconv(noise_dim, img_dim, bn_mode, batch_size, model_name="genera
     return generator_model
 
 
-def discriminator(img_dim, bn_mode, model_name="discriminator", dset="mnist"):
+def discriminator(img_dim, bn_mode, model_name="discriminator"):
     """DCGAN discriminator
 
     Args:
         img_dim: dimension of the image output
         bn_mode: keras batchnorm mode
         model_name: model name (default: {"generator_deconv"})
-        dset: dataset (default: {"mnist"})
 
     Returns:
         keras model
@@ -249,12 +250,7 @@ def discriminator(img_dim, bn_mode, model_name="discriminator", dset="mnist"):
     # Last convolution
     x = Convolution2D(1, 3, 3, name="last_conv", border_mode="same", bias=False, init=conv2D_init)(x)
     # Average pooling
-    if dset == "mnist":
-        pool_size = (7, 7)
-    else:
-        pool_size = (4, 4)
-    x = AveragePooling2D(pool_size=pool_size)(x)
-    x = Flatten()(x)
+    x = GlobalAveragePooling2D()(x)
 
     discriminator_model = Model(input=[disc_input], output=[x], name=model_name)
     visualize_model(discriminator_model)

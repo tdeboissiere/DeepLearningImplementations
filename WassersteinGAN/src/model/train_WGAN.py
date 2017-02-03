@@ -1,10 +1,8 @@
-import os
 import sys
 import time
 import numpy as np
 import models_WGAN as models
 from keras.utils import generic_utils
-import matplotlib.pylab as plt
 # Utils
 sys.path.append("../utils")
 import general_utils
@@ -63,7 +61,7 @@ def train(**kwargs):
         generator_model = models.generator_upsampling(noise_dim, img_dim, bn_mode, dset=dset)
     else:
         generator_model = models.generator_deconv(noise_dim, img_dim, bn_mode, batch_size, dset=dset)
-    discriminator_model = models.discriminator(img_dim, bn_mode, dset=dset)
+    discriminator_model = models.discriminator(img_dim, bn_mode)
     DCGAN_model = models.DCGAN(generator_model, discriminator_model, noise_dim, img_dim)
 
     ############################
@@ -126,7 +124,7 @@ def train(**kwargs):
             #######################
             # 2) Train the generator
             #######################
-            X_gen = X_gen = data_utils.sample_noise(noise_scale, batch_size, noise_dim)
+            X_gen = data_utils.sample_noise(noise_scale, batch_size, noise_dim)
 
             # Freeze the discriminator
             discriminator_model.trainable = False
