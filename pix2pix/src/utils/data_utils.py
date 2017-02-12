@@ -56,9 +56,9 @@ def extract_patches(X, image_dim_ordering, patch_size):
     return list_X
 
 
-def load_facade(image_dim_ordering):
+def load_data(dset, image_dim_ordering):
 
-    with h5py.File("../../data/processed/facade_data.h5", "r") as hf:
+    with h5py.File("../../data/processed/%s_data.h5" % dset, "r") as hf:
 
         X_full_train = hf["train_data_full"][:].astype(np.float32)
         X_full_train = normalization(X_full_train)
@@ -124,19 +124,21 @@ def get_disc_batch(X_full_batch, X_sketch_batch, generator_model, batch_counter,
     return X_disc, y_disc
 
 
-def plot_generated_batch(X_full, X_sketch, generator_model, batch_size, image_dim_ordering):
+def plot_generated_batch(X_full, X_sketch, generator_model, batch_size, image_dim_ordering, suffix):
 
     # Generate images
     X_gen = generator_model.predict(X_sketch)
 
+    X_sketch = inverse_normalization(X_sketch)
     X_full = inverse_normalization(X_full)
     X_gen = inverse_normalization(X_gen)
 
+    Xs = X_sketch[:8]
     Xg = X_gen[:8]
     Xr = X_full[:8]
 
     if image_dim_ordering == "tf":
-        X = np.concatenate((Xg, Xr), axis=0)
+        X = np.concatenate((Xs, Xg, Xr), axis=0)
         list_rows = []
         for i in range(int(X.shape[0] / 4)):
             Xr = np.concatenate([X[k] for k in range(4 * i, 4 * (i + 1))], axis=1)
@@ -145,7 +147,7 @@ def plot_generated_batch(X_full, X_sketch, generator_model, batch_size, image_di
         Xr = np.concatenate(list_rows, axis=0)
 
     if image_dim_ordering == "th":
-        X = np.concatenate((Xg, Xr), axis=0)
+        X = np.concatenate((Xs, Xg, Xr), axis=0)
         list_rows = []
         for i in range(int(X.shape[0] / 4)):
             Xr = np.concatenate([X[k] for k in range(4 * i, 4 * (i + 1))], axis=2)
@@ -158,6 +160,7 @@ def plot_generated_batch(X_full, X_sketch, generator_model, batch_size, image_di
         plt.imshow(Xr[:, :, 0], cmap="gray")
     else:
         plt.imshow(Xr)
-    plt.savefig("../../figures/current_batch.png")
+    plt.axis("off")
+    plt.savefig("../../figures/current_batch_%s.png" % suffix)
     plt.clf()
     plt.close()
