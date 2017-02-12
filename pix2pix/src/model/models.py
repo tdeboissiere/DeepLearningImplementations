@@ -215,15 +215,18 @@ def DCGAN_discriminator(img_dim, nb_patch, bn_mode, model_name="DCGAN_discrimina
     else:
         bn_axis = -1
 
+    nb_filters = 64
+    nb_conv = int(np.floor(np.log(img_dim[1]) / np.log(2)))
+    list_filters = [nb_filters * min(8, (2 ** i)) for i in range(nb_conv)]
+
     # First conv
     x_input = Input(shape=img_dim, name="discriminator_input")
-    x = Convolution2D(64, 3, 3, subsample=(2, 2), name="disc_conv2d_1", border_mode="same")(x_input)
+    x = Convolution2D(list_filters[0], 3, 3, subsample=(2, 2), name="disc_conv2d_1", border_mode="same")(x_input)
     x = BatchNormalization(mode=bn_mode, axis=bn_axis)(x)
     x = LeakyReLU(0.2)(x)
 
     # Next convs
-    list_f = [128, 256, 512, 512]
-    for i, f in enumerate(list_f):
+    for i, f in enumerate(list_filters[1:]):
         name = "disc_conv2d_%s" % (i + 2)
         x = Convolution2D(f, 3, 3, subsample=(2, 2), name=name, border_mode="same")(x)
         x = BatchNormalization(mode=bn_mode, axis=bn_axis)(x)

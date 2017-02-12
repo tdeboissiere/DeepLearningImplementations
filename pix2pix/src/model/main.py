@@ -16,7 +16,7 @@ if __name__ == "__main__":
     parser.add_argument('--generator', type=str, default="upsampling", help="upsampling or deconv")
     parser.add_argument('--dset', type=str, default="facades", help="facades")
     parser.add_argument('--batch_size', default=4, type=int, help='Batch size')
-    parser.add_argument('--n_batch_per_epoch', default=500, type=int, help="Number of training epochs")
+    parser.add_argument('--n_batch_per_epoch', default=100, type=int, help="Number of training epochs")
     parser.add_argument('--nb_epoch', default=400, type=int, help="Number of batches per epoch")
     parser.add_argument('--epoch', default=10, type=int, help="Epoch at which weights were saved for evaluation")
     parser.add_argument('--nb_classes', default=2, type=int, help="Number of classes")
@@ -28,8 +28,6 @@ if __name__ == "__main__":
     parser.add_argument('--label_flipping', default=0, type=float, help="Probability (0 to 1.) to flip the labels when training D")
 
     args = parser.parse_args()
-
-    assert args.dset in ["facades"]
 
     # Set the backend by modifying the env variable
     if args.backend == "theano":

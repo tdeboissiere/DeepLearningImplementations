@@ -5,10 +5,15 @@ import numpy as np
 import models
 from keras.utils import generic_utils
 from keras.optimizers import Adam, SGD
+import keras.backend as K
 # Utils
 sys.path.append("../utils")
 import general_utils
 import data_utils
+
+
+def l1_loss(y_true, y_pred):
+    return K.sum(K.abs(y_pred - y_true), axis=-1)
 
 
 def train(**kwargs):
@@ -50,9 +55,9 @@ def train(**kwargs):
     try:
 
         # Create optimizers
-        opt_dcgan = Adam(lr=1E-4, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
+        opt_dcgan = Adam(lr=1E-3, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
         # opt_discriminator = SGD(lr=1E-3, momentum=0.9, nesterov=True)
-        opt_discriminator = Adam(lr=1E-4, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
+        opt_discriminator = Adam(lr=1E-3, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
 
         # Load generator model
         generator_model = models.load("generator_unet_%s" % generator,
@@ -78,8 +83,8 @@ def train(**kwargs):
                                    patch_size,
                                    image_dim_ordering)
 
-        loss = ['mae', 'binary_crossentropy']
-        loss_weights = [1E2, 1]
+        loss = [l1_loss, 'binary_crossentropy']
+        loss_weights = [1E1, 1]
         DCGAN_model.compile(loss=loss, loss_weights=loss_weights, optimizer=opt_dcgan)
 
         discriminator_model.trainable = True
@@ -125,7 +130,7 @@ def train(**kwargs):
                 batch_counter += 1
                 progbar.add(batch_size, values=[("D logloss", disc_loss),
                                                 ("G tot", gen_loss[0]),
-                                                ("G mae", gen_loss[1]),
+                                                ("G L1", gen_loss[1]),
                                                 ("G logloss", gen_loss[2])])
 
                 # Save images for visualization
