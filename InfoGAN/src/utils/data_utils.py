@@ -87,7 +87,7 @@ def get_disc_batch(X_real_batch, generator_model, batch_counter, batch_size, cat
         y_cont = sample_noise(noise_scale, batch_size, cont_dim)
         noise_input = sample_noise(noise_scale, batch_size, noise_dim)
         # Produce an output
-        X_disc = generator_model.predict([y_cat, y_cont, noise_input])
+        X_disc = generator_model.predict([y_cat, y_cont, noise_input],batch_size=batch_size)
         y_disc = np.zeros((X_disc.shape[0], 2), dtype=np.uint8)
         y_disc[:, 0] = 1
 
@@ -141,7 +141,7 @@ def plot_generated_batch(X_real, generator_model, batch_size, cat_dim, cont_dim,
     y_cont = sample_noise(noise_scale, batch_size, cont_dim)
     noise_input = sample_noise(noise_scale, batch_size, noise_dim)
     # Produce an output
-    X_gen = generator_model.predict([y_cat, y_cont, noise_input])
+    X_gen = generator_model.predict([y_cat, y_cont, noise_input],batch_size=batch_size)
 
     X_real = inverse_normalization(X_real)
     X_gen = inverse_normalization(X_gen)
