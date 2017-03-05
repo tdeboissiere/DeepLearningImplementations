@@ -144,7 +144,7 @@ def get_disc_batch(X_real_batch, generator_model, batch_counter, batch_size, noi
     # Pass noise to the generator
     noise_input = sample_noise(noise_scale, batch_size, noise_dim)
     # Produce an output
-    X_disc_gen = generator_model.predict(noise_input)
+    X_disc_gen = generator_model.predict(noise_input, batch_size=batch_size)
     X_disc_real = X_real_batch[:batch_size]
 
     return X_disc_real, X_disc_gen
