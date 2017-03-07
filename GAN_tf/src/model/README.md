@@ -1,4 +1,4 @@
-# Training WGAN
+# Training GAN
 
 ## Usage
 
