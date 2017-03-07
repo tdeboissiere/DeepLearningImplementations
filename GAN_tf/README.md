@@ -1,48 +1,29 @@
 # Generative Adversarial Networks
 
-Keras implementation of WassersteinGAN.
+Pure tensorflow implementation of DCGAN
 
 **Sources:**
 
-- [Wasserstein GAN](https://arxiv.org/abs/1701.07875)
+- [Improved Techniques for Training GANs](https://arxiv.org/abs/1606.03498)
+- [Unsupervised Representation Learning with Deep Convolutional Generative Adversarial Networks](https://arxiv.org/abs/1511.06434)
+- [GANHacks](https://github.com/soumith/ganhacks)
 
 # Requirements
 
 ## python modules
 
-- keras, theano or tensorflow backend
+- tensorflow 1.0
 - h5py
 - matplotlib
 - opencv 3
 - numpy
 - tqdm
+- colorama
+- terminaltables
 - parmap
 
 
-# Part 1. Processing the data
+# Running the code
 
-Follow [these instructions](https://github.com/tdeboissiere/DeepLearningImplementations/tree/master/WassersteinGAN/src/data).
-
-# Part 2. Running the code
-
-Follow [these instructions](https://github.com/tdeboissiere/DeepLearningImplementations/tree/master/WassersteinGAN/src/model)
-
-# Part 3. Example results
-
-**CelebA example results**
-
-![figure](./figures/img_celebA_1.png)
-![figure](./figures/img_celebA_2.png)
-
-For each image:
-
-- The first 2 rows are generated images
-- The last 2 rows are real images
-
-
-**MoG**
-
-Results on the unrolled GAN paper to dataset:
-
-![figure](./figures/MoG_dataset.gif)
+Follow [these instructions](https://github.com/tdeboissiere/DeepLearningImplementations/tree/master/GAN_tf/src/model)
 
