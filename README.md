@@ -21,3 +21,5 @@
 - [InfoGAN](https://arxiv.org/abs/1606.03657) in the [InfoGAN folder](https://github.com/tdeboissiere/DeepLearningImplementations/tree/master/InfoGAN)
 
 - [WassersteinGAN](https://arxiv.org/abs/1701.07875) in the [WassersteinGAN folder](https://github.com/tdeboissiere/DeepLearningImplementations/tree/master/WassersteinGAN)
+
+[BEGAN](https://arxiv.org/pdf/1703.10717.pdf) in the [BEGAN folder](https://github.com/tdeboissiere/DeepLearningImplementations/tree/master/BEGAN)
