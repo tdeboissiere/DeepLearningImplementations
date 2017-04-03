@@ -34,8 +34,6 @@ Follow [these instructions](https://github.com/tdeboissiere/DeepLearningImplemen
 
 ![figure](./figures/celeba_samples.png)
 
-For each image:
-
 - The first 2 rows are generated images
 - The last 2 rows are real images
 
