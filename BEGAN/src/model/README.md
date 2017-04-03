@@ -66,3 +66,4 @@ for visualization.
 
 - Downsampling in D is done with strided convolutions
 - The current implementation is designed for 64x64 images.
+- Previous models / logs / figures are wiped out at each invocation of the code. THis behaviour can be modified in `src/utils/training_utils/setup_training_session()`
