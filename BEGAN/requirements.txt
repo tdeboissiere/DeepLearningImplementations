@@ -1,0 +1,11 @@
+matplotlib
+terminaltables
+natsort
+parmap
+tqdm
+opencv-python
+tensorflow-gpu
+numpy
+scipy
+natsort
+colorama
