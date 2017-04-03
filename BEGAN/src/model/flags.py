@@ -21,6 +21,8 @@ def define_flags():
     tf.app.flags.DEFINE_float('learning_rate', 1E-4, "Learning rate used for AdamOptimizer")
     tf.app.flags.DEFINE_integer('h_dim', 128, "AutoEncoder internal embedding dimension")
     tf.app.flags.DEFINE_integer('z_dim', 128, "Noise distribution dimension dimension")
+    tf.app.flags.DEFINE_integer('nb_filters_D', 64, "Number of conv filters for D")
+    tf.app.flags.DEFINE_integer('nb_filters_G', 64, "Number of conv filters for G")
     tf.app.flags.DEFINE_integer('random_seed', 0, "Seed used to initialize rng.")
     tf.app.flags.DEFINE_integer('max_to_keep', 500, "Maximum number of model/session files to keep")
     tf.app.flags.DEFINE_float('gamma', 0.5, "")

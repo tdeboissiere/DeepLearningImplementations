@@ -17,6 +17,11 @@ optional arguments:
                           Learning rate used for AdamOptimizer
     --h_dim H_DIM         AutoEncoder internal embedding dimension
     --z_dim Z_DIM         Noise distribution dimension dimension
+    --nb_filters_D NB_FILTERS_D
+                      Number of conv filters for D
+    --nb_filters_G NB_FILTERS_G
+                      Number of conv filters for G
+
     --random_seed RANDOM_SEED
                           Seed used to initialize rng.
     --max_to_keep MAX_TO_KEEP

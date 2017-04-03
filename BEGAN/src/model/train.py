@@ -26,8 +26,8 @@ def train_model():
 
     # Noise
     batch_size = tf.shape(X_real)[0]
-    z_noise_for_D = tf.random_uniform((batch_size, FLAGS.latent_dim,), minval=-1, maxval=1, name="z_input_D")
-    z_noise_for_G = tf.random_uniform((batch_size, FLAGS.latent_dim,), minval=-1, maxval=1, name="z_input_G")
+    z_noise_for_D = tf.random_uniform((batch_size, FLAGS.z_dim,), minval=-1, maxval=1, name="z_input_D")
+    z_noise_for_G = tf.random_uniform((batch_size, FLAGS.z_dim,), minval=-1, maxval=1, name="z_input_G")
 
     # k factor
     k_factor = tf.Variable(initial_value=0., trainable=False, name='anneal_factor')
@@ -38,8 +38,8 @@ def train_model():
     ########################
     # Instantiate models
     ########################
-    G = models.Generator(latent_dim=FLAGS.latent_dim)
-    D = models.Discriminator(latent_dim=FLAGS.latent_dim)
+    G = models.Generator(nb_filters=FLAGS.nb_filters_G)
+    D = models.Discriminator(h_dim=FLAGS.h_dim, nb_filters=FLAGS.nb_filters_D)
 
     ##########
     # Outputs
