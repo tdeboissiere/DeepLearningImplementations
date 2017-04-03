@@ -22,16 +22,6 @@ should install all the necessary dependencies.
 - Copy these folders to `/data/raw`.
 - Extract the zip files.
 
-├── Anno
-    ├── list_attr_celeba.txt
-    ├── list_bbox_celeba.txt
-    ├── list_landmarks_align_celeba.txt
-    ├── list_landmarks_celeba.txt
-├── Eval
-    ├──list_eval_partition.txt
-├── img_align_celeba
-    ├──lots of images
-
 We are only going to use the images
 
 # Part 2. Running the code
