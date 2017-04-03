@@ -130,7 +130,7 @@ class Discriminator(Model):
             x = layers.dec_conv2d_block(x, "D_dec_conv2D4", self.nb_filters, 3, data_format=FLAGS.data_format)
 
             # Last conv
-            x = layers.conv2d(x, "D_dec_conv2D5", 32, FLAGS.channels, 3, 1, "SAME", data_format=FLAGS.data_format)
+            x = layers.conv2d(x, "D_dec_conv2D5", self.nb_filters, FLAGS.channels, 3, 1, "SAME", data_format=FLAGS.data_format)
             x = tf.nn.tanh(x, name=output_name)
 
             return x
