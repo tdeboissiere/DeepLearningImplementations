@@ -33,6 +33,7 @@ Follow [these instructions](https://github.com/tdeboissiere/DeepLearningImplemen
 **CelebA example results**
 
 ![figure](./figures/celeba_samples.png)
+![figure](./figures/celeba_samples2.png)
 
 - The first 2 rows are generated images
 - The last 2 rows are real images
