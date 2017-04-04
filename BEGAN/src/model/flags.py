@@ -17,7 +17,7 @@ def define_flags():
     ###########################
     tf.app.flags.DEFINE_integer('nb_epoch', 500, "Number of epochs")
     tf.app.flags.DEFINE_integer('batch_size', 16, "Number of samples per batch.")
-    tf.app.flags.DEFINE_integer('nb_batch_per_epoch', 200, "Number of batches per epoch")
+    tf.app.flags.DEFINE_integer('nb_batch_per_epoch', 100, "Number of batches per epoch")
     tf.app.flags.DEFINE_float('learning_rate', 1E-4, "Learning rate used for AdamOptimizer")
     tf.app.flags.DEFINE_integer('h_dim', 128, "AutoEncoder internal embedding dimension")
     tf.app.flags.DEFINE_integer('z_dim', 128, "Noise distribution dimension dimension")

@@ -40,7 +40,7 @@ class Generator(Model):
                 target_shape = (batch_size, self.nb_filters, 8, 8)
 
             x = layers.reshape(x, target_shape)
-            x = tf.contrib.layers.batch_norm(x, fused=True, data_format=FLAGS.data_format)
+            # x = tf.contrib.layers.batch_norm(x, fused=True, data_format=FLAGS.data_format)
             x = tf.nn.elu(x)
 
             x = layers.dec_conv2d_block(x, "G_conv2D1", self.nb_filters, 3, data_format=FLAGS.data_format)
@@ -115,7 +115,7 @@ class Discriminator(Model):
                 target_shape = (batch_size, self.nb_filters, 8, 8)
 
             x = layers.reshape(x, target_shape)
-            x = tf.contrib.layers.batch_norm(x, fused=True, data_format=FLAGS.data_format)
+            # x = tf.contrib.layers.batch_norm(x, fused=True, data_format=FLAGS.data_format)
             x = tf.nn.elu(x)
 
             x = layers.dec_conv2d_block(x, "D_dec_conv2D1", self.nb_filters, 3, data_format=FLAGS.data_format)

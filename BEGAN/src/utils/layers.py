@@ -37,7 +37,7 @@ def linear(x, name, n_out, bias=True, activation_fn=None):
         return x
 
 
-def conv2d(x, name, n_in, n_out, k, s, p, bias=True, stddev=0.01, data_format="NCHW"):
+def conv2d(x, name, n_in, n_out, k, s, p, bias=True, stddev=0.02, data_format="NCHW"):
     """Conv2D layer"""
     with tf.variable_scope(name):
 
@@ -64,7 +64,7 @@ def conv2d(x, name, n_in, n_out, k, s, p, bias=True, stddev=0.01, data_format="N
         return conv
 
 
-def dec_conv2d_block(x, name, f, k, bias=True, bn=True, stddev=0.01, data_format="NCHW", activation_fn=tf.nn.elu):
+def dec_conv2d_block(x, name, f, k, bias=True, bn=False, stddev=0.02, data_format="NCHW", activation_fn=tf.nn.elu):
     """Decoding 2D conv block: chain 2 convolutions with"""
     with tf.variable_scope(name):
 
@@ -114,7 +114,7 @@ def upsampleNN(x, name, s, data_format="NCHW"):
         return x
 
 
-def enc_conv2d_block(x, name, f, k, bias=True, bn=True, stddev=0.01, data_format="NCHW", activation_fn=tf.nn.elu, downsampling=True):
+def enc_conv2d_block(x, name, f, k, bias=True, bn=False, stddev=0.02, data_format="NCHW", activation_fn=tf.nn.elu, downsampling=True):
     """Encoding 2D conv block: chain 2 convolutions with x2 downsampling by default"""
     with tf.variable_scope(name):
 

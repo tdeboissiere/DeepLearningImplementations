@@ -92,7 +92,7 @@ def train_model():
     D_update = opt.apply_gradients(D_gradvar, name='D_loss_minimize')
 
     update_k_factor = tf.assign(k_factor, k_factor + FLAGS.lambdak * (FLAGS.gamma * loss_real - loss_fake_for_G))
-    update_lr = tf.assign(lr, lr / 2)
+    update_lr = tf.assign(lr, tf.maximum(1E-6, lr / 2))
 
     ##########################
     # Summary ops
@@ -135,8 +135,8 @@ def train_model():
 
     for e in tqdm(range(FLAGS.nb_epoch), desc="Training progress"):
 
-        # Anneal learning rate every 5 epoch
-        if (e + 1) % 5 == 0:
+        # Anneal learning rate
+        if (e + 1) % 200 == 0:
             sess.run([update_lr])
 
         t = tqdm(range(FLAGS.nb_batch_per_epoch), desc="Epoch %i" % e, mininterval=0.5)
