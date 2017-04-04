@@ -2,6 +2,6 @@
 
 Go to:
 
-- [data](https://github.com/tdeboissiere/DeepLearningImplementations/tree/master/WassersteinGAN/src/data) for the data processing scripts
-- [utils](https://github.com/tdeboissiere/DeepLearningImplementations/tree/master/WassersteinGAN/src/utils) for the various scripting utilities used throughout
-- [model](https://github.com/tdeboissiere/DeepLearningImplementations/tree/master/WassersteinGAN/src/model) for training scripts
+- [data](https://github.com/tdeboissiere/DeepLearningImplementations/tree/master/BEGAN/src/data) for the data processing scripts
+- [utils](https://github.com/tdeboissiere/DeepLearningImplementations/tree/master/BEGAN/src/utils) for the various scripting utilities used throughout
+- [model](https://github.com/tdeboissiere/DeepLearningImplementations/tree/master/BEGAN/src/model) for training scripts
