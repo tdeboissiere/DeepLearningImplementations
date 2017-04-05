@@ -27,7 +27,7 @@ We are only going to use the images
 
 # Part 2. Running the code
 
-Follow [these instructions](https://github.com/tdeboissiere/DeepLearningImplementations/tree/master/WGAN_tf/src/model)
+Follow [these instructions](https://github.com/tdeboissiere/DeepLearningImplementations/tree/master/WGAN-GP/src/model)
 
 # Part 3. Example results
 
