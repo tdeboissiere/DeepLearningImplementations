@@ -22,6 +22,16 @@ Pure tensorflow implementation of DCGAN
 - terminaltables
 - parmap
 
+## Data
+
+CelebA data:
+
+- Go to http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html
+- In the Downloads section, select Align&Cropped images.
+- In the dropbox page that follows, download the Anno, Eval and Img folders.
+- Copy these folders to `/data/raw`.
+- Extract the zip files.
+
 
 # Running the code
 
