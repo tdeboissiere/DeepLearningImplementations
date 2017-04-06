@@ -1,4 +1,4 @@
-# Generative Adversarial Networks
+# WGAN-GP
 
 Pure tensorflow implementation of WGAN-GP
 
