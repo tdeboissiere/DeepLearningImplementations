@@ -1,6 +1,6 @@
 """
-Authors: Eugene Belilovsky, Edouard Oyallon and Sergey Zagoruyko
-All rights reserved, 2017.
+Copyright (c) 2017, Eugene Belilovsky (INRIA), Edouard Oyallon (ENS) and Sergey Zagoruyko (ENPC)
+All rights reserved.
 """
 
 import warnings

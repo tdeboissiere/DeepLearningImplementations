@@ -7,6 +7,8 @@ from filters_bank import filters_bank
 import tensorflow as tf
 
 # All code directly adapted from https://github.com/edouardoyallon/pyscatwave
+# Copyright (c) 2017, Eugene Belilovsky (INRIA), Edouard Oyallon (ENS) and Sergey Zagoruyko (ENPC)
+# All rights reserved.
 
 
 def stack_real_imag(x):

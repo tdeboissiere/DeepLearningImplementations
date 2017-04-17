@@ -13,6 +13,9 @@
 
 This repository is a simple adapatation of [pyscatwave](https://github.com/edouardoyallon/pyscatwave) with tensorflow primitives only.
 
+**Copyright (c) 2017, Eugene Belilovsky (INRIA), Edouard Oyallon (ENS) and Sergey Zagoruyko (ENPC)**
+**All rights reserved.**
+
 # Requirements
 
 ## python modules

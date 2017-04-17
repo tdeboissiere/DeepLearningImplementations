@@ -9,6 +9,8 @@ import numpy as np
 import scipy.fftpack as fft
 
 # All code for the filters bank directly adapted from https://github.com/edouardoyallon/pyscatwave
+# Copyright (c) 2017, Eugene Belilovsky (INRIA), Edouard Oyallon (ENS) and Sergey Zagoruyko (ENPC)
+# All rights reserved.
 
 
 def filters_bank(M, N, J, L=8):
