@@ -1,4 +1,4 @@
-# Training GAN
+# Training a Hybrid Scattering + NN model.
 
 ## Usage
 
