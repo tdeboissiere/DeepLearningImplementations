@@ -40,7 +40,7 @@ optional arguments:
     --data_dir DATA_DIR   Where processed data is saved
 
 
-# To train a MNIST model
+# To train a MNIST classification model
 
     python main.py --run train
 
