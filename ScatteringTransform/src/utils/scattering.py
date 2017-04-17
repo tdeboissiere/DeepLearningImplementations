@@ -76,7 +76,7 @@ def modulus(x):
 
     out = tf.norm(x, axis=len(input_shape) - 1)
     out = tf.expand_dims(out, axis=-1)
-    out = tf.concat([out, out], axis=-1)
+    out = tf.concat([out, tf.zeros_like(out)], axis=-1)
 
     return out
 

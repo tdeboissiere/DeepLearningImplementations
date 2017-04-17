@@ -118,7 +118,8 @@ class Modulus(object):
 
     def __call__(self, input):
         if not self.jit or not isinstance(input, torch.cuda.FloatTensor):
-            return input.norm(2, input.dim()-1).expand_as(input).contiguous()
+            norm = input.norm(2, input.dim() - 1)
+            return torch.cat([norm, norm.new(norm.size()).zero_()], input.dim() - 1)
 
         out = input.new(input.size())
         input = input.contiguous()
