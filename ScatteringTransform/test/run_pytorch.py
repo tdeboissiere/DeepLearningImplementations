@@ -28,14 +28,20 @@ def run_filter_bank(M, N, J):
     return d_save
 
 
-def run_scattering(X, use_XLA=False):
+def run_scattering(X, use_cuda=False):
 
     # Ensure NCHW format
     assert X.shape[1] < min(X.shape[2:])
 
     M, N = X.shape[2:]
 
-    scat = scattering.Scattering(M=M, N=N, J=2, check=True)
-    list_S = scat.forward(torch.FloatTensor(X))
+    if use_cuda:
+
+        scat = scattering.Scattering(M=M, N=N, J=2, check=True).cuda()
+        list_S = scat.forward(torch.FloatTensor(X).cuda())
+
+    else:
+        scat = scattering.Scattering(M=M, N=N, J=2, check=True)
+        list_S = scat.forward(torch.FloatTensor(X))
 
     return list_S

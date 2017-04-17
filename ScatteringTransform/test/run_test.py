@@ -36,13 +36,13 @@ def test_filters_bank(M, N, J):
     lu.print_green("All filters equal")
 
 
-def test_scattering(M, N, J):
+def test_scattering(M, N, J, use_cuda, use_XLA):
 
     np.random.seed(0)
     X = np.random.normal(0, 1, size=(16, 3, M, N))
 
-    S_pytorch = run_pytorch.run_scattering(X)
-    S_tf = run_tf.run_scattering(X)
+    S_pytorch = run_pytorch.run_scattering(X, use_cuda)
+    S_tf = run_tf.run_scattering(X, use_XLA)
 
     for idx, (Stf, Spytorch) in enumerate(zip(S_tf, S_pytorch)):
         try:
@@ -61,8 +61,10 @@ if __name__ == '__main__':
     parser.add_argument('--M', type=int, default=32)
     parser.add_argument('--N', type=int, default=32)
     parser.add_argument('--J', type=int, default=2)
+    parser.add_argument('--use_cuda', action="store_true")
+    parser.add_argument('--use_XLA', action="store_true")
 
     args = parser.parse_args()
 
     test_filters_bank(args.M, args.N, args.J)
-    test_scattering(args.M, args.N, args.J)
+    test_scattering(args.M, args.N, args.J, args.use_cuda, args.use_XLA)

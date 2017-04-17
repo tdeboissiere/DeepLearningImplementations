@@ -17,7 +17,7 @@ def define_flags():
     tf.app.flags.DEFINE_integer('nb_epoch', 400, "Number of epochs")
     tf.app.flags.DEFINE_integer('batch_size', 128, "Number of samples per batch.")
     tf.app.flags.DEFINE_integer('nb_batch_per_epoch', 30, "Number of batches per epoch")
-    tf.app.flags.DEFINE_float('learning_rate', 2E-4, "Learning rate used for AdamOptimizer")
+    tf.app.flags.DEFINE_float('learning_rate', 1E-5, "Learning rate used for AdamOptimizer")
     tf.app.flags.DEFINE_integer('noise_dim', 100, "Noise dimension for GAN generation")
     tf.app.flags.DEFINE_integer('random_seed', 0, "Seed used to initialize rng.")
 
