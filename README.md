@@ -23,3 +23,5 @@
 - [WassersteinGAN](https://arxiv.org/abs/1701.07875) in the [WassersteinGAN folder](https://github.com/tdeboissiere/DeepLearningImplementations/tree/master/WassersteinGAN) and [WGAN-GP folder](https://github.com/tdeboissiere/DeepLearningImplementations/tree/master/WGAN-GP) for a tensorflow implementation.
 
 - [BEGAN](https://arxiv.org/pdf/1703.10717.pdf) in the [BEGAN folder](https://github.com/tdeboissiere/DeepLearningImplementations/tree/master/BEGAN)
+
+- [Scaling the Scattering Transform: Deep Hybrid Networks](https://arxiv.org/abs/1703.08961) in the [ScatteringTransform folder](https://github.com/tdeboissiere/DeepLearningImplementations/tree/master/ScatteringTransform)
