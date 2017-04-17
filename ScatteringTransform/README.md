@@ -3,7 +3,7 @@
 - Pure tensorflow implementation of the scattering transform and hybrid networks.
 - No need for external dependencies, only tensorflow functions are used
 - Depending on the settings (e.g. use_XLA), the code is between 3x to 5x slower than [pyscatwave](https://github.com/edouardoyallon/pyscatwave).
-- Since only tensorflow primitives are involved, it is possible to backprop through the Scattering Transform (this functionality will soon be added to pyscatwave](https://github.com/edouardoyallon/pyscatwave)).
+- Since only tensorflow primitives are involved, it is possible to backprop through the Scattering Transform (this functionality will soon be added to [pyscatwave](https://github.com/edouardoyallon/pyscatwave)).
 
 
 **Sources:**
