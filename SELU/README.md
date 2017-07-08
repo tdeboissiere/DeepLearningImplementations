@@ -53,8 +53,23 @@ Modify `plot_results.py` to select your experiments, then run:
 	python plot_results.py
 
 
-## Notes
+## Results
 
 - The architecture of the NN is the same as in the original paper.
-- We plot the loss curves to give some more perspective.
-- Initially had a hard time reproducing results. Inspection of loss curves show you just have to train longer until Soboleb loss and MSE loss have similar magnitude. Or increase the weight on the Sobolev loss.
+- The depths are a bit different (powers of 2 for inner layers, not counting first and last layer)
+- N.B. The number of epochs vary between plots.
+- At LR = 1E-5, the results are consistent with the paper albeit the minimum training loss is quite a bit higher than in the paper.
+- The Adam optimizer was also used (far less epochs though) for comparison. SELU still seems to work better but is more unstable
+- At higher learning rates, Adam no longer works really well for SELU. (Note that the conclusion may change with more epochs but 2000 epochs is quite a lot of time...)
+
+![learning rate 1e-2](figures/SELU_LR_1E-2.png)
+![learning rate 1e-3](figures/SELU_LR_1E-3.png)
+![learning rate 1e-5](figures/SELU_LR_1E-5.png)
+
+
+
+## Conclusion
+
+- SELU is definitely better behaved with SGD.
+- Depending on learning rate, it may also be better with Adam.
+- However a fair bit of fine tuning seems to be needed to get best performance (even with SGD) and training may be quite slow (lots of epochs needed for low learning rate).
