@@ -27,3 +27,5 @@
 - [Scaling the Scattering Transform: Deep Hybrid Networks](https://arxiv.org/abs/1703.08961) in the [ScatteringTransform folder](https://github.com/tdeboissiere/DeepLearningImplementations/tree/master/ScatteringTransform)
 
 - [Sobolev Training for Neural Networks](https://arxiv.org/abs/1706.04859) in the [Sobolev folder](https://github.com/tdeboissiere/DeepLearningImplementations/tree/master/Sobolev)
+
+- [Self-Normalizing Networks](https://arxiv.org/pdf/1706.02515.pdf) in the [SELU folder](https://github.com/tdeboissiere/DeepLearningImplementations/tree/master/SELU)
