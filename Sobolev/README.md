@@ -2,6 +2,10 @@
 
 theano + lasagne implementation of [Sobolev Training for Neural Networks](https://arxiv.org/abs/1706.04859)
 
+![Sobolev with 20 pts](figures/tang_20pts.gif)
+![Sobolev with 100 pts](figures/tang_100pts.gif)
+
+
 ## Dependencies
 
 - lasagne (tested on 0.2.dev1)
