@@ -25,3 +25,5 @@
 - [BEGAN](https://arxiv.org/pdf/1703.10717.pdf) in the [BEGAN folder](https://github.com/tdeboissiere/DeepLearningImplementations/tree/master/BEGAN)
 
 - [Scaling the Scattering Transform: Deep Hybrid Networks](https://arxiv.org/abs/1703.08961) in the [ScatteringTransform folder](https://github.com/tdeboissiere/DeepLearningImplementations/tree/master/ScatteringTransform)
+
+- [Sobolev Training for Neural Networks](https://arxiv.org/abs/1706.04859) in the [Sobolev folder](https://github.com/tdeboissiere/DeepLearningImplementations/tree/master/Sobolev)
