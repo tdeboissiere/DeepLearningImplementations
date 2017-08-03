@@ -126,11 +126,7 @@ def train(**kwargs):
             #######################
             X_gen = data_utils.sample_noise(noise_scale, batch_size, noise_dim)
 
-            # Freeze the discriminator
-            discriminator_model.trainable = False
             gen_loss = DCGAN_model.train_on_batch(X_gen, -np.ones(X_gen.shape[0]))
-            # Unfreeze the discriminator
-            discriminator_model.trainable = True
 
             gen_iterations += 1
             batch_counter += 1
@@ -253,11 +249,7 @@ def train_toy(**kwargs):
             #######################
             X_gen = data_utils.sample_noise(noise_scale, batch_size, noise_dim)
 
-            # Freeze the discriminator
-            discriminator_model.trainable = False
             gen_loss = GAN_model.train_on_batch(X_gen, -np.ones(X_gen.shape[0]))
-            # Unfreeze the discriminator
-            discriminator_model.trainable = True
 
             batch_counter += 1
             progbar.add(batch_size, values=[("Loss_D", -np.mean(list_disc_loss_real) - np.mean(list_disc_loss_gen)),
