@@ -7,7 +7,7 @@ Keras implementation of [Image-to-Image Translation with Conditional Adversarial
 
 ## python modules
 
-- keras, theano or tensorflow backend
+- keras (recommended version: 1.2.2), theano (recommended version: 0.9) or tensorflow (recommended version: 1.0) backend
 - h5py
 - matplotlib
 - opencv 3
