@@ -49,13 +49,12 @@ def train(**kwargs):
     nb_epoch = kwargs["nb_epoch"]
     data_file = kwargs["data_file"]
     nb_neighbors = kwargs["nb_neighbors"]
-    model_name = kwargs["model_name"]
     training_mode = kwargs["training_mode"]
     epoch_size = n_batch_per_epoch * batch_size
     img_size = int(os.path.basename(data_file).split("_")[1])
 
     # Setup directories to save model, architecture etc
-    general_utils.setup_logging(model_name)
+    general_utils.setup_logging("colorful")
 
     # Create a batch generator for the color data
     DataGen = batch_utils.DataGenerator(data_file,
@@ -87,12 +86,12 @@ def train(**kwargs):
         opt = Adam(lr=1E-4, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
 
         # Load colorizer model
-        color_model = models.load(model_name, nb_q, (1, h, w), batch_size)
+        color_model = models.load(nb_q, (1, h, w), batch_size)
         color_model.compile(loss=categorical_crossentropy_color, optimizer=opt)
 
         color_model.summary()
-        from keras.utils.visualize_util import plot
-        plot(color_model, to_file='../../figures/colorful.png', show_shapes=True, show_layer_names=True)
+        from keras.utils import plot_model
+        plot_model(color_model, to_file='../../figures/colorful.png', show_shapes=True, show_layer_names=True)
 
         # Actual training loop
         for epoch in range(nb_epoch):
@@ -130,7 +129,7 @@ def train(**kwargs):
             # Save weights every 5 epoch
             if epoch % 5 == 0:
                 weights_path = os.path.join('../../models/%s/%s_weights_epoch%s.h5' %
-                                            (model_name, model_name, epoch))
+                                            ("colorful", "colorful", epoch))
                 color_model.save_weights(weights_path, overwrite=True)
 
     except KeyboardInterrupt:

@@ -20,8 +20,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Train model')
     parser.add_argument('mode', type=str, help="Choose train or eval")
     parser.add_argument('data_file', type=str, help="Path to HDF5 containing the data")
-    parser.add_argument('--model_name', type=str, default="simple_colorful",
-                        help="Model name. Choose simple_colorful or colorful")
     parser.add_argument('--training_mode', default="in_memory", type=str,
                         help=('Training mode. Choose in_memory to load all the data in memory and train.'
                               'Choose on_demand to load batches from disk at each step'))
@@ -44,7 +42,6 @@ if __name__ == "__main__":
                 "nb_epoch": args.nb_epoch,
                 "nb_resblocks":args.nb_resblocks,
                 "training_mode": args.training_mode,
-                "model_name": args.model_name,
                 "nb_neighbors": args.nb_neighbors,
                 "epoch": args.epoch,
                 "T": args.T
@@ -52,7 +49,6 @@ if __name__ == "__main__":
 
     assert args.mode in ["train", "eval"]
     assert args.training_mode in ["in_memory", "on_demand"]
-    assert args.model_name in ["colorful", "simple_colorful"]
 
     if args.mode == "train":
         # Launch training
