@@ -8,12 +8,12 @@ theano + lasagne implementation of [Sobolev Training for Neural Networks](https:
 
 ## Dependencies
 
-- lasagne (tested on 0.2.dev1)
-- theano (tested on 0.9.0)
-- matplotlib (tested on 2.0.1)
-- tqdm
-- numpy
-- natsort
+- Lasagne==0.2.dev1
+- Theano==0.9.0
+- numpy==1.13.3
+- tqdm==4.17.0
+- natsort==5.1.0
+- matplotlib==2.0.2
 
 
 ## Uage
