@@ -148,8 +148,6 @@ def train_model():
                 output = sess.run([summary_op])
                 writer.add_summary(output[-1], e * FLAGS.nb_batch_per_epoch + batch_counter)
 
-            t.set_description('Epoch %s:' % e)
-
         # Plot some generated images
         Xf, Xr, Xrrec, Xfrec = sess.run([generated_toplot, real_toplot, real_rec_toplot, generated_rec_toplot])
         vu.save_image(Xf, Xr, title="current_batch", e=e)
