@@ -58,3 +58,11 @@ optional arguments:
 With two dense blocks and 2 convolution operations within each block, the model looks like this:
 
 ![Model archi](./figures/densenet_archi.png)
+
+
+# Requirements
+
+- numpy==1.13.3
+- matplotlib==2.0.2
+- Keras==2.0.8
+- tensorflow==1.3.0 or theano==0.9.0

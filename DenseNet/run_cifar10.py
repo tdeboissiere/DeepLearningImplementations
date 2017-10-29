@@ -48,7 +48,7 @@ def run_cifar10(batch_size,
     nb_classes = len(np.unique(y_train))
     img_dim = X_train.shape[1:]
 
-    if K.image_dim_ordering() == "th":
+    if K.image_data_format() == "channels_first":
         n_channels = X_train.shape[1]
     else:
         n_channels = X_train.shape[-1]
@@ -63,14 +63,14 @@ def run_cifar10(batch_size,
     # Normalisation
     X = np.vstack((X_train, X_test))
     # 2 cases depending on the image ordering
-    if K.image_dim_ordering() == "th":
+    if K.image_data_format() == "channels_first":
         for i in range(n_channels):
             mean = np.mean(X[:, i, :, :])
             std = np.std(X[:, i, :, :])
             X_train[:, i, :, :] = (X_train[:, i, :, :] - mean) / std
             X_test[:, i, :, :] = (X_test[:, i, :, :] - mean) / std
 
-    elif K.image_dim_ordering() == "tf":
+    elif K.image_data_format() == "channels_last":
         for i in range(n_channels):
             mean = np.mean(X[:, :, :, i])
             std = np.std(X[:, :, :, i])
