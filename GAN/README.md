@@ -12,13 +12,14 @@ Keras implementation of some GAN models.
 
 ## python modules
 
-- keras, theano or tensorflow backend
-- h5py
-- matplotlib
-- opencv 3
-- numpy
-- tqdm
-- parmap
+- tqdm==4.17.0
+- opencv_python==3.3.0.10
+- numpy==1.13.3
+- matplotlib==2.0.2
+- Keras==2.0.8
+- Theano==0.9.0 or Tensorflow==1.3.0
+- h5py==2.7.0
+- parmap==1.5.1
 
 
 # Part 1. Processing the data
