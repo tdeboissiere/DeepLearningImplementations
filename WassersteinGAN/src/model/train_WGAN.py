@@ -32,19 +32,19 @@ def train(**kwargs):
     opt_G = kwargs["opt_G"]
     clamp_lower = kwargs["clamp_lower"]
     clamp_upper = kwargs["clamp_upper"]
-    image_dim_ordering = kwargs["image_dim_ordering"]
+    image_data_format = kwargs["image_data_format"]
     epoch_size = n_batch_per_epoch * batch_size
 
     print("\nExperiment parameters:")
     for key in kwargs.keys():
-        print key, kwargs[key]
+        print(key, kwargs[key])
     print("\n")
 
     # Setup environment (logging directory etc)
     general_utils.setup_logging("DCGAN")
 
     # Load and normalize data
-    X_real_train = data_utils.load_image_dataset(dset, img_dim, image_dim_ordering)
+    X_real_train = data_utils.load_image_dataset(dset, img_dim, image_data_format)
 
     # Get the full real image dimension
     img_dim = X_real_train.shape[-3:]
@@ -142,7 +142,7 @@ def train(**kwargs):
             # Save images for visualization ~2 times per epoch
             if batch_counter % (n_batch_per_epoch / 2) == 0:
                 data_utils.plot_generated_batch(X_real_batch, generator_model,
-                                                batch_size, noise_dim, image_dim_ordering)
+                                                batch_size, noise_dim, image_data_format)
 
         print('\nEpoch %s/%s, Time: %s' % (e + 1, nb_epoch, time.time() - start))
 
@@ -173,7 +173,7 @@ def train_toy(**kwargs):
 
     print("\nExperiment parameters:")
     for key in kwargs.keys():
-        print key, kwargs[key]
+        print(key, kwargs[key])
     print("\n")
 
     # Setup environment (logging directory etc)

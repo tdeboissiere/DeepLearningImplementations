@@ -10,14 +10,16 @@ Keras implementation of WassersteinGAN.
 
 ## python modules
 
-- keras, theano or tensorflow backend
-- h5py
-- matplotlib
-- opencv 3
-- numpy
-- tqdm
-- parmap
-
+numpy==1.13.3
+natsort==5.1.0
+matplotlib==2.0.2
+opencv_python==3.3.0.10
+scipy==1.0.0
+tqdm==4.17.0
+Keras==2.0.8
+parmap==1.5.1
+h5py==2.7.0
+Theano==0.9.0 or tensorflow==1.3.0
 
 # Part 1. Processing the data
 

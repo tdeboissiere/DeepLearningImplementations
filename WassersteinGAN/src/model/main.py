@@ -51,11 +51,11 @@ if __name__ == "__main__":
 
     # manually set dim ordering otherwise it is not changed
     if args.backend == "theano":
-        image_dim_ordering = "th"
-        K.set_image_dim_ordering(image_dim_ordering)
+        image_data_format = "channels_first"
+        K.set_image_data_format(image_data_format)
     elif args.backend == "tensorflow":
-        image_dim_ordering = "tf"
-        K.set_image_dim_ordering(image_dim_ordering)
+        image_data_format = "channels_last"
+        K.set_image_data_format(image_data_format)
 
     import train_WGAN
 
@@ -78,7 +78,7 @@ if __name__ == "__main__":
                 "opt_D": args.opt_D,
                 "opt_G": args.opt_G,
                 "use_mbd": args.use_mbd,
-                "image_dim_ordering": image_dim_ordering
+                "image_data_format": image_data_format
                 }
 
     # Launch training

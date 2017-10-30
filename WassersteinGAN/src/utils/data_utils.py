@@ -9,10 +9,10 @@ import matplotlib.gridspec as gridspec
 from keras.optimizers import Adam, SGD, RMSprop
 
 
-def normalization(X, image_dim_ordering):
+def normalization(X, image_data_format):
 
     X = X / 255.
-    if image_dim_ordering == "tf":
+    if image_data_format == "channels_last":
         X = (X - 0.5) / 0.5
     else:
         X = (X - 0.5) / 0.5
@@ -25,11 +25,11 @@ def inverse_normalization(X):
     return ((X * 0.5 + 0.5) * 255.).astype(np.uint8)
 
 
-def load_mnist(image_dim_ordering):
+def load_mnist(image_data_format):
 
     (X_train, y_train), (X_test, y_test) = mnist.load_data()
 
-    if image_dim_ordering == 'th':
+    if image_data_format == 'channels_first':
         X_train = X_train.reshape(X_train.shape[0], 1, 28, 28)
         X_test = X_test.reshape(X_test.shape[0], 1, 28, 28)
     else:
@@ -39,8 +39,8 @@ def load_mnist(image_dim_ordering):
     X_train = X_train.astype('float32')
     X_test = X_test.astype('float32')
 
-    X_train = normalization(X_train, image_dim_ordering)
-    X_test = normalization(X_test, image_dim_ordering)
+    X_train = normalization(X_train, image_data_format)
+    X_test = normalization(X_test, image_data_format)
 
     nb_classes = len(np.unique(np.hstack((y_train, y_test))))
 
@@ -50,11 +50,11 @@ def load_mnist(image_dim_ordering):
     return X_train, Y_train, X_test, Y_test
 
 
-def load_cifar10(image_dim_ordering):
+def load_cifar10(image_data_format):
 
     (X_train, y_train), (X_test, y_test) = cifar10.load_data()
 
-    if image_dim_ordering == 'th':
+    if image_data_format == 'channels_first':
         X_train = X_train.reshape(X_train.shape[0], 3, 32, 32)
         X_test = X_test.reshape(X_test.shape[0], 3, 32, 32)
     else:
@@ -64,8 +64,8 @@ def load_cifar10(image_dim_ordering):
     X_train = X_train.astype('float32')
     X_test = X_test.astype('float32')
 
-    X_train = normalization(X_train, image_dim_ordering)
-    X_test = normalization(X_test, image_dim_ordering)
+    X_train = normalization(X_train, image_data_format)
+    X_test = normalization(X_test, image_data_format)
 
     nb_classes = len(np.unique(np.vstack((y_train, y_test))))
 
@@ -75,27 +75,27 @@ def load_cifar10(image_dim_ordering):
     return X_train, Y_train, X_test, Y_test
 
 
-def load_celebA(img_dim, image_dim_ordering):
+def load_celebA(img_dim, image_data_format):
 
     with h5py.File("../../data/processed/CelebA_%s_data.h5" % img_dim, "r") as hf:
 
         X_real_train = hf["data"][:].astype(np.float32)
-        X_real_train = normalization(X_real_train, image_dim_ordering)
+        X_real_train = normalization(X_real_train, image_data_format)
 
-        if image_dim_ordering == "tf":
+        if image_data_format == "channels_last":
             X_real_train = X_real_train.transpose(0, 2, 3, 1)
 
         return X_real_train
 
 
-def load_image_dataset(dset, img_dim, image_dim_ordering):
+def load_image_dataset(dset, img_dim, image_data_format):
 
     if dset == "celebA":
-        X_real_train = load_celebA(img_dim, image_dim_ordering)
+        X_real_train = load_celebA(img_dim, image_data_format)
     if dset == "mnist":
-        X_real_train, _, _, _ = load_mnist(image_dim_ordering)
+        X_real_train, _, _, _ = load_mnist(image_data_format)
     if dset == "cifar10":
-        X_real_train, _, _, _ = load_cifar10(image_dim_ordering)
+        X_real_train, _, _, _ = load_cifar10(image_data_format)
 
     return X_real_train
 
@@ -165,7 +165,7 @@ def save_model_weights(generator_model, discriminator_model, DCGAN_model, e):
         DCGAN_model.save_weights(DCGAN_weights_path, overwrite=True)
 
 
-def plot_generated_batch(X_real, generator_model, batch_size, noise_dim, image_dim_ordering, noise_scale=0.5):
+def plot_generated_batch(X_real, generator_model, batch_size, noise_dim, image_data_format, noise_scale=0.5):
 
     # Generate images
     X_gen = sample_noise(noise_scale, batch_size, noise_dim)
@@ -177,7 +177,7 @@ def plot_generated_batch(X_real, generator_model, batch_size, noise_dim, image_d
     Xg = X_gen[:8]
     Xr = X_real[:8]
 
-    if image_dim_ordering == "tf":
+    if image_data_format == "channels_last":
         X = np.concatenate((Xg, Xr), axis=0)
         list_rows = []
         for i in range(int(X.shape[0] / 4)):
@@ -186,7 +186,7 @@ def plot_generated_batch(X_real, generator_model, batch_size, noise_dim, image_d
 
         Xr = np.concatenate(list_rows, axis=0)
 
-    if image_dim_ordering == "th":
+    if image_data_format == "channels_first":
         X = np.concatenate((Xg, Xr), axis=0)
         list_rows = []
         for i in range(int(X.shape[0] / 4)):

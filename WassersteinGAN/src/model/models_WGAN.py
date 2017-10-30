@@ -2,17 +2,12 @@ import numpy as np
 import keras.backend as K
 from keras.models import Model
 from keras.layers import Input
-from keras import initializations
-from keras.utils import visualize_util
+from keras.initializers import RandomNormal
 from keras.layers.advanced_activations import LeakyReLU
 from keras.layers.normalization import BatchNormalization
-from keras.layers.core import Flatten, Dense, Activation, Reshape
-from keras.layers.convolutional import Convolution2D, Deconvolution2D, UpSampling2D
-from keras.layers.pooling import AveragePooling2D, GlobalAveragePooling2D
-
-
-def conv2D_init(shape, name=None):
-    return initializations.normal(shape, scale=0.02, name=name)
+from keras.layers.core import Dense, Activation, Reshape
+from keras.layers.convolutional import Conv2D, Deconv2D, UpSampling2D
+from keras.layers.pooling import GlobalAveragePooling2D
 
 
 def wasserstein(y_true, y_pred):
@@ -24,10 +19,11 @@ def wasserstein(y_true, y_pred):
 def visualize_model(model):
 
     model.summary()
-    visualize_util.plot(model,
-                        to_file='../../figures/%s.png' % model.name,
-                        show_shapes=True,
-                        show_layer_names=True)
+    from keras.utils import plot_model
+    plot_model(model,
+               to_file='../../figures/%s.png' % model.name,
+               show_shapes=True,
+               show_layer_names=True)
 
 
 def generator_toy(noise_dim, model_name="generator_toy"):
@@ -43,7 +39,7 @@ def generator_toy(noise_dim, model_name="generator_toy"):
     x = Activation("tanh")(x)
     x = Dense(2)(x)
 
-    generator_model = Model(input=[gen_input], output=[x], name=model_name)
+    generator_model = Model(inputs=[gen_input], outputs=[x], name=model_name)
     visualize_model(generator_model)
 
     return generator_model
@@ -62,7 +58,7 @@ def discriminator_toy(model_name="discriminator_toy"):
     x = Activation("tanh")(x)
     x = Dense(1)(x)
 
-    discriminator_model = Model(input=[disc_input], output=[x], name=model_name)
+    discriminator_model = Model(inputs=[disc_input], outputs=[x], name=model_name)
     visualize_model(discriminator_model)
 
     return discriminator_model
@@ -77,8 +73,8 @@ def GAN_toy(generator, discriminator, noise_dim):
     generated_sample = generator(gen_input)
     GAN_output = discriminator(generated_sample)
 
-    GAN_toy = Model(input=[gen_input],
-                    output=[GAN_output],
+    GAN_toy = Model(inputs=[gen_input],
+                    outputs=[GAN_output],
                     name="GAN_toy")
     visualize_model(GAN_toy)
 
@@ -123,24 +119,24 @@ def generator_upsampling(noise_dim, img_dim, bn_mode, model_name="generator_upsa
     # Noise input and reshaping
     x = Dense(f * start_dim * start_dim, input_dim=noise_dim)(gen_input)
     x = Reshape(reshape_shape)(x)
-    x = BatchNormalization(mode=bn_mode, axis=bn_axis)(x)
+    x = BatchNormalization(axis=bn_axis)(x)
     x = Activation("relu")(x)
 
     # Upscaling blocks: Upsampling2D->Conv2D->ReLU->BN->Conv2D->ReLU
     for i in range(nb_upconv):
         x = UpSampling2D(size=(2, 2))(x)
         nb_filters = int(f / (2 ** (i + 1)))
-        x = Convolution2D(nb_filters, 3, 3, border_mode="same", init=conv2D_init)(x)
-        x = BatchNormalization(mode=bn_mode, axis=1)(x)
+        x = Conv2D(nb_filters, (3, 3), padding="same", kernel_initializer=RandomNormal(stddev=0.02))(x)
+        x = BatchNormalization(axis=1)(x)
         x = Activation("relu")(x)
-        x = Convolution2D(nb_filters, 3, 3, border_mode="same", init=conv2D_init)(x)
+        x = Conv2D(nb_filters, (3, 3), padding="same", kernel_initializer=RandomNormal(stddev=0.02))(x)
         x = Activation("relu")(x)
 
     # Last Conv to get the output image
-    x = Convolution2D(output_channels, 3, 3, name="gen_conv2d_final",
-                      border_mode="same", activation='tanh', init=conv2D_init)(x)
+    x = Conv2D(output_channels, (3, 3), name="gen_conv2d_final",
+               padding="same", activation='tanh', kernel_initializer=RandomNormal(stddev=0.02))(x)
 
-    generator_model = Model(input=[gen_input], output=[x], name=model_name)
+    generator_model = Model(inputs=[gen_input], outputs=[x], name=model_name)
     visualize_model(generator_model)
 
     return generator_model
@@ -180,9 +176,9 @@ def generator_deconv(noise_dim, img_dim, bn_mode, batch_size, model_name="genera
     gen_input = Input(shape=noise_dim, name="generator_input")
 
     # Noise input and reshaping
-    x = Dense(f * start_dim * start_dim, input_dim=noise_dim, bias=False)(gen_input)
+    x = Dense(f * start_dim * start_dim, input_dim=noise_dim, use_bias=False)(gen_input)
     x = Reshape(reshape_shape)(x)
-    x = BatchNormalization(mode=bn_mode, axis=bn_axis)(x)
+    x = BatchNormalization(axis=bn_axis)(x)
     x = Activation("relu")(x)
 
     # Transposed conv blocks: Deconv2D->BN->ReLU
@@ -190,19 +186,23 @@ def generator_deconv(noise_dim, img_dim, bn_mode, batch_size, model_name="genera
         nb_filters = int(f / (2 ** (i + 1)))
         s = start_dim * (2 ** (i + 1))
         o_shape = (batch_size, s, s, nb_filters)
-        x = Deconvolution2D(nb_filters, 3, 3,
-                            output_shape=o_shape, subsample=(2, 2), border_mode="same", bias=False, init=conv2D_init)(x)
+        x = Deconv2D(nb_filters, (3, 3),
+                     output_shape=o_shape, strides=(2, 2),
+                     padding="same", use_bias=False,
+                     kernel_initializer=RandomNormal(stddev=0.02))(x)
         x = BatchNormalization(mode=2, axis=-1)(x)
         x = Activation("relu")(x)
 
     # Last block
     s = start_dim * (2 ** (nb_upconv))
     o_shape = (batch_size, s, s, output_channels)
-    x = Deconvolution2D(output_channels, 3, 3,
-                        output_shape=o_shape, subsample=(2, 2), border_mode="same", bias=False, init=conv2D_init)(x)
+    x = Deconv2D(output_channels, (3, 3),
+                 output_shape=o_shape, strides=(2, 2),
+                 padding="same", use_bias=False,
+                 kernel_initializer=RandomNormal(stddev=0.02))(x)
     x = Activation("tanh")(x)
 
-    generator_model = Model(input=[gen_input], output=[x], name=model_name)
+    generator_model = Model(inputs=[gen_input], outputs=[x], name=model_name)
     visualize_model(generator_model)
 
     return generator_model
@@ -235,24 +235,27 @@ def discriminator(img_dim, bn_mode, model_name="discriminator"):
     list_f = [64 * min(8, (2 ** i)) for i in range(nb_conv)]
 
     # First conv with 2x2 strides
-    x = Convolution2D(list_f[0], 3, 3, subsample=(2, 2), name="disc_conv2d_1",
-                      border_mode="same", bias=False, init=conv2D_init)(disc_input)
-    x = BatchNormalization(mode=bn_mode, axis=bn_axis)(x)
+    x = Conv2D(list_f[0], (3, 3), strides=(2, 2), name="disc_conv2d_1",
+               padding="same", use_bias=False,
+               kernel_initializer=RandomNormal(stddev=0.02))(disc_input)
+    x = BatchNormalization(axis=bn_axis)(x)
     x = LeakyReLU(0.2)(x)
 
     # Conv blocks: Conv2D(2x2 strides)->BN->LReLU
     for i, f in enumerate(list_f[1:]):
         name = "disc_conv2d_%s" % (i + 2)
-        x = Convolution2D(f, 3, 3, subsample=(2, 2), name=name, border_mode="same", bias=False, init=conv2D_init)(x)
-        x = BatchNormalization(mode=bn_mode, axis=bn_axis)(x)
+        x = Conv2D(f, (3, 3), strides=(2, 2), name=name, padding="same", use_bias=False,
+                   kernel_initializer=RandomNormal(stddev=0.02))(x)
+        x = BatchNormalization(axis=bn_axis)(x)
         x = LeakyReLU(0.2)(x)
 
     # Last convolution
-    x = Convolution2D(1, 3, 3, name="last_conv", border_mode="same", bias=False, init=conv2D_init)(x)
+    x = Conv2D(1, (3, 3), name="last_conv", padding="same", use_bias=False,
+               kernel_initializer=RandomNormal(stddev=0.02))(x)
     # Average pooling
     x = GlobalAveragePooling2D()(x)
 
-    discriminator_model = Model(input=[disc_input], output=[x], name=model_name)
+    discriminator_model = Model(inputs=[disc_input], outputs=[x], name=model_name)
     visualize_model(discriminator_model)
 
     return discriminator_model
@@ -275,8 +278,8 @@ def DCGAN(generator, discriminator, noise_dim, img_dim):
     generated_image = generator(noise_input)
     DCGAN_output = discriminator(generated_image)
 
-    DCGAN = Model(input=[noise_input],
-                  output=[DCGAN_output],
+    DCGAN = Model(inputs=[noise_input],
+                  outputs=[DCGAN_output],
                   name="DCGAN")
     visualize_model(DCGAN)
 
