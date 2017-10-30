@@ -10,15 +10,13 @@ Pure tensorflow implementation of WGAN-GP
 
 ## python modules
 
-- tensorflow 1.0
-- h5py
-- matplotlib
-- opencv 3
-- numpy
-- tqdm
-- colorama
-- terminaltables
-- parmap
+- terminaltables==3.1.0
+- colorama==0.3.9
+- matplotlib==2.0.2
+- tensorflow_gpu==1.3.0
+- tqdm==4.17.0
+- numpy==1.13.3
+- tensorflow==1.4.0rc1
 
 # Part 1. Getting the data
 
