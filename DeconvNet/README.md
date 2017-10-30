@@ -4,9 +4,11 @@ N.B. It's still early days for this code. Suggestions for improvement are welcom
 
 # Requirements
 
-- Up to date versions of Keras and Theano
-- OpenCV3
-- matplotlib, numpy
+- Keras==2.0.8
+- numpy==1.13.3
+- opencv_python==3.3.0.10
+- matplotlib==2.0.2
+- Theano==0.9.0
 
 # Configure
 
@@ -30,7 +32,7 @@ N.B. It's still early days for this code. Suggestions for improvement are welcom
 - Go to step 1, set the flag to `True`
 - Specify which layer you want in `d_act` e.g. `d_act = {"convolution2d_13": {}}`
 - By default, the algorithm will look for the images maximally activating the first 10 feature maps of this layer
-- Go to step 2 and set the flag to `True
+- Go to step 2 and set the flag to `True`
 - Then run `python VGG_deconv.py`. You may have to change the batch size depending on your GPU
 - It will take a little while to run and find the top 9 images
 - Once this step is complete

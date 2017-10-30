@@ -1,3 +1,4 @@
+from __future__ import print_function
 import keras.backend as K
 import numpy as np
 import matplotlib.pylab as plt
@@ -44,7 +45,7 @@ def find_top9_mean_act(data, Dec, target_layer, feat_map, batch_size=32):
     list_max = np.array(list_max)
     i_sort = np.argsort(list_max)
     top9 = i_sort[-9:]
-    print
+    print("")
     return top9
 
 
@@ -278,7 +279,7 @@ def plot_max_activation(d_act_path, d_deconv_path, data, target_layer, save=Fals
             try:
                 (ystart, xstart), (ystop, xstop) = arr.min(0), arr.max(0) + 1
             except ValueError:
-                print "Encountered a dead filter"
+                print("Encountered a dead filter")
                 return
             delta_x = xstop - xstart
             delta_y = ystop - ystart
@@ -297,7 +298,7 @@ def plot_max_activation(d_act_path, d_deconv_path, data, target_layer, save=Fals
             try:
                 (ystart, xstart), (ystop, xstop) = arr.min(0), arr.max(0) + 1
             except ValueError:
-                print "Encountered a dead filter"
+                print("Encountered a dead filter")
                 return
             # Specific case to avoid array boundary issues
             y_min, y_max = ystart, ystart + max_delta_y
@@ -373,7 +374,6 @@ def plot_max_activation(d_act_path, d_deconv_path, data, target_layer, save=Fals
         plt.savefig("./Figures/%s.png" % target_layer, format='png', dpi=200)
     else:
         plt.show()
-        raw_input()
 
 
 def plot_deconv(img_index, data, Dec, target_layer, feat_map, save=False):
@@ -413,7 +413,7 @@ def plot_deconv(img_index, data, Dec, target_layer, feat_map, save=False):
         try:
             (ystart, xstart), (ystop, xstop) = arr.min(0), arr.max(0) + 1
         except ValueError:
-            print "Encountered a dead filter, retry with different img/filter"
+            print("Encountered a dead filter, retry with different img/filter")
             return
         delta_x = xstop - xstart
         delta_y = ystop - ystart
@@ -431,7 +431,7 @@ def plot_deconv(img_index, data, Dec, target_layer, feat_map, save=False):
         try:
             (ystart, xstart), (ystop, xstop) = arr.min(0), arr.max(0) + 1
         except ValueError:
-            print "Encountered a dead filter, retry with different img/filter"
+            print("Encountered a dead filter, retry with different img/filter")
             return
         # Specific case to avoid array boundary issues
         y_min, y_max = ystart, ystart + max_delta_y
@@ -489,4 +489,3 @@ def plot_deconv(img_index, data, Dec, target_layer, feat_map, save=False):
         plt.savefig("./Figures/sample_%s.png" % target_layer, format='png', dpi=200)
     else:
         plt.show()
-        raw_input()

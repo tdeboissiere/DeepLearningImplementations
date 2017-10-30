@@ -1,3 +1,4 @@
+from __future__ import print_function
 import keras.backend as K
 import time
 import numpy as np
@@ -32,7 +33,7 @@ class DeconvNet(object):
         try:
             return self.d_layers[layer_name]
         except KeyError:
-            print "Erroneous layer name"
+            print("Erroneous layer name")
 
     def _deconv(self, X, lname, d_switch, feat_map=None):
         o_width, o_height = self[lname].output_shape[-2:]
@@ -57,11 +58,11 @@ class DeconvNet(object):
         activation = self[lname].activation
         X = activation(X)
         if feat_map is not None:
-            print "Setting other feat map to zero"
+            print("Setting other feat map to zero")
             for i in range(X.shape[1]):
                 if i != feat_map:
                     X[:, i, :, :] = 0
-            print "Setting non max activations to zero"
+            print("Setting non max activations to zero")
             for i in range(X.shape[0]):
                 iw, ih = np.unravel_index(
                     X[i, feat_map, :, :].argmax(), X[i, feat_map, :, :].shape)
@@ -98,7 +99,7 @@ class DeconvNet(object):
             inc, out = self[lname].input, self[lname].output
             f = K.function([inc], out)
             X = f([X])
-            if "convolution2d" in lname:
+            if "conv2d" in lname:
                 d_switch[lname] = np.where(X <= 0)
         return d_switch
 
@@ -111,7 +112,7 @@ class DeconvNet(object):
         X_outl = layer_output([X])
         # Special case for the starting layer where we may want
         # to switchoff somes maps/ activations
-        print "Deconvolving %s..." % target_layer
+        print("Deconvolving %s..." % target_layer)
         if "maxpooling2d" in target_layer:
             X_maxunp = K.pool.max_pool_2d_same_size(
                 self[target_layer].input, self[target_layer].pool_size)
@@ -127,7 +128,7 @@ class DeconvNet(object):
                     m = np.max(X_outl[i, feat_map, :, :])
                     X_outl[i, feat_map, :, :] = 0
                     X_outl[i, feat_map, iw, ih] = m
-        elif "convolution2d" in target_layer:
+        elif "conv2d" in target_layer:
             X_outl = self._deconv(X_outl, target_layer,
                                   d_switch, feat_map=feat_map)
         else:
@@ -135,7 +136,7 @@ class DeconvNet(object):
                 "Invalid layer name: %s \n Can only handle maxpool and conv" % target_layer)
         # Iterate over layers (deepest to shallowest)
         for lname in self.lnames[:layer_index][::-1]:
-            print "Deconvolving %s..." % lname
+            print("Deconvolving %s..." % lname)
             # Unpool, Deconv or do nothing
             if "maxpooling2d" in lname:
                 p1, p2 = self[lname].pool_size
@@ -143,7 +144,7 @@ class DeconvNet(object):
                     [self.x], K.resize_images(self.x, p1, p2, "th"))
                 X_outl = uppool([X_outl])
 
-            elif "convolution2d" in lname:
+            elif "conv2d" in lname:
                 X_outl = self._deconv(X_outl, lname, d_switch)
             elif "padding" in lname:
                 pass
@@ -178,11 +179,11 @@ class DeconvNet(object):
         # First make predictions to get feature maps
         self.model.predict(X)
         # Forward pass storing switches
-        print "Starting forward pass..."
+        print("Starting forward pass...")
         start_time = time.time()
         d_switch = self._forward_pass(X, target_layer)
         end_time = time.time()
-        print 'Forward pass completed in %ds' % (end_time - start_time)
+        print('Forward pass completed in %ds' % (end_time - start_time))
         # Then deconvolve starting from target layer
         X_out = self._backward_pass(X, target_layer, d_switch, feat_map)
         return X_out
