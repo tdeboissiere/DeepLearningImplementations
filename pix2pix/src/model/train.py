@@ -31,7 +31,7 @@ def train(**kwargs):
     nb_epoch = kwargs["nb_epoch"]
     model_name = kwargs["model_name"]
     generator = kwargs["generator"]
-    image_dim_ordering = kwargs["image_dim_ordering"]
+    image_data_format = kwargs["image_data_format"]
     img_dim = kwargs["img_dim"]
     patch_size = kwargs["patch_size"]
     bn_mode = kwargs["bn_mode"]
@@ -46,11 +46,11 @@ def train(**kwargs):
     general_utils.setup_logging(model_name)
 
     # Load and rescale data
-    X_full_train, X_sketch_train, X_full_val, X_sketch_val = data_utils.load_data(dset, image_dim_ordering)
+    X_full_train, X_sketch_train, X_full_val, X_sketch_val = data_utils.load_data(dset, image_data_format)
     img_dim = X_full_train.shape[-3:]
 
     # Get the number of non overlapping patch and the size of input image to the discriminator
-    nb_patch, img_dim_disc = data_utils.get_nb_patch(img_dim, patch_size, image_dim_ordering)
+    nb_patch, img_dim_disc = data_utils.get_nb_patch(img_dim, patch_size, image_data_format)
 
     try:
 
@@ -81,7 +81,7 @@ def train(**kwargs):
                                    discriminator_model,
                                    img_dim,
                                    patch_size,
-                                   image_dim_ordering)
+                                   image_data_format)
 
         loss = [l1_loss, 'binary_crossentropy']
         loss_weights = [1E1, 1]
@@ -109,7 +109,7 @@ def train(**kwargs):
                                                            generator_model,
                                                            batch_counter,
                                                            patch_size,
-                                                           image_dim_ordering,
+                                                           image_data_format,
                                                            label_smoothing=label_smoothing,
                                                            label_flipping=label_flipping)
 
@@ -137,10 +137,10 @@ def train(**kwargs):
                 if batch_counter % (n_batch_per_epoch / 2) == 0:
                     # Get new images from validation
                     data_utils.plot_generated_batch(X_full_batch, X_sketch_batch, generator_model,
-                                                    batch_size, image_dim_ordering, "training")
+                                                    batch_size, image_data_format, "training")
                     X_full_batch, X_sketch_batch = next(data_utils.gen_batch(X_full_val, X_sketch_val, batch_size))
                     data_utils.plot_generated_batch(X_full_batch, X_sketch_batch, generator_model,
-                                                    batch_size, image_dim_ordering, "validation")
+                                                    batch_size, image_data_format, "validation")
 
                 if batch_counter >= n_batch_per_epoch:
                     break

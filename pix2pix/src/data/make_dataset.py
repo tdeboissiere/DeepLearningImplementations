@@ -24,8 +24,8 @@ def format_image(img_path, size, nb_channels):
     w = img.shape[1]
 
     # Slice image in 2 to get both parts
-    img_full = img[:, :w / 2, :]
-    img_sketch = img[:, w / 2:, :]
+    img_full = img[:, :w // 2, :]
+    img_sketch = img[:, w // 2:, :]
 
     img_full = cv2.resize(img_full, (size, size), interpolation=cv2.INTER_AREA)
     img_sketch = cv2.resize(img_sketch, (size, size), interpolation=cv2.INTER_AREA)
@@ -52,9 +52,10 @@ def build_HDF5(jpeg_dir, nb_channels, size=256):
 
         for dset_type in ["train", "test", "val"]:
 
-            list_img = list(Path(jpeg_dir).glob('%s/*.jpg' % dset_type))
+            list_img = [img for img in Path(jpeg_dir).glob('%s/*.jpg' % dset_type)]
+            list_img = [str(img) for img in list_img]
             list_img.extend(list(Path(jpeg_dir).glob('%s/*.png' % dset_type)))
-            list_img = map(str, list_img)
+            list_img = list(map(str, list_img))
             list_img = np.array(list_img)
 
             data_full = hfw.create_dataset("%s_data_full" % dset_type,
