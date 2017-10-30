@@ -20,15 +20,19 @@ This repository is a simple adapatation of [pyscatwave](https://github.com/edoua
 
 ## python modules
 
-- tensorflow 1.0
-- h5py
-- matplotlib
-- opencv 3
-- numpy
-- tqdm
-- colorama
-- terminaltables
-- parmap
+- scipy==1.0.0
+- torch==0.2.0.post4
+- numpy==1.13.3
+- terminaltables==3.1.0
+- matplotlib==2.0.2
+- tqdm==4.17.0
+- colorama==0.3.9
+- tensorflow_gpu==1.3.0
+- cupy==3.0.0a1
+- asposebarcode==1.0.0
+- pynvrtc==8.0
+- tensorflow==1.4.0rc1
+- scikit-cuda==0.5.1
 
 You should also install the dependencies of [pyscatwave](https://github.com/edouardoyallon/pyscatwave) to run the tests.
 
