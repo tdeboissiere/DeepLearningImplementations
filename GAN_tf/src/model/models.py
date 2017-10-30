@@ -1,6 +1,5 @@
 import sys
 import tensorflow as tf
-import collections
 sys.path.append("../utils")
 import layers
 
@@ -52,18 +51,7 @@ class Generator(Model):
         with tf.variable_scope(self.name) as scope:
 
             if reuse:
-                # list_v = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=scope.name)
-                # for v in list_v:
-                #     print v
-                # print
-                # print
-                # for v in tf.get_collection(tf.GraphKeys.UPDATE_OPS):
-                #     print v
-                # import ipdb; ipdb.set_trace()
                 scope.reuse_variables()
-
-            # Store all layers in a dict
-            d = collections.OrderedDict()
 
             # Initial dense multiplication
             x = layers.linear(x, self.filters * self.start_dim * self.start_dim)
@@ -77,8 +65,6 @@ class Generator(Model):
             x = layers.reshape(x, target_shape)
             x = tf.contrib.layers.batch_norm(x, fused=True)
             x = tf.nn.relu(x)
-
-            import ipdb; ipdb.set_trace()
 
             # # Conv2D + Phase shift blocks
             # x = layers.conv2d_block("conv2D_1_1", x, 512, 3, 1, p="SAME", stddev=0.02,

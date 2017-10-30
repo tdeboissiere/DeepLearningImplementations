@@ -163,8 +163,8 @@ def train_model():
             if batch_counter % (FLAGS.nb_batch_per_epoch // (int(0.5 * FLAGS.nb_batch_per_epoch))) == 0:
                 writer.add_summary(output[-1], e * FLAGS.nb_batch_per_epoch + batch_counter)
 
-            t.set_description('Epoch %i: - G loss: %.3f D loss real: %.3f Dloss fake: %.3f' %
-                              (e, np.mean(list_G_loss), np.mean(list_D_loss_real), np.mean(list_D_loss_fake)))
+        t.set_description('Epoch %i: - G loss: %.3f D loss real: %.3f Dloss fake: %.3f' %
+                          (e, np.mean(list_G_loss), np.mean(list_D_loss_real), np.mean(list_D_loss_fake)))
 
         # Plot some generated images
         output = sess.run([X_G_output, X_real_output])
@@ -174,7 +174,7 @@ def train_model():
         saver.save(sess, os.path.join(FLAGS.model_dir, "model"), global_step=e)
 
         if e == 0:
-            print len(list_data)
+            print(len(list_data))
             output = sess.run([noise_input, X_real, X_fake, X_G_output, X_real_output])
             tu.check_data(output, list_data)
 

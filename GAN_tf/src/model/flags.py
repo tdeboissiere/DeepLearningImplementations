@@ -32,7 +32,7 @@ def define_flags():
     # Datasets
     ##########
     tf.app.flags.DEFINE_string('data_format', "NCHW", "Tensorflow image data format.")
-    tf.app.flags.DEFINE_string('celebA_path', "/home/tmain/Desktop/DeepLearning/Data/CelebA/img_align_celeba", "Path to celebA images")
+    tf.app.flags.DEFINE_string('celebA_path', "../../data/raw/img_align_celeba", "Path to celebA images")
     tf.app.flags.DEFINE_integer('channels', 3, "Number of channels")
     tf.app.flags.DEFINE_float('central_fraction', 0.8, "Central crop as a fraction of total image")
     tf.app.flags.DEFINE_integer('img_size', 64, "Image size")

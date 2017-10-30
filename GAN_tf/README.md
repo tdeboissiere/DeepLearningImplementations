@@ -12,15 +12,15 @@ Pure tensorflow implementation of DCGAN
 
 ## python modules
 
-- tensorflow 1.0
-- h5py
-- matplotlib
-- opencv 3
-- numpy
-- tqdm
-- colorama
-- terminaltables
-- parmap
+- numpy==1.13.3
+- matplotlib==2.0.2
+- terminaltables==3.1.0
+- ipdb==0.10.3
+- tensorflow_gpu==1.3.0
+- colorama==0.3.9
+- tqdm==4.17.0
+- tensorflow==1.4.0rc1
+
 
 ## Data
 
