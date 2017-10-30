@@ -64,7 +64,7 @@ def train(model_name, **kwargs):
         loss = model.fit(X_train, Y_train,
                          batch_size=batch_size,
                          validation_data=(X_test, Y_test),
-                         nb_epoch=1)
+                         epochs=1)
 
         train_losses.append(loss.history["loss"])
         val_losses.append(loss.history["val_loss"])

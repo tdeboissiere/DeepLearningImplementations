@@ -5,6 +5,13 @@ This is a keras implementation of [Improving Stochastic Gradient Descent With Fe
 
 Check [this page](https://github.com/jayanthkoushik/sgd-feedback/blob/master/src/eve.py) for the authors' original implementation of Eve.
 
+## Requirements
+
+- numpy==1.13.3
+- matplotlib==2.0.2
+- Keras==2.0.8
+- Theano==0.9.0
+
 ## Usage
 
 You can either import this optimizer:

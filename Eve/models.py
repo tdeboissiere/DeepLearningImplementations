@@ -1,17 +1,17 @@
 from keras.models import Model
 from keras.layers.core import Activation, Flatten, Dense, Dropout
-from keras.layers.convolutional import Convolution2D
+from keras.layers.convolutional import Conv2D
 from keras.layers.pooling import MaxPooling2D
 from keras.layers import Input
 from keras.layers.normalization import BatchNormalization
 from keras.regularizers import l2
 
 
-def standard_conv_block(x, nb_filter, subsample=(1,1), pooling=False, bn=False, dropout_rate=None, weight_decay=0):
-    x = Convolution2D(nb_filter, 3, 3,
-                      subsample=subsample,
-                      border_mode="same",
-                      W_regularizer=l2(weight_decay))(x)
+def standard_conv_block(x, nb_filter, strides=(1,1), pooling=False, bn=False, dropout_rate=None, weight_decay=0):
+    x = Conv2D(nb_filter, (3, 3),
+               strides=strides,
+               padding="same",
+               kernel_regularizer=l2(weight_decay))(x)
     if bn:
         x = BatchNormalization(mode=2, axis=1)(x)
     x = Activation("relu")(x)
@@ -33,7 +33,7 @@ def FCN(img_dim, nb_classes, model_name="FCN"):
 
     x = Dense(nb_classes, activation="softmax")(x)
 
-    FCN = Model(input=[x_input], output=[x])
+    FCN = Model(inputs=[x_input], outputs=[x])
     FCN.name = model_name
 
     return FCN
@@ -53,7 +53,7 @@ def CNN(img_dim, nb_classes, model_name="CNN"):
     x = Dense(512, activation="relu")(x)
     x = Dense(nb_classes, activation="softmax")(x)
 
-    CNN = Model(input=[x_input], output=[x])
+    CNN = Model(inputs=[x_input], outputs=[x])
     CNN.name = model_name
 
     return CNN
@@ -83,7 +83,7 @@ def Big_CNN(img_dim, nb_classes, model_name="Big_CNN"):
     x = Dropout(0.5)(x)
     x = Dense(nb_classes, activation="softmax")(x)
 
-    Big_CNN = Model(input=[x_input], output=[x])
+    Big_CNN = Model(inputs=[x_input], outputs=[x])
     Big_CNN.name = model_name
 
     return Big_CNN
