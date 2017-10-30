@@ -40,7 +40,7 @@ def train(**kwargs):
     nb_epoch = kwargs["nb_epoch"]
     generator = kwargs["generator"]
     model_name = kwargs["model_name"]
-    image_dim_ordering = kwargs["image_dim_ordering"]
+    image_data_format = kwargs["image_data_format"]
     img_dim = kwargs["img_dim"]
     cont_dim = (kwargs["cont_dim"],)
     cat_dim = (kwargs["cat_dim"],)
@@ -58,9 +58,9 @@ def train(**kwargs):
 
     # Load and rescale data
     if dset == "celebA":
-        X_real_train = data_utils.load_celebA(img_dim, image_dim_ordering)
+        X_real_train = data_utils.load_celebA(img_dim, image_data_format)
     if dset == "mnist":
-        X_real_train, _, _, _ = data_utils.load_mnist(image_dim_ordering)
+        X_real_train, _, _, _ = data_utils.load_mnist(image_data_format)
     img_dim = X_real_train.shape[-3:]
 
     try:
@@ -162,7 +162,7 @@ def train(**kwargs):
                 # Save images for visualization
                 if batch_counter % (n_batch_per_epoch / 2) == 0:
                     data_utils.plot_generated_batch(X_real_batch, generator_model,
-                                                    batch_size, cat_dim, cont_dim, noise_dim, image_dim_ordering)
+                                                    batch_size, cat_dim, cont_dim, noise_dim, image_data_format)
 
                 if batch_counter >= n_batch_per_epoch:
                     break

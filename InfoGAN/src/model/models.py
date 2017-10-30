@@ -1,6 +1,6 @@
 from keras.models import Model
 from keras.layers.core import Flatten, Dense, Dropout, Activation, Lambda, Reshape
-from keras.layers.convolutional import Convolution2D, Deconvolution2D, ZeroPadding2D, UpSampling2D
+from keras.layers.convolutional import Conv2D, Deconv2D, ZeroPadding2D, UpSampling2D
 from keras.layers import Input, merge
 from keras.layers.advanced_activations import LeakyReLU
 from keras.layers.normalization import BatchNormalization
@@ -44,11 +44,11 @@ def generator_upsampling(cat_dim, cont_dim, noise_dim, img_dim, bn_mode, model_n
     gen_input = merge([cat_input, cont_input, noise_input], mode="concat")
 
     x = Dense(1024)(gen_input)
-    x = BatchNormalization(mode=1)(x)
+    x = BatchNormalization()(x)
     x = Activation("relu")(x)
 
     x = Dense(f * start_dim * start_dim)(x)
-    x = BatchNormalization(mode=1)(x)
+    x = BatchNormalization()(x)
     x = Activation("relu")(x)
 
     x = Reshape(reshape_shape)(x)
@@ -57,16 +57,16 @@ def generator_upsampling(cat_dim, cont_dim, noise_dim, img_dim, bn_mode, model_n
     for i in range(nb_upconv):
         x = UpSampling2D(size=(2, 2))(x)
         nb_filters = int(f / (2 ** (i + 1)))
-        x = Convolution2D(nb_filters, 3, 3, border_mode="same")(x)
-        x = BatchNormalization(mode=bn_mode, axis=bn_axis)(x)
+        x = Conv2D(nb_filters, (3, 3), padding="same")(x)
+        x = BatchNormalization(axis=bn_axis)(x)
         x = Activation("relu")(x)
-        # x = Convolution2D(nb_filters, 3, 3, border_mode="same")(x)
-        # x = BatchNormalization(mode=bn_mode, axis=bn_axis)(x)
+        # x = Conv2D(nb_filters, (3, 3), padding="same")(x)
+        # x = BatchNormalization(axis=bn_axis)(x)
         # x = Activation("relu")(x)
 
-    x = Convolution2D(output_channels, 3, 3, name="gen_convolution2d_final", border_mode="same", activation='tanh')(x)
+    x = Conv2D(output_channels, (3, 3), name="gen_Conv2D_final", padding="same", activation='tanh')(x)
 
-    generator_model = Model(input=[cat_input, cont_input, noise_input], output=[x], name=model_name)
+    generator_model = Model(inputs=[cat_input, cont_input, noise_input], outputs=[x], name=model_name)
 
     return generator_model
 
@@ -105,11 +105,11 @@ def generator_deconv(cat_dim, cont_dim, noise_dim, img_dim, bn_mode, batch_size,
     gen_input = merge([cat_input, cont_input, noise_input], mode="concat")
 
     x = Dense(1024)(gen_input)
-    x = BatchNormalization(mode=1)(x)
+    x = BatchNormalization()(x)
     x = Activation("relu")(x)
 
     x = Dense(f * start_dim * start_dim)(x)
-    x = BatchNormalization(mode=1)(x)
+    x = BatchNormalization()(x)
     x = Activation("relu")(x)
 
     x = Reshape(reshape_shape)(x)
@@ -119,17 +119,17 @@ def generator_deconv(cat_dim, cont_dim, noise_dim, img_dim, bn_mode, batch_size,
         nb_filters = int(f / (2 ** (i + 1)))
         s = start_dim * (2 ** (i + 1))
         o_shape = (batch_size, s, s, nb_filters)
-        x = Deconvolution2D(nb_filters, 3, 3, output_shape=o_shape, subsample=(2, 2), border_mode="same")(x)
+        x = Deconv2D(nb_filters, (3, 3), output_shape=o_shape, strides=(2, 2), padding="same")(x)
         x = BatchNormalization(mode=2, axis=bn_axis)(x)
         x = Activation("relu")(x)
 
     # Last block
     s = start_dim * (2 ** (nb_upconv))
     o_shape = (batch_size, s, s, output_channels)
-    x = Deconvolution2D(output_channels, 3, 3, output_shape=o_shape, subsample=(2, 2), border_mode="same")(x)
+    x = Deconv2D(output_channels, (3, 3), output_shape=o_shape, strides=(2, 2), padding="same")(x)
     x = Activation("tanh")(x)
 
-    generator_model = Model(input=[cat_input, cont_input, noise_input], output=[x], name=model_name)
+    generator_model = Model(inputs=[cat_input, cont_input, noise_input], outputs=[x], name=model_name)
 
     return generator_model
 
@@ -158,19 +158,19 @@ def DCGAN_discriminator(cat_dim, cont_dim, img_dim, bn_mode, model_name="DCGAN_d
         list_f = [64, 128, 256]
 
     # First conv
-    x = Convolution2D(64, 3, 3, subsample=(2, 2), name="disc_convolution2d_1", border_mode="same")(disc_input)
+    x = Conv2D(64, (3, 3), strides=(2, 2), name="disc_Conv2D_1", padding="same")(disc_input)
     x = LeakyReLU(0.2)(x)
 
     # Next convs
     for i, f in enumerate(list_f):
-        name = "disc_convolution2d_%s" % (i + 2)
-        x = Convolution2D(f, 3, 3, subsample=(2, 2), name=name, border_mode="same")(x)
-        x = BatchNormalization(mode=bn_mode, axis=bn_axis)(x)
+        name = "disc_Conv2D_%s" % (i + 2)
+        x = Conv2D(f, (3, 3), strides=(2, 2), name=name, padding="same")(x)
+        x = BatchNormalization(axis=bn_axis)(x)
         x = LeakyReLU(0.2)(x)
 
     x = Flatten()(x)
     x = Dense(1024)(x)
-    x = BatchNormalization(mode=1)(x)
+    x = BatchNormalization()(x)
     x = LeakyReLU(0.2)(x)
 
     def linmax(x):
@@ -181,7 +181,7 @@ def DCGAN_discriminator(cat_dim, cont_dim, img_dim, bn_mode, model_name="DCGAN_d
 
     # More processing for auxiliary Q
     x_Q = Dense(128)(x)
-    x_Q = BatchNormalization(mode=1)(x_Q)
+    x_Q = BatchNormalization()(x_Q)
     x_Q = LeakyReLU(0.2)(x_Q)
     x_Q_Y = Dense(cat_dim[0], activation='softmax', name="Q_cat_out")(x_Q)
     x_Q_C_mean = Dense(cont_dim[0], activation='linear', name="dense_Q_cont_mean")(x_Q)
@@ -205,7 +205,7 @@ def DCGAN_discriminator(cat_dim, cont_dim, img_dim, bn_mode, model_name="DCGAN_d
     num_kernels = 300
     dim_per_kernel = 5
 
-    M = Dense(num_kernels * dim_per_kernel, bias=False, activation=None)
+    M = Dense(num_kernels * dim_per_kernel, use_bias=False, activation=None)
     MBD = Lambda(minb_disc, output_shape=lambda_output)
 
     if use_mbd:
@@ -216,7 +216,7 @@ def DCGAN_discriminator(cat_dim, cont_dim, img_dim, bn_mode, model_name="DCGAN_d
 
     # Create discriminator model
     x_disc = Dense(2, activation='softmax', name="disc_out")(x)
-    discriminator_model = Model(input=[disc_input], output=[x_disc, x_Q_Y, x_Q_C], name=model_name)
+    discriminator_model = Model(inputs=[disc_input], outputs=[x_disc, x_Q_Y, x_Q_C], name=model_name)
 
     return discriminator_model
 
@@ -230,8 +230,8 @@ def DCGAN(generator, discriminator_model, cat_dim, cont_dim, noise_dim):
     generated_image = generator([cat_input, cont_input, noise_input])
     x_disc, x_Q_Y, x_Q_C = discriminator_model(generated_image)
 
-    DCGAN = Model(input=[cat_input, cont_input, noise_input],
-                  output=[x_disc, x_Q_Y, x_Q_C],
+    DCGAN = Model(inputs=[cat_input, cont_input, noise_input],
+                  outputs=[x_disc, x_Q_Y, x_Q_C],
                   name="DCGAN")
 
     return DCGAN
@@ -241,21 +241,23 @@ def load(model_name, cat_dim, cont_dim, noise_dim, img_dim, bn_mode, batch_size,
 
     if model_name == "generator_upsampling":
         model = generator_upsampling(cat_dim, cont_dim, noise_dim, img_dim, bn_mode, model_name=model_name, dset=dset)
-        print model.summary()
-        from keras.utils.visualize_util import plot
-        plot(model, to_file='../../figures/%s.png' % model_name, show_shapes=True, show_layer_names=True)
+        model.summary()
+        from keras.utils import plot_model
+        plot_model(model, to_file='../../figures/%s.png' % model_name, show_shapes=True, show_layer_names=True)
         return model
     if model_name == "generator_deconv":
-        model = generator_deconv(cat_dim, cont_dim, noise_dim, img_dim, bn_mode, batch_size, model_name=model_name, dset=dset)
-        print model.summary()
-        from keras.utils.visualize_util import plot
-        plot(model, to_file='../../figures/%s.png' % model_name, show_shapes=True, show_layer_names=True)
+        model = generator_deconv(cat_dim, cont_dim, noise_dim, img_dim, bn_mode,
+                                 batch_size, model_name=model_name, dset=dset)
+        model.summary()
+        from keras.utils import plot_model
+        plot_model(model, to_file='../../figures/%s.png' % model_name, show_shapes=True, show_layer_names=True)
         return model
     if model_name == "DCGAN_discriminator":
-        model = DCGAN_discriminator(cat_dim, cont_dim, img_dim, bn_mode, model_name=model_name, dset=dset, use_mbd=use_mbd)
+        model = DCGAN_discriminator(cat_dim, cont_dim, img_dim, bn_mode,
+                                    model_name=model_name, dset=dset, use_mbd=use_mbd)
         model.summary()
-        from keras.utils.visualize_util import plot
-        plot(model, to_file='../../figures/%s.png' % model_name, show_shapes=True, show_layer_names=True)
+        from keras.utils import plot_model
+        plot_model(model, to_file='../../figures/%s.png' % model_name, show_shapes=True, show_layer_names=True)
         return model
 
 

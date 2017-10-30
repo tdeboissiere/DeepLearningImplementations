@@ -14,7 +14,7 @@ def eval(**kwargs):
     batch_size = kwargs["batch_size"]
     generator = kwargs["generator"]
     model_name = kwargs["model_name"]
-    image_dim_ordering = kwargs["image_dim_ordering"]
+    image_data_format = kwargs["image_data_format"]
     img_dim = kwargs["img_dim"]
     cont_dim = (kwargs["cont_dim"],)
     cat_dim = (kwargs["cat_dim"],)
@@ -29,9 +29,9 @@ def eval(**kwargs):
 
     # Load and rescale data
     if dset == "RGZ":
-        X_real_train = data_utils.load_RGZ(img_dim, image_dim_ordering)
+        X_real_train = data_utils.load_RGZ(img_dim, image_data_format)
     if dset == "mnist":
-        X_real_train, _, _, _ = data_utils.load_mnist(image_dim_ordering)
+        X_real_train, _, _, _ = data_utils.load_mnist(image_data_format)
     img_dim = X_real_train.shape[-3:]
 
     # Load generator model
@@ -60,7 +60,7 @@ def eval(**kwargs):
         X_gen = generator_model.predict([X_cat, X_cont, X_noise])
         X_gen = data_utils.inverse_normalization(X_gen)
 
-        if image_dim_ordering == "th":
+        if image_data_format == "channels_first":
             X_gen = X_gen.transpose(0,2,3,1)
 
         X_gen = [X_gen[i] for i in range(len(X_gen))]
@@ -97,7 +97,7 @@ def eval(**kwargs):
 
         X_gen = generator_model.predict([X_cat, X_cont, X_noise])
         X_gen = data_utils.inverse_normalization(X_gen)
-        if image_dim_ordering == "th":
+        if image_data_format == "channels_first":
             X_gen = X_gen.transpose(0,2,3,1)
         X_gen = [X_gen[i] for i in range(len(X_gen))]
         X_plot.append(np.concatenate(X_gen, axis=1))

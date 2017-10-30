@@ -55,11 +55,11 @@ if __name__ == "__main__":
 
     # manually set dim ordering otherwise it is not changed
     if args.backend == "theano":
-        image_dim_ordering = "th"
-        K.set_image_dim_ordering(image_dim_ordering)
+        image_data_format = "channels_first"
+        K.set_image_data_format(image_data_format)
     elif args.backend == "tensorflow":
-        image_dim_ordering = "tf"
-        K.set_image_dim_ordering(image_dim_ordering)
+        image_data_format = "channels_last"
+        K.set_image_data_format(image_data_format)
 
     import train
     import eval
@@ -74,7 +74,7 @@ if __name__ == "__main__":
                 "epoch": args.epoch,
                 "nb_classes": args.nb_classes,
                 "do_plot": args.do_plot,
-                "image_dim_ordering": image_dim_ordering,
+                "image_data_format": image_data_format,
                 "bn_mode": args.bn_mode,
                 "img_dim": args.img_dim,
                 "noise_dim": args.noise_dim,

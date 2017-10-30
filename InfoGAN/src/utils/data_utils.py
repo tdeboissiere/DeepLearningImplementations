@@ -16,19 +16,19 @@ def inverse_normalization(X):
     return (X + 1.) / 2.
 
 
-def load_mnist(image_dim_ordering):
+def load_mnist(image_data_format):
 
     (X_train, y_train), (X_test, y_test) = mnist.load_data()
 
-    if image_dim_ordering == 'th':
+    if image_data_format == "channels_first":
         X_train = X_train.reshape(X_train.shape[0], 1, 28, 28)
         X_test = X_test.reshape(X_test.shape[0], 1, 28, 28)
     else:
         X_train = X_train.reshape(X_train.shape[0], 28, 28, 1)
         X_test = X_test.reshape(X_test.shape[0], 28, 28, 1)
 
-    X_train = X_train.astype('float32')
-    X_test = X_test.astype('float32')
+    X_train = X_train.astype("float32")
+    X_test = X_test.astype("float32")
 
     X_train = normalization(X_train)
     X_test = normalization(X_test)
@@ -38,19 +38,19 @@ def load_mnist(image_dim_ordering):
     Y_train = np_utils.to_categorical(y_train, nb_classes)
     Y_test = np_utils.to_categorical(y_test, nb_classes)
 
-    print X_train.shape, X_test.shape, Y_train.shape, Y_test.shape
+    print(X_train.shape, X_test.shape, Y_train.shape, Y_test.shape)
 
     return X_train, Y_train, X_test, Y_test
 
 
-def load_celebA(img_dim, image_dim_ordering):
+def load_celebA(img_dim, image_data_format):
 
     with h5py.File("../../data/processed/CelebA_%s_data.h5" % img_dim, "r") as hf:
 
         X_real_train = hf["data"][:].astype(np.float32)
         X_real_train = normalization(X_real_train)
 
-        if image_dim_ordering == "tf":
+        if image_data_format == "channels_last":
             X_real_train = X_real_train.transpose(0, 2, 3, 1)
 
         return X_real_train
@@ -70,7 +70,7 @@ def sample_noise(noise_scale, batch_size, noise_dim):
 
 def sample_cat(batch_size, cat_dim):
 
-    y = np.zeros((batch_size, cat_dim[0]), dtype='float32')
+    y = np.zeros((batch_size, cat_dim[0]), dtype="float32")
     random_y = np.random.randint(0, cat_dim[0], size=batch_size)
     y[np.arange(batch_size), random_y] = 1
 
@@ -111,7 +111,7 @@ def get_disc_batch(X_real_batch, generator_model, batch_counter, batch_size, cat
             if p > 0:
                 y_disc[:, [0, 1]] = y_disc[:, [1, 0]]
 
-    # Repeat y_cont to accomodate for keras' loss function conventions
+    # Repeat y_cont to accomodate for keras" loss function conventions
     y_cont = np.expand_dims(y_cont, 1)
     y_cont = np.repeat(y_cont, 2, axis=1)
 
@@ -127,14 +127,14 @@ def get_gen_batch(batch_size, cat_dim, cont_dim, noise_dim, noise_scale=0.5):
     y_cat = sample_cat(batch_size, cat_dim)
     y_cont = sample_noise(noise_scale, batch_size, cont_dim)
 
-    # Repeat y_cont to accomodate for keras' loss function conventions
+    # Repeat y_cont to accomodate for keras" loss function conventions
     y_cont_target = np.expand_dims(y_cont, 1)
     y_cont_target = np.repeat(y_cont_target, 2, axis=1)
 
     return X_gen, y_gen, y_cat, y_cont, y_cont_target
 
 
-def plot_generated_batch(X_real, generator_model, batch_size, cat_dim, cont_dim, noise_dim, image_dim_ordering, noise_scale=0.5):
+def plot_generated_batch(X_real, generator_model, batch_size, cat_dim, cont_dim, noise_dim, image_data_format, noise_scale=0.5):
 
     # Generate images
     y_cat = sample_cat(batch_size, cat_dim)
@@ -149,7 +149,7 @@ def plot_generated_batch(X_real, generator_model, batch_size, cat_dim, cont_dim,
     Xg = X_gen[:8]
     Xr = X_real[:8]
 
-    if image_dim_ordering == "tf":
+    if image_data_format == "channels_last":
         X = np.concatenate((Xg, Xr), axis=0)
         list_rows = []
         for i in range(int(X.shape[0] / 4)):
@@ -158,7 +158,7 @@ def plot_generated_batch(X_real, generator_model, batch_size, cat_dim, cont_dim,
 
         Xr = np.concatenate(list_rows, axis=0)
 
-    if image_dim_ordering == "th":
+    if image_data_format == "channels_first":
         X = np.concatenate((Xg, Xr), axis=0)
         list_rows = []
         for i in range(int(X.shape[0] / 4)):
