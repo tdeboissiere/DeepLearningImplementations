@@ -83,7 +83,7 @@ def build_HDF5(size):
         for chunk_idx in tqdm(arr_chunks):
 
             list_img_path = arr_img[chunk_idx].tolist()
-            output = parmap.map(format_image, list_img_path, size, parallel=True)
+            output = parmap.map(format_image, list_img_path, size, pm_parallel=True)
 
             arr_img_color = np.concatenate(output, axis=0)
 

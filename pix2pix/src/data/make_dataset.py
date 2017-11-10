@@ -76,7 +76,7 @@ def build_HDF5(jpeg_dir, nb_channels, size=256):
             for chunk_idx in tqdm(arr_chunks):
 
                 list_img_path = list_img[chunk_idx].tolist()
-                output = parmap.map(format_image, list_img_path, size, nb_channels, parallel=False)
+                output = parmap.map(format_image, list_img_path, size, nb_channels, pm_parallel=False)
 
                 arr_img_full = np.concatenate([o[0] for o in output], axis=0)
                 arr_img_sketch = np.concatenate([o[1] for o in output], axis=0)
