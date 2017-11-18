@@ -12,7 +12,7 @@ def residual_block(x, nb_filter, block_idx, bn=True, weight_decay=0):
     # 1st conv
     name = "block%s_conv2D%s" % (block_idx, "a")
     W_reg = l2(weight_decay)
-    r = Conv2D(nb_filter, (3, 3), padding="same", kernel_regularizer=W_reg, name=name)(x)
+    r = Conv2D(nb_filter, (3, 3), padding="same", kernel_regularizer=W_reg, name=name,data_format='channels_first')(x)
     if bn:
         r = BatchNormalization(axis=1, name="block%s_bn%s" % (block_idx, "a"))(r)
     r = Activation("relu", name="block%s_relu%s" % (block_idx, "a"))(r)
@@ -20,7 +20,7 @@ def residual_block(x, nb_filter, block_idx, bn=True, weight_decay=0):
     # 2nd conv
     name = "block%s_conv2D%s" % (block_idx, "b")
     W_reg = l2(weight_decay)
-    r = Conv2D(nb_filter, (3, 3), padding="same", kernel_regularizer=W_reg, name=name)(r)
+    r = Conv2D(nb_filter, (3, 3), padding="same", kernel_regularizer=W_reg, name=name,data_format='channels_first')(r)
     if bn:
         r = BatchNormalization(axis=1, name="block%s_bn%s" % (block_idx, "b"))(r)
     r = Activation("relu", name="block%s_relu%s" % (block_idx, "b"))(r)
@@ -37,11 +37,11 @@ def convolutional_block(x, block_idx, nb_filter, nb_conv, strides):
     for i in range(nb_conv):
         name = "block%s_conv2D_%s" % (block_idx, i)
         if i < nb_conv - 1:
-            x = Conv2D(nb_filter, (3, 3), name=name, padding="same")(x)
+            x = Conv2D(nb_filter, (3, 3), name=name, padding="same",data_format='channels_first')(x)
             x = BatchNormalization(axis=1)(x)
             x = Activation("relu")(x)
         else:
-            x = Conv2D(nb_filter, (3, 3), name=name, strides=strides, padding="same")(x)
+            x = Conv2D(nb_filter, (3, 3), name=name, strides=strides, padding="same",data_format='channels_first')(x)
             x = BatchNormalization(axis=1)(x)
             x = Activation("relu")(x)
 
@@ -56,7 +56,7 @@ def colorful(nb_classes, img_dim, batch_size, model_name="colorful"):
 
     # First conv block
     x_input = Input(shape=img_dim, name="input")
-    x = Conv2D(64, (3, 3), name="block%s_conv2d_0" % block_idx, padding="same")(x_input)
+    x = Conv2D(64, (3, 3), name="block%s_conv2d_0" % block_idx, padding="same",data_format='channels_first')(x_input)
     x = Activation("relu", name="block%s_relu" % block_idx)(x)
     block_idx += 1
 
@@ -66,7 +66,7 @@ def colorful(nb_classes, img_dim, batch_size, model_name="colorful"):
         block_idx += 1
 
     # Final conv
-    x = Conv2D(nb_classes, (1, 1), name="final_conv2D", padding="same")(x)
+    x = Conv2D(nb_classes, (1, 1), name="final_conv2D", padding="same",data_format='channels_first')(x)
 
     # Reshape Softmax
     def output_shape(input_shape):
