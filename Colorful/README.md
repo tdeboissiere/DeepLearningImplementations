@@ -8,15 +8,17 @@ The technique is applied on the [CelebA dataset](http://mmlab.ie.cuhk.edu.hk/pro
 
 ## python modules
 
-- keras, theano backend
-- h5py
-- matplotlib
-- scikit-learn
-- scikit-image
-- opencv 3
-- numpy
-- scipy
-- tqdm
+- scikit-learn==0.19.1
+- scikit-image==0.13.1
+- tqdm==4.17.0
+- opencv_python==3.3.0.10
+- numpy==1.13.3
+- matplotlib==2.0.2
+- Keras==2.0.8
+- Theano==0.9.0 or Tensorflow==1.3.0
+- h5py==2.7.0
+- parmap==1.5.1
+- scipy==1.0.0
 
 ## System requirements
 
