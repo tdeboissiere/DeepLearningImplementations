@@ -190,7 +190,7 @@ def generator_deconv(noise_dim, img_dim, bn_mode, batch_size, model_name="genera
                      output_shape=o_shape, strides=(2, 2),
                      padding="same", use_bias=False,
                      kernel_initializer=RandomNormal(stddev=0.02))(x)
-        x = BatchNormalization(mode=2, axis=-1)(x)
+        x = BatchNormalization(axis=-1)(x)
         x = Activation("relu")(x)
 
     # Last block
