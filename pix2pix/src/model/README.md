@@ -19,8 +19,8 @@ optional arguments:
     --batch_size BATCH_SIZE
                         Batch size
     --n_batch_per_epoch N_BATCH_PER_EPOCH
-                        Number of training epochs
-    --nb_epoch NB_EPOCH   Number of batches per epoch
+                        Number of batches per epoch
+    --nb_epoch NB_EPOCH   Number of training epochs
     --epoch EPOCH         Epoch at which weights were saved for evaluation
     --nb_classes NB_CLASSES
                         Number of classes
