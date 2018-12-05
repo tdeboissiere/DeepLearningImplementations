@@ -39,7 +39,8 @@ def train(**kwargs):
     label_flipping = kwargs["label_flipping"]
     dset = kwargs["dset"]
     use_mbd = kwargs["use_mbd"]
-
+    do_plot = kwargs["do_plot"]
+    
     epoch_size = n_batch_per_epoch * batch_size
 
     # Setup environment (logging directory etc)
@@ -65,14 +66,16 @@ def train(**kwargs):
                                       nb_patch,
                                       bn_mode,
                                       use_mbd,
-                                      batch_size)
+                                      batch_size,
+                                      do_plot)
         # Load discriminator model
         discriminator_model = models.load("DCGAN_discriminator",
                                           img_dim_disc,
                                           nb_patch,
                                           bn_mode,
                                           use_mbd,
-                                          batch_size)
+                                          batch_size,
+                                          do_plot)
 
         generator_model.compile(loss='mae', optimizer=opt_discriminator)
         discriminator_model.trainable = False
