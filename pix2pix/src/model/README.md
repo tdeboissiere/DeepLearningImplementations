@@ -4,9 +4,8 @@
 
 `python main.py`
 
-
 positional arguments:
-    
+
     patch_size            Patch size for D
 
 optional arguments:
@@ -14,26 +13,26 @@ optional arguments:
     -h, --help            show this help message and exit
     --backend BACKEND     theano or tensorflow
     --generator GENERATOR
-                        upsampling or deconv
+                           upsampling or deconv
     --dset DSET           facades
     --batch_size BATCH_SIZE
-                        Batch size
+                           Batch size
     --n_batch_per_epoch N_BATCH_PER_EPOCH
-                        Number of batches per epoch
+                          Number of batches per epoch
     --nb_epoch NB_EPOCH   Number of training epochs
     --epoch EPOCH         Epoch at which weights were saved for evaluation
     --nb_classes NB_CLASSES
-                        Number of classes
+                          Number of classes
     --do_plot             Debugging plot
     --bn_mode BN_MODE     Batch norm mode
     --img_dim IMG_DIM     Image width == height
     --use_mbd             Whether to use minibatch discrimination
     --use_label_smoothing
-                        Whether to smooth the positive labels when training D
+                          Whether to smooth the positive labels when training D
     --label_flipping LABEL_FLIPPING
-                        Probability (0 to 1.) to flip the labels when training
-                        D
-
+                          Probability (0 to 1.) to flip the labels when training D
+    --logging_dir LOGGING_DIR
+                          Path to logging directory
 
 **Example:**
 

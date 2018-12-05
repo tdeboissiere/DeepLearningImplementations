@@ -40,11 +40,12 @@ def train(**kwargs):
     dset = kwargs["dset"]
     use_mbd = kwargs["use_mbd"]
     do_plot = kwargs["do_plot"]
+    logging_dir = kwargs["logging_dir"]
     
     epoch_size = n_batch_per_epoch * batch_size
 
     # Setup environment (logging directory etc)
-    general_utils.setup_logging(model_name)
+    general_utils.setup_logging(model_name, logging_dir=logging_dir)
 
     # Load and rescale data
     X_full_train, X_sketch_train, X_full_val, X_sketch_val = data_utils.load_data(dset, image_data_format)
