@@ -30,22 +30,19 @@ def normalization(X):
 
 
 def inverse_normalization(X):
-    result = (X + 1.) / 2.
-    # Deal with the case where float multiplication gives an out of range result (eg 1.000001)
-    # Deal with the case where float multiplication gives an out of range result (eg 1.000001)
-    out_of_bounds_high = (result > 1.)
-    out_of_bounds_low = (result < -1.)
+    # normalises back to ints 0-255, as more reliable than floats 0-1
+    # (np.isclose is unpredictable with values very close to zero)
+    result = ((X + 1.) * 127.5).astype('uint8')
+    # Still check for out of bounds, just in case
+    out_of_bounds_high = (result > 255)
+    out_of_bounds_low = (result < 0)
     out_of_bounds = out_of_bounds_high + out_of_bounds_low
     
-    if not all(np.isclose(result[out_of_bounds_high],1)):
-        raise RuntimeError("Inverse normalization gave a value greater than 1")
-    else:
-        result[out_of_bounds_high] = 1.
+    if out_of_bounds_high.any():
+        raise RuntimeError("Inverse normalization gave a value greater than 255")
         
-    if not all(np.isclose(result[out_of_bounds_low],0)):
-        raise RuntimeError("Inverse normalization gave a value lower than 0")
-    else:
-        result[out_of_bounds_low] = 1.
+    if out_of_bounds_low.any():
+        raise RuntimeError("Inverse normalization gave a value lower than 1")
         
     return result
 
@@ -165,8 +162,8 @@ def plot_generated_batch(X_full, X_sketch, generator_model, batch_size, image_da
 
     X_sketch = inverse_normalization(X_sketch)
     X_full = inverse_normalization(X_full)
-    X_gen = inverse_normalization(X_gen)
-   
+    X_gen = inverse_normalization(X_gen) 
+    
     Xs = X_sketch[:8]
     Xg = X_gen[:8]
     Xr = X_full[:8]
