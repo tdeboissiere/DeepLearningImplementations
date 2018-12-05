@@ -7,13 +7,45 @@ import matplotlib.pylab as plt
 
 
 def normalization(X):
-
-    return X / 127.5 - 1
+    result = X / 127.5 - 1
+    
+    # Deal with the case where float multiplication gives an out of range result (eg 1.000001)
+    out_of_bounds_high = (result > 1.)
+    out_of_bounds_low = (result < -1.)
+    out_of_bounds = out_of_bounds_high + out_of_bounds_low
+    
+    if not all(np.isclose(result[out_of_bounds_high],1)):
+        raise RuntimeError("Normalization gave a value greater than 1")
+    else:
+        result[out_of_bounds_high] = 1.
+        
+    if not all(np.isclose(result[out_of_bounds_low],-1)):
+        raise RuntimeError("Normalization gave a value lower than -1")
+    else:
+        result[out_of_bounds_low] = 1.
+    
+    return result
 
 
 def inverse_normalization(X):
-
-    return (X + 1.) / 2.
+    result = (X + 1.) / 2.
+    # Deal with the case where float multiplication gives an out of range result (eg 1.000001)
+    # Deal with the case where float multiplication gives an out of range result (eg 1.000001)
+    out_of_bounds_high = (result > 1.)
+    out_of_bounds_low = (result < -1.)
+    out_of_bounds = out_of_bounds_high + out_of_bounds_low
+    
+    if not all(np.isclose(result[out_of_bounds_high],1)):
+        raise RuntimeError("Inverse normalization gave a value greater than 1")
+    else:
+        result[out_of_bounds_high] = 1.
+        
+    if not all(np.isclose(result[out_of_bounds_low],0)):
+        raise RuntimeError("Inverse normalization gave a value lower than 0")
+    else:
+        result[out_of_bounds_low] = 1.
+        
+    return result
 
 
 def get_nb_patch(img_dim, patch_size, image_data_format):
@@ -132,11 +164,11 @@ def plot_generated_batch(X_full, X_sketch, generator_model, batch_size, image_da
     X_sketch = inverse_normalization(X_sketch)
     X_full = inverse_normalization(X_full)
     X_gen = inverse_normalization(X_gen)
-
+   
     Xs = X_sketch[:8]
     Xg = X_gen[:8]
     Xr = X_full[:8]
-
+    
     if image_data_format == "channels_last":
         X = np.concatenate((Xs, Xg, Xr), axis=0)
         list_rows = []
