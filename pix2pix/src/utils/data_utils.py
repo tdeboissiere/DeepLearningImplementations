@@ -3,6 +3,8 @@ from keras.utils import np_utils
 import numpy as np
 import h5py
 
+import os
+
 import matplotlib.pylab as plt
 
 
@@ -156,7 +158,7 @@ def get_disc_batch(X_full_batch, X_sketch_batch, generator_model, batch_counter,
     return X_disc, y_disc
 
 
-def plot_generated_batch(X_full, X_sketch, generator_model, batch_size, image_data_format, suffix):
+def plot_generated_batch(X_full, X_sketch, generator_model, batch_size, image_data_format, suffix, logging_dir):
 
     # Generate images
     X_gen = generator_model.predict(X_sketch)
@@ -193,6 +195,6 @@ def plot_generated_batch(X_full, X_sketch, generator_model, batch_size, image_da
     else:
         plt.imshow(Xr)
     plt.axis("off")
-    plt.savefig("../../figures/current_batch_%s.png" % suffix)
+    plt.savefig(os.path.join(logging_dir, "figures/current_batch_%s.png" % suffix))
     plt.clf()
     plt.close()
