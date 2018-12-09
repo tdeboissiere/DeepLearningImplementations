@@ -3,17 +3,48 @@ from keras.utils import np_utils
 import numpy as np
 import h5py
 
+import os
+
 import matplotlib.pylab as plt
 
 
 def normalization(X):
-
-    return X / 127.5 - 1
+    result = X / 127.5 - 1
+    
+    # Deal with the case where float multiplication gives an out of range result (eg 1.000001)
+    out_of_bounds_high = (result > 1.)
+    out_of_bounds_low = (result < -1.)
+    out_of_bounds = out_of_bounds_high + out_of_bounds_low
+    
+    if not all(np.isclose(result[out_of_bounds_high],1)):
+        raise RuntimeError("Normalization gave a value greater than 1")
+    else:
+        result[out_of_bounds_high] = 1.
+        
+    if not all(np.isclose(result[out_of_bounds_low],-1)):
+        raise RuntimeError("Normalization gave a value lower than -1")
+    else:
+        result[out_of_bounds_low] = 1.
+    
+    return result
 
 
 def inverse_normalization(X):
-
-    return (X + 1.) / 2.
+    # normalises back to ints 0-255, as more reliable than floats 0-1
+    # (np.isclose is unpredictable with values very close to zero)
+    result = ((X + 1.) * 127.5).astype('uint8')
+    # Still check for out of bounds, just in case
+    out_of_bounds_high = (result > 255)
+    out_of_bounds_low = (result < 0)
+    out_of_bounds = out_of_bounds_high + out_of_bounds_low
+    
+    if out_of_bounds_high.any():
+        raise RuntimeError("Inverse normalization gave a value greater than 255")
+        
+    if out_of_bounds_low.any():
+        raise RuntimeError("Inverse normalization gave a value lower than 1")
+        
+    return result
 
 
 def get_nb_patch(img_dim, patch_size, image_data_format):
@@ -124,19 +155,19 @@ def get_disc_batch(X_full_batch, X_sketch_batch, generator_model, batch_counter,
     return X_disc, y_disc
 
 
-def plot_generated_batch(X_full, X_sketch, generator_model, batch_size, image_data_format, suffix):
+def plot_generated_batch(X_full, X_sketch, generator_model, batch_size, image_data_format, suffix, logging_dir):
 
     # Generate images
     X_gen = generator_model.predict(X_sketch)
 
     X_sketch = inverse_normalization(X_sketch)
     X_full = inverse_normalization(X_full)
-    X_gen = inverse_normalization(X_gen)
-
+    X_gen = inverse_normalization(X_gen) 
+    
     Xs = X_sketch[:8]
     Xg = X_gen[:8]
     Xr = X_full[:8]
-
+    
     if image_data_format == "channels_last":
         X = np.concatenate((Xs, Xg, Xr), axis=0)
         list_rows = []
@@ -161,6 +192,6 @@ def plot_generated_batch(X_full, X_sketch, generator_model, batch_size, image_da
     else:
         plt.imshow(Xr)
     plt.axis("off")
-    plt.savefig("../../figures/current_batch_%s.png" % suffix)
+    plt.savefig(os.path.join(logging_dir, "figures/current_batch_%s.png" % suffix))
     plt.clf()
     plt.close()

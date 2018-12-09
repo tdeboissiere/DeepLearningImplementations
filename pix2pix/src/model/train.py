@@ -39,11 +39,14 @@ def train(**kwargs):
     label_flipping = kwargs["label_flipping"]
     dset = kwargs["dset"]
     use_mbd = kwargs["use_mbd"]
-
+    do_plot = kwargs["do_plot"]
+    logging_dir = kwargs["logging_dir"]
+    save_every_epoch = kwargs["epoch"]
+    
     epoch_size = n_batch_per_epoch * batch_size
 
     # Setup environment (logging directory etc)
-    general_utils.setup_logging(model_name)
+    general_utils.setup_logging(model_name, logging_dir=logging_dir)
 
     # Load and rescale data
     X_full_train, X_sketch_train, X_full_val, X_sketch_val = data_utils.load_data(dset, image_data_format)
@@ -65,14 +68,16 @@ def train(**kwargs):
                                       nb_patch,
                                       bn_mode,
                                       use_mbd,
-                                      batch_size)
+                                      batch_size,
+                                      do_plot)
         # Load discriminator model
         discriminator_model = models.load("DCGAN_discriminator",
                                           img_dim_disc,
                                           nb_patch,
                                           bn_mode,
                                           use_mbd,
-                                          batch_size)
+                                          batch_size,
+                                          do_plot)
 
         generator_model.compile(loss='mae', optimizer=opt_discriminator)
         discriminator_model.trainable = False
@@ -137,10 +142,12 @@ def train(**kwargs):
                 if batch_counter % (n_batch_per_epoch / 2) == 0:
                     # Get new images from validation
                     data_utils.plot_generated_batch(X_full_batch, X_sketch_batch, generator_model,
-                                                    batch_size, image_data_format, "training")
+                                                    batch_size, image_data_format, "training",
+                                                    logging_dir)
                     X_full_batch, X_sketch_batch = next(data_utils.gen_batch(X_full_val, X_sketch_val, batch_size))
                     data_utils.plot_generated_batch(X_full_batch, X_sketch_batch, generator_model,
-                                                    batch_size, image_data_format, "validation")
+                                                    batch_size, image_data_format, "validation",
+                                                    logging_dir)
 
                 if batch_counter >= n_batch_per_epoch:
                     break
@@ -148,14 +155,14 @@ def train(**kwargs):
             print("")
             print('Epoch %s/%s, Time: %s' % (e + 1, nb_epoch, time.time() - start))
 
-            if e % 5 == 0:
-                gen_weights_path = os.path.join('../../models/%s/gen_weights_epoch%s.h5' % (model_name, e))
+            if e % save_every_epoch == 0:
+                gen_weights_path = os.path.join(logging_dir, 'models/%s/gen_weights_epoch%s.h5' % (model_name, e))
                 generator_model.save_weights(gen_weights_path, overwrite=True)
 
-                disc_weights_path = os.path.join('../../models/%s/disc_weights_epoch%s.h5' % (model_name, e))
+                disc_weights_path = os.path.join(logging_dir, 'models/%s/disc_weights_epoch%s.h5' % (model_name, e))
                 discriminator_model.save_weights(disc_weights_path, overwrite=True)
 
-                DCGAN_weights_path = os.path.join('../../models/%s/DCGAN_weights_epoch%s.h5' % (model_name, e))
+                DCGAN_weights_path = os.path.join(logging_dir, 'models/%s/DCGAN_weights_epoch%s.h5' % (model_name, e))
                 DCGAN_model.save_weights(DCGAN_weights_path, overwrite=True)
 
     except KeyboardInterrupt:

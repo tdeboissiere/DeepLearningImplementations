@@ -40,11 +40,13 @@ def format_image(img_path, size, nb_channels):
     return img_full, img_sketch
 
 
-def build_HDF5(jpeg_dir, nb_channels, size=256):
+def build_HDF5(jpeg_dir, nb_channels, data_dir, size=256):
     """
     Gather the data in a single HDF5 file.
     """
 
+    data_dir = os.path.join(data_dir, 'processed')
+    
     # Put train data in HDF5
     file_name = os.path.basename(jpeg_dir.rstrip("/"))
     hdf5_file = os.path.join(data_dir, "%s_data.h5" % file_name)
@@ -123,11 +125,13 @@ if __name__ == '__main__':
                         help='Desired Width == Height')
     parser.add_argument('--do_plot', action="store_true",
                         help='Plot the images to make sure the data processing went OK')
-    args = parser.parse_args()
-
-    data_dir = "../../data/processed"
-
-    build_HDF5(args.jpeg_dir, args.nb_channels, size=args.img_size)
-
+    parser.add_argument('--data_dir', default='../../data', type=str, help='Data directory')
+    args = parser.parse_args()  
+    
+    build_HDF5(args.jpeg_dir,
+               args.nb_channels,
+               args.data_dir,
+               size=args.img_size)
+    
     if args.do_plot:
         check_HDF5(args.jpeg_dir, args.nb_channels)

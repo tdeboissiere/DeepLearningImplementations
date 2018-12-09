@@ -16,8 +16,8 @@ if __name__ == "__main__":
     parser.add_argument('--generator', type=str, default="upsampling", help="upsampling or deconv")
     parser.add_argument('--dset', type=str, default="facades", help="facades")
     parser.add_argument('--batch_size', default=4, type=int, help='Batch size')
-    parser.add_argument('--n_batch_per_epoch', default=100, type=int, help="Number of training epochs")
-    parser.add_argument('--nb_epoch', default=400, type=int, help="Number of batches per epoch")
+    parser.add_argument('--n_batch_per_epoch', default=100, type=int, help="Number of batches per epoch")
+    parser.add_argument('--nb_epoch', default=400, type=int, help="Number of training epochs")
     parser.add_argument('--epoch', default=10, type=int, help="Epoch at which weights were saved for evaluation")
     parser.add_argument('--nb_classes', default=2, type=int, help="Number of classes")
     parser.add_argument('--do_plot', action="store_true", help="Debugging plot")
@@ -26,6 +26,7 @@ if __name__ == "__main__":
     parser.add_argument('--use_mbd', action="store_true", help="Whether to use minibatch discrimination")
     parser.add_argument('--use_label_smoothing', action="store_true", help="Whether to smooth the positive labels when training D")
     parser.add_argument('--label_flipping', default=0, type=float, help="Probability (0 to 1.) to flip the labels when training D")
+    parser.add_argument('--logging_dir', default='../..', type=str, help="Path to logging directory")
 
     args = parser.parse_args()
 
@@ -64,7 +65,8 @@ if __name__ == "__main__":
                 "use_label_smoothing": args.use_label_smoothing,
                 "label_flipping": args.label_flipping,
                 "patch_size": args.patch_size,
-                "use_mbd": args.use_mbd
+                "use_mbd": args.use_mbd,
+                "logging_dir": args.logging_dir
                 }
 
     # Launch training
