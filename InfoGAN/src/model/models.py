@@ -1,7 +1,8 @@
 from keras.models import Model
 from keras.layers.core import Flatten, Dense, Dropout, Activation, Lambda, Reshape
 from keras.layers.convolutional import Conv2D, Deconv2D, ZeroPadding2D, UpSampling2D
-from keras.layers import Input, merge
+from keras.layers import Input
+from keras.layers.merge import concatenate
 from keras.layers.advanced_activations import LeakyReLU
 from keras.layers.normalization import BatchNormalization
 from keras.layers.pooling import MaxPooling2D
@@ -41,7 +42,7 @@ def generator_upsampling(cat_dim, cont_dim, noise_dim, img_dim, bn_mode, model_n
     cont_input = Input(shape=cont_dim, name="cont_input")
     noise_input = Input(shape=noise_dim, name="noise_input")
 
-    gen_input = merge([cat_input, cont_input, noise_input], mode="concat")
+    gen_input = concatenate([cat_input, cont_input, noise_input])
 
     x = Dense(1024)(gen_input)
     x = BatchNormalization()(x)
@@ -102,7 +103,7 @@ def generator_deconv(cat_dim, cont_dim, noise_dim, img_dim, bn_mode, batch_size,
     cont_input = Input(shape=cont_dim, name="cont_input")
     noise_input = Input(shape=noise_dim, name="noise_input")
 
-    gen_input = merge([cat_input, cont_input, noise_input], mode="concat")
+    gen_input = concatenate([cat_input, cont_input, noise_input])
 
     x = Dense(1024)(gen_input)
     x = BatchNormalization()(x)
@@ -190,7 +191,7 @@ def DCGAN_discriminator(cat_dim, cont_dim, img_dim, bn_mode, model_name="DCGAN_d
     # Reshape Q to nbatch, 1, cont_dim[0]
     x_Q_C_mean = Reshape((1, cont_dim[0]))(x_Q_C_mean)
     x_Q_C_logstd = Reshape((1, cont_dim[0]))(x_Q_C_logstd)
-    x_Q_C = merge([x_Q_C_mean, x_Q_C_logstd], mode="concat", name="Q_cont_out", concat_axis=1)
+    x_Q_C = concatenate([x_Q_C_mean, x_Q_C_logstd], name="Q_cont_out", axis=1)
 
     def minb_disc(z):
         diffs = K.expand_dims(z, 3) - K.expand_dims(K.permute_dimensions(z, [1, 2, 0]), 0)
@@ -212,7 +213,7 @@ def DCGAN_discriminator(cat_dim, cont_dim, img_dim, bn_mode, model_name="DCGAN_d
         x_mbd = M(x)
         x_mbd = Reshape((num_kernels, dim_per_kernel))(x_mbd)
         x_mbd = MBD(x_mbd)
-        x = merge([x, x_mbd], mode='concat')
+        x = concatenate([x, x_mbd])
 
     # Create discriminator model
     x_disc = Dense(2, activation='softmax', name="disc_out")(x)
