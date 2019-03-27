@@ -173,7 +173,7 @@ def DenseNet(nb_classes, img_dim, depth, nb_dense_block, growth_rate,
                                   dropout_rate=dropout_rate,
                                   weight_decay=weight_decay)
         # add transition
-        x = transition(x, nb_filter, dropout_rate=dropout_rate,
+        x = transition(x, concat_axis, nb_filter, dropout_rate=dropout_rate,
                        weight_decay=weight_decay)
 
     # The last denseblock does not have a transition
