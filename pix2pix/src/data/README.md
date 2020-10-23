@@ -35,4 +35,4 @@ optional arguments:
 
 **Example:**
 
-`python make_dataset.py /home/user/GitHub/pix2pix/datasets/facades 3 --img_size 256 --do_plot True`
+`python make_dataset.py /home/user/GitHub/pix2pix/datasets/facades 3 --img_size 256 --do_plot`
